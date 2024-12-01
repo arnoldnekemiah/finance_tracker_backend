@@ -14,6 +14,573 @@ servers:
 - url: http://localhost:3001
   description: Development server
 paths:
+  "/api/v1/budgets":
+    get:
+      summary: Lists all budgets
+      tags:
+      - Budgets
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: budgets found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        category:
+                          type: string
+                        limit:
+                          type: number
+                        spent:
+                          type: number
+                        start_date:
+                          type: string
+                          format: date-time
+                        end_date:
+                          type: string
+                          format: date-time
+                        remaining_amount:
+                          type: number
+                        percentage_used:
+                          type: number
+                        is_over_budget:
+                          type: boolean
+    post:
+      summary: Creates a budget
+      tags:
+      - Budgets
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: budget created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  category:
+                    type: string
+                  limit:
+                    type: number
+                  spent:
+                    type: number
+                  start_date:
+                    type: string
+                    format: date-time
+                  end_date:
+                    type: string
+                    format: date-time
+        '422':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                budget:
+                  type: object
+                  properties:
+                    category:
+                      type: string
+                    limit:
+                      type: number
+                    spent:
+                      type: number
+                    start_date:
+                      type: string
+                      format: date-time
+                    end_date:
+                      type: string
+                      format: date-time
+                  required:
+                  - category
+                  - limit
+                  - start_date
+                  - end_date
+  "/api/v1/insights/overview":
+    get:
+      summary: Get monthly overview
+      tags:
+      - Insights
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: overview data retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      total_income:
+                        type: number
+                      total_expenses:
+                        type: number
+                      top_categories:
+                        type: object
+                        additionalProperties:
+                          type: number
+                      monthly_trend:
+                        type: number
+        '422':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  "/api/v1/insights/spending_by_category":
+    get:
+      summary: Get spending by category
+      tags:
+      - Insights
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: category data retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    additionalProperties:
+                      type: number
+  "/api/v1/insights/weekly_trends":
+    get:
+      summary: Get weekly spending trends
+      tags:
+      - Insights
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: weekly trends retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    additionalProperties:
+                      type: number
+  "/api/v1/recurring_transactions":
+    get:
+      summary: Lists all active recurring transactions
+      tags:
+      - Recurring Transactions
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: recurring transactions found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        amount:
+                          type: number
+                        category:
+                          type: string
+                        description:
+                          type: string
+                        period:
+                          type: string
+                        start_date:
+                          type: string
+                          format: date-time
+                        end_date:
+                          type: string
+                          format: date-time
+                        is_active:
+                          type: boolean
+    post:
+      summary: Creates a recurring transaction
+      tags:
+      - Recurring Transactions
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: recurring transaction created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  amount:
+                    type: number
+                  category:
+                    type: string
+                  description:
+                    type: string
+                  period:
+                    type: string
+                  start_date:
+                    type: string
+                    format: date-time
+                  end_date:
+                    type: string
+                    format: date-time
+                  is_active:
+                    type: boolean
+        '422':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recurring_transaction:
+                  type: object
+                  properties:
+                    amount:
+                      type: number
+                    category:
+                      type: string
+                    description:
+                      type: string
+                    period:
+                      type: string
+                      enum:
+                      - daily
+                      - weekly
+                      - monthly
+                      - yearly
+                    start_date:
+                      type: string
+                      format: date-time
+                    end_date:
+                      type: string
+                      format: date-time
+                    is_active:
+                      type: boolean
+                  required:
+                  - amount
+                  - category
+                  - period
+                  - start_date
+  "/api/v1/recurring_transactions/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    put:
+      summary: Updates a recurring transaction
+      tags:
+      - Recurring Transactions
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: recurring transaction updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  amount:
+                    type: number
+                  category:
+                    type: string
+                  description:
+                    type: string
+                  period:
+                    type: string
+                  start_date:
+                    type: string
+                    format: date-time
+                  end_date:
+                    type: string
+                    format: date-time
+                  is_active:
+                    type: boolean
+        '422':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recurring_transaction:
+                  type: object
+                  properties:
+                    amount:
+                      type: number
+                    category:
+                      type: string
+                    description:
+                      type: string
+                    period:
+                      type: string
+                      enum:
+                      - daily
+                      - weekly
+                      - monthly
+                      - yearly
+                    start_date:
+                      type: string
+                      format: date-time
+                    end_date:
+                      type: string
+                      format: date-time
+                    is_active:
+                      type: boolean
+  "/api/v1/saving_goals":
+    get:
+      summary: Lists all saving goals
+      tags:
+      - Saving Goals
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: saving goals found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+                        target_amount:
+                          type: number
+                        current_amount:
+                          type: number
+                        target_date:
+                          type: string
+                          format: date-time
+                        notes:
+                          type: string
+    post:
+      summary: Creates a saving goal
+      tags:
+      - Saving Goals
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: saving goal created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  title:
+                    type: string
+                  target_amount:
+                    type: number
+                  current_amount:
+                    type: number
+                  target_date:
+                    type: string
+                    format: date-time
+                  notes:
+                    type: string
+        '422':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                saving_goal:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    target_amount:
+                      type: number
+                    current_amount:
+                      type: number
+                    target_date:
+                      type: string
+                      format: date-time
+                    notes:
+                      type: string
+                  required:
+                  - title
+                  - target_amount
+                  - target_date
+  "/api/v1/saving_goals/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Retrieves a saving goal
+      tags:
+      - Saving Goals
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: saving goal found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  title:
+                    type: string
+                  target_amount:
+                    type: number
+                  current_amount:
+                    type: number
+                  target_date:
+                    type: string
+                    format: date-time
+                  notes:
+                    type: string
+        '404':
+          description: saving goal not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    put:
+      summary: Updates a saving goal
+      tags:
+      - Saving Goals
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: saving goal updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  title:
+                    type: string
+                  target_amount:
+                    type: number
+                  current_amount:
+                    type: number
+                  target_date:
+                    type: string
+                    format: date-time
+                  notes:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                saving_goal:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    target_amount:
+                      type: number
+                    current_amount:
+                      type: number
+                    target_date:
+                      type: string
+                      format: date-time
+                    notes:
+                      type: string
+    delete:
+      summary: Deletes a saving goal
+      tags:
+      - Saving Goals
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: saving goal deleted
   "/api/v1/transactions":
     get:
       summary: Lists all transactions
