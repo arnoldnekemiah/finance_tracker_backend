@@ -6,4 +6,9 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, 
          :jwt_authenticatable, jwt_revocation_strategy: self
+               
+  has_many :transactions
+  has_many :budgets
+  has_many :saving_goals
+  has_many :recurring_transactions
 end
