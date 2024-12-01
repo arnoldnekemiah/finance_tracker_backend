@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  category: MyString
+  limit: 9.99
+  spent: 9.99
+  start_date: 2024-12-01 16:55:48
+  end_date: 2024-12-01 16:55:48
+
+two:
+  user: two
+  category: MyString
+  limit: 9.99
+  spent: 9.99
+  start_date: 2024-12-01 16:55:48
+  end_date: 2024-12-01 16:55:48

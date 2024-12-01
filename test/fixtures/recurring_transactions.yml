@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  amount: 9.99
+  category: MyString
+  description: MyText
+  period: MyString
+  start_date: 2024-12-01 16:57:24
+  end_date: 2024-12-01 16:57:24
+  is_active: false
+
+two:
+  user: two
+  amount: 9.99
+  category: MyString
+  description: MyText
+  period: MyString
+  start_date: 2024-12-01 16:57:24
+  end_date: 2024-12-01 16:57:24
+  is_active: false
