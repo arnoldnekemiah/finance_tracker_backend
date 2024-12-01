@@ -1,4 +1,6 @@
 class Api::V1::InsightsController < ApplicationController
+    load_and_authorize_resource
+    
     def overview
         monthly_data = {
           total_income: current_user.transactions.income.this_month.sum(:amount),

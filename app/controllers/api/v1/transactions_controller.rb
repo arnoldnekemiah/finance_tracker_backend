@@ -1,4 +1,6 @@
 class Api::V1::TransactionsController < ApplicationController
+    load_and_authorize_resource
+    
     def index
         transactions = current_user.transactions
         render json: transactions

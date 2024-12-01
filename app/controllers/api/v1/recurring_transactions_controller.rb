@@ -1,4 +1,6 @@
 class Api::V1::RecurringTransactionsController < ApplicationController
+    load_and_authorize_resource
+    
     def index
         recurring_transactions = current_user.recurring_transactions.active
         render json: recurring_transactions

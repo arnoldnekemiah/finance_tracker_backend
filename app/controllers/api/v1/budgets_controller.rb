@@ -1,4 +1,6 @@
 class Api::V1::BudgetsController < ApplicationController
+    load_and_authorize_resource
+    
     def index
         budgets = current_user.budgets
         render json: budgets, each_serializer: BudgetSerializer
