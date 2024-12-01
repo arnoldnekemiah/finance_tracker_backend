@@ -18,6 +18,10 @@ gem 'devise'
 gem 'devise-jwt'
 gem 'jsonapi-serializer'
 
+# gem 'active_storage_validations'
+
+gem 'cancancan'
+
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 
