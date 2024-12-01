@@ -10,9 +10,62 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_30_165725) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_01_204147) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "budgets", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "category"
+    t.decimal "limit"
+    t.decimal "spent"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_budgets_on_user_id"
+  end
+
+  create_table "recurring_transactions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.decimal "amount"
+    t.string "category"
+    t.text "description"
+    t.string "period"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.boolean "is_active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_recurring_transactions_on_user_id"
+  end
+
+  create_table "saving_goals", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "title"
+    t.decimal "target_amount"
+    t.decimal "current_amount"
+    t.datetime "target_date"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_saving_goals_on_user_id"
+  end
+
+  create_table "transactions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.decimal "amount"
+    t.string "category"
+    t.string "type"
+    t.datetime "date"
+    t.text "notes"
+    t.string "recurring_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_transactions_on_category"
+    t.index ["date"], name: "index_transactions_on_date"
+    t.index ["user_id"], name: "index_transactions_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -29,4 +82,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_30_165725) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "budgets", "users"
+  add_foreign_key "recurring_transactions", "users"
+  add_foreign_key "saving_goals", "users"
+  add_foreign_key "transactions", "users"
 end
