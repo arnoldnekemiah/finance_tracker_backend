@@ -1,0 +1,132 @@
+---
+openapi: 3.0.1
+info:
+  title: Finance Tracker API
+  version: v1
+  description: This is the API documentation for the Finance Tracker application.
+components:
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+      bearer_format: JWT
+servers:
+- url: http://localhost:3001
+  description: Development server
+paths:
+  "/api/v1/transactions":
+    get:
+      summary: Lists all transactions
+      tags:
+      - Transactions
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: transactions found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        amount:
+                          type: number
+                        category:
+                          type: string
+                        type:
+                          type: string
+                        date:
+                          type: string
+                          format: date-time
+                        notes:
+                          type: string
+                        recurring_id:
+                          type: string
+                          nullable: true
+        '401':
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    post:
+      summary: Creates a transaction
+      tags:
+      - Transactions
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: transaction created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  amount:
+                    type: number
+                  category:
+                    type: string
+                  type:
+                    type: string
+                  date:
+                    type: string
+                    format: date-time
+                  notes:
+                    type: string
+                  recurring_id:
+                    type: string
+                    nullable: true
+        '422':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transaction:
+                  type: object
+                  properties:
+                    amount:
+                      type: number
+                    category:
+                      type: string
+                    type:
+                      type: string
+                      enum:
+                      - income
+                      - expense
+                    date:
+                      type: string
+                      format: date-time
+                    notes:
+                      type: string
+                    recurring_id:
+                      type: string
+                      nullable: true
+                  required:
+                  - amount
+                  - category
+                  - type
+                  - date
