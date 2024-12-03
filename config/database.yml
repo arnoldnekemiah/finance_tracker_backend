@@ -80,5 +80,5 @@ test:
 production:
   <<: *default
   database: finance_tracker_api_production
-  username: finance_tracker_api
-  password: <%= ENV["FINANCE_TRACKER_API_DATABASE_PASSWORD"] %>
+  username: arnold
+  password: 12345
