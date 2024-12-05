@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-arnold}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12345}
+      POSTGRES_DB: finance_tracker_api_production
+    ports:
+      - "5432:5432"
+
+  app:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "3001:3001"
+    environment:
+      RAILS_ENV: production
+      DATABASE_URL: postgres://${POSTGRES_USER:-arnold}:${POSTGRES_PASSWORD:-12345}@db/finance_tracker_api_production
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+    volumes:
+      - .:/rails
+      - gem_cache:/usr/local/bundle
+
+volumes:
+  postgres_data:
+  gem_cache: 
