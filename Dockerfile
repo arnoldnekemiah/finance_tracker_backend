@@ -1,60 +1,61 @@
 # syntax = docker/dockerfile:1
 
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.3.1
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
 
-# Rails app lives here
 WORKDIR /rails
 
-# Set production environment
 ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+    BUNDLE_WITHOUT="development:test"
 
-# Throw-away build stage to reduce size of final image
-FROM base as build
+FROM base as builder
 
-# Install packages needed to build gems
+# Install packages needed for building
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config
+    apt-get install --no-install-recommends -y \
+    build-essential \
+    git \
+    libpq-dev \
+    libvips \
+    pkg-config && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives
 
 # Install specific bundler version
 RUN gem install bundler -v 2.5.22
 
-# Install application gems
+# Install gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle _2.5.22_ install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
+RUN bundle _2.5.22_ config set --local without 'development test' && \
+    bundle _2.5.22_ install --jobs 20 --retry 5 && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
 # Copy application code
 COPY . .
 
-# Precompile bootsnap code for faster boot times
+# Precompile bootsnap code
 RUN bundle exec bootsnap precompile app/ lib/
 
-# Final stage for app image
+# Final stage
 FROM base
 
-# Install packages needed for deployment
+# Install runtime dependencies only
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libvips postgresql-client && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+    apt-get install --no-install-recommends -y \
+    libvips \
+    postgresql-client && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives
 
-# Copy built artifacts: gems, application
-COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build /rails /rails
+# Copy built artifacts
+COPY --from=builder /usr/local/bundle /usr/local/bundle
+COPY --from=builder /rails /rails
 
-# Run and own only the runtime files as a non-root user for security
+# Setup non-root user
 RUN useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp
 USER rails:rails
 
-# Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-
-# Start the server by default, this can be overwritten at runtime
 EXPOSE 3001
+ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 CMD ["./bin/rails", "server"]
