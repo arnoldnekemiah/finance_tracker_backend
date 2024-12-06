@@ -29,3 +29,39 @@
 !/storage/.keep
 /tmp/storage/*
 !/tmp/storage/.keep
+
+# Ignore gitignore file.
+.gitignore
+
+# Ignore README file.
+README.md
+
+# Ignore tmp directory.
+tmp/*
+
+# Ignore log directory.
+log/*
+
+# Ignore md files.
+*.md
+
+# Ignore env files.
+.env*
+
+# Ignore dockerignore file.
+.dockerignore
+
+# Ignore docker-compose file.
+docker-compose.yml
+
+# Ignore Dockerfile.
+Dockerfile
+
+# Ignore coverage directory.
+coverage/*
+
+# Ignore spec directory.
+spec/*
+
+# Ignore test directory.
+test/*
