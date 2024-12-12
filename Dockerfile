@@ -30,14 +30,14 @@ RUN gem install bundler
 COPY Gemfile Gemfile.lock ./
 RUN --mount=type=cache,target=/usr/local/bundle \
     bundle config set --local without 'development test' && \
-    bundle install && \
+    bundle install --full-index && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
 # Copy application code
 COPY . .
 
 # Precompile bootsnap code
-RUN bundle exec bootsnap precompile app/ lib/
+RUN bundle exec /usr/local/bundle/bin/bootsnap precompile app/ lib/
 
 # Final stage
 FROM base
