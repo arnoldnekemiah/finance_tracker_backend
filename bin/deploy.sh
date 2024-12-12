@@ -29,8 +29,10 @@ sudo systemctl enable docker
 # Add ubuntu user to docker group
 sudo usermod -aG docker ubuntu
 
-# Install AWS CLI
-sudo apt-get install -y awscli
+# Install AWS CLI only if not already installed
+if ! command -v aws &> /dev/null; then
+    sudo apt-get install -y awscli
+fi
 
 # Set correct permissions
 sudo chown -R ubuntu:ubuntu /home/ubuntu/finance_tracker_backend
