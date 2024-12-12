@@ -24,13 +24,13 @@ RUN apt-get update -qq && \
     pkg-config
 
 # Install specific bundler version
-RUN gem install bundler -v 2.5.22
+RUN gem install bundler
 
 # Install gems
 COPY Gemfile Gemfile.lock ./
 RUN --mount=type=cache,target=/usr/local/bundle \
-    bundle _2.5.22_ config set --local without 'development test' && \
-    bundle _2.5.22_ install && \
+    bundle config set --local without 'development test' && \
+    bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
 # Copy application code
