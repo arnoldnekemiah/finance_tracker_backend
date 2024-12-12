@@ -16,20 +16,25 @@ FROM base as builder
 
 # Install packages needed for building
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     build-essential \
     git \
-    libpq-dev \
-    libvips \
-    pkg-config
+    pkg-config && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
-# Install specific bundler version
+# Install database and image processing dependencies
+RUN apt-get update -qq && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+    libpq-dev \
+    libvips && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+# Install bundler
 RUN gem install bundler
 
 # Install gems
 COPY Gemfile Gemfile.lock ./
-RUN --mount=type=cache,target=/usr/local/bundle \
-    bundle config set --local without 'development test' && \
+RUN bundle config set --local without 'development test' && \
     bundle install --full-index && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
@@ -44,9 +49,10 @@ FROM base
 
 # Install runtime dependencies only
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     libvips \
-    postgresql-client
+    postgresql-client && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 # Copy built artifacts
 COPY --from=builder /usr/local/bundle /usr/local/bundle
