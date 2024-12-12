@@ -15,8 +15,7 @@ ENV RAILS_ENV="production" \
 FROM base as builder
 
 # Install packages needed for building
-RUN --mount=type=cache,target=/var/cache/apt \
-    apt-get update -qq && \
+RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     build-essential \
     git \
@@ -44,8 +43,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 FROM base
 
 # Install runtime dependencies only
-RUN --mount=type=cache,target=/var/cache/apt \
-    apt-get update -qq && \
+RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     libvips \
     postgresql-client
