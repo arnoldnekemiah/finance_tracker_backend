@@ -29,9 +29,13 @@ sudo systemctl enable docker
 # Add ubuntu user to docker group
 sudo usermod -aG docker ubuntu
 
-# Install AWS CLI only if not already installed
+# Install AWS CLI v2 if not already installed
 if ! command -v aws &> /dev/null; then
-    sudo apt-get install -y awscli
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    sudo apt-get install -y unzip
+    unzip awscliv2.zip
+    sudo ./aws/install
+    rm -rf aws awscliv2.zip
 fi
 
 # Set correct permissions
