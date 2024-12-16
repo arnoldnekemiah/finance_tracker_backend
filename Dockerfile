@@ -15,44 +15,40 @@ ENV RAILS_ENV="production" \
 FROM base as builder
 
 # Install packages needed for building
-RUN apt-get update -qq && \
-    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
     build-essential \
     git \
-    pkg-config && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
-
-# Install database and image processing dependencies
-RUN apt-get update -qq && \
-    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     libpq-dev \
-    libvips && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+    libvips \
+    pkg-config
 
-# Install bundler
-RUN gem install bundler
+# Install specific bundler version
+RUN gem install bundler -v 2.5.22
 
 # Install gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle config set --local without 'development test' && \
-    bundle install --full-index && \
+RUN --mount=type=cache,target=/usr/local/bundle \
+    bundle _2.5.22_ config set --local without 'development test' && \
+    bundle _2.5.22_ install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
 # Copy application code
 COPY . .
 
 # Precompile bootsnap code
-RUN bundle exec /usr/local/bundle/bin/bootsnap precompile app/ lib/
+RUN bundle exec bootsnap precompile app/ lib/
 
 # Final stage
 FROM base
 
 # Install runtime dependencies only
-RUN apt-get update -qq && \
-    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+RUN --mount=type=cache,target=/var/cache/apt \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
     libvips \
-    postgresql-client && \
-    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+    postgresql-client
 
 # Copy built artifacts
 COPY --from=builder /usr/local/bundle /usr/local/bundle

@@ -79,7 +79,4 @@ test:
 #
 production:
   <<: *default
-  host: db
-  database: finance_tracker_api_production
-  username: <%= ENV['POSTGRES_USER'] %>
-  password: <%= ENV['POSTGRES_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %>

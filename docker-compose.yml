@@ -16,7 +16,6 @@ services:
       retries: 5
     ports:
       - "5432:5432"
-    restart: unless-stopped
 
   app:
     build:
@@ -32,8 +31,7 @@ services:
     environment:
       RAILS_ENV: production
       DATABASE_URL: postgres://${POSTGRES_USER:-arnold}:${POSTGRES_PASSWORD:-12345}@db/finance_tracker_api_production
-      RAILS_MASTER_KEY: 80145fd863afb43fe1468066ee11f67a
-      PORT: 3001
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
     deploy:
       resources:
         limits:
@@ -42,17 +40,11 @@ services:
     volumes:
       - gem_cache:/usr/local/bundle
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:3001/up"]
       interval: 30s
       timeout: 10s
       retries: 3
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
 volumes:
   postgres_data:
-  gem_cache: 
+  gem_cache:
