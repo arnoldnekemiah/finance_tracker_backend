@@ -79,9 +79,19 @@ sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t
 sudo systemctl restart nginx
 
-# Build and start Docker containers
+# Clean up any existing Docker resources and locks before building
+sudo rm -f /var/lib/apt/lists/lock
+sudo rm -f /var/cache/apt/archives/lock
+sudo rm -f /var/lib/dpkg/lock*
+sudo docker compose down
+
+# Build and start Docker containers with error handling
 export DOCKER_BUILDKIT=1
-sudo docker compose build --no-cache --parallel
+if ! sudo docker compose build --no-cache --parallel; then
+    echo "Docker build failed, retrying after cleanup..."
+    sudo docker system prune -f
+    sudo docker compose build --no-cache --parallel
+fi
 sudo docker compose up -d
 
 # Wait for the application to be ready
