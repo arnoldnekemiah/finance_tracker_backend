@@ -30,7 +30,11 @@ RUN rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/loc
 RUN gem install bundler -v 3.5.22
 
 # Install gems
-RUN bundle install
+COPY Gemfile Gemfile.lock ./
+RUN --mount=type=cache,target=/usr/local/bundle \
+    bundle _3.5.22_ config set --local without 'development test' && \
+    bundle _3.5.22_ install && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
 # Copy application code
 COPY . .
