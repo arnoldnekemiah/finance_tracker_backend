@@ -1,7 +1,16 @@
 #!/bin/bash
 
-# Exit on error
-set -e
+# Exit on error and enable debug mode
+set -eo pipefail
+
+# Function for cleanup
+cleanup() {
+    echo "Cleaning up Docker resources..."
+    sudo docker system prune -f
+    sudo rm -f /var/lib/apt/lists/lock
+    sudo rm -f /var/cache/apt/archives/lock
+    sudo rm -f /var/lib/dpkg/lock*
+}
 
 # Update system packages
 sudo apt-get update
@@ -37,39 +46,18 @@ sudo systemctl start docker
 
 # Configure Docker daemon for BuildKit
 echo '{
-  "features": {
-    "buildkit": true
-  }
+    "features": {
+        "buildkit": true
+    },
+    "log-driver": "json-file",
+    "log-opts": {
+        "max-size": "10m",
+        "max-file": "3"
+    }
 }' | sudo tee /etc/docker/daemon.json
 
 # Restart Docker daemon
 sudo systemctl restart docker
-
-# Set up Nginx configuration
-sudo tee /etc/nginx/sites-available/finance_tracker << EOF
-upstream rails_app {
-    server 127.0.0.1:3001;
-}
-
-server {
-    listen 80;
-    server_name ec2-54-160-201-25.compute-1.amazonaws.com 54.160.201.25;
-
-    location / {
-        proxy_pass http://rails_app;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-
-        # CORS headers
-        add_header 'Access-Control-Allow-Origin' '*';
-        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
-        add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization';
-        add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
-    }
-}
-EOF
 
 # Enable the site and remove default
 sudo ln -sf /etc/nginx/sites-available/finance_tracker /etc/nginx/sites-enabled/
@@ -79,26 +67,47 @@ sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t
 sudo systemctl restart nginx
 
-# Clean up any existing Docker resources and locks before building
-sudo rm -f /var/lib/apt/lists/lock
-sudo rm -f /var/cache/apt/archives/lock
-sudo rm -f /var/lib/dpkg/lock*
-sudo docker compose down
-
-# Build and start Docker containers with error handling
+# Improved Docker build and deploy process
+cleanup
 export DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD=1
+
+echo "Building Docker containers..."
 if ! sudo docker compose build --no-cache --parallel; then
-    echo "Docker build failed, retrying after cleanup..."
-    sudo docker system prune -f
+    echo "Initial build failed, retrying after cleanup..."
+    cleanup
     sudo docker compose build --no-cache --parallel
 fi
+
+echo "Starting containers..."
 sudo docker compose up -d
 
-# Wait for the application to be ready
-echo "Waiting for the application to start..."
-sleep 10
+# Health check
+echo "Performing health check..."
+max_attempts=30
+attempt=1
+while [ $attempt -le $max_attempts ]; do
+    if curl -s http://localhost:3001/health > /dev/null; then
+        echo "Application is healthy!"
+        break
+    fi
+    echo "Waiting for application to be ready (attempt $attempt/$max_attempts)..."
+    sleep 5
+    attempt=$((attempt + 1))
+done
 
-# Run database migrations
-sudo docker compose exec app rails db:migrate
+if [ $attempt -gt $max_attempts ]; then
+    echo "Application failed to start properly"
+    sudo docker compose logs
+    exit 1
+fi
+
+# Run migrations
+echo "Running database migrations..."
+sudo docker compose exec -T app rails db:migrate || {
+    echo "Migration failed!"
+    sudo docker compose logs
+    exit 1
+}
 
 echo "Deployment completed successfully!"
