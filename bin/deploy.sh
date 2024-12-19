@@ -1,4 +1,17 @@
-#!/bin/bash
+#!/bin/bash -e
+
+# Check for .env file
+if [ ! -f .env ]; then
+    echo "Error: .env file not found!"
+    echo "Please create a .env file with the required environment variables."
+    echo "You can use .env.example as a template."
+    exit 1
+fi
+
+# Load environment variables
+set -a
+source .env
+set +a
 
 # Exit on error and enable debug mode
 set -eo pipefail
@@ -7,12 +20,19 @@ set -eo pipefail
 cleanup() {
     echo "Cleaning up Docker resources..."
     sudo docker system prune -f
+    sudo docker builder prune -f
+    
+    # More thorough cleanup of APT locks
     sudo rm -f /var/lib/apt/lists/lock
     sudo rm -f /var/cache/apt/archives/lock
     sudo rm -f /var/lib/dpkg/lock*
+    sudo rm -f /var/lib/dpkg/lock-frontend
     sudo killall apt-get || true
     sudo killall dpkg || true
     sudo dpkg --configure -a
+    
+    # Clean Docker build cache
+    sudo docker builder prune -f --filter until=24h
 }
 
 # Update system packages
@@ -75,6 +95,9 @@ cleanup
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 
+# Stop and remove all containers
+sudo docker compose down --remove-orphans
+
 echo "Building Docker containers..."
 if ! sudo docker compose build --no-cache --parallel; then
     echo "Initial build failed, retrying after cleanup..."
@@ -115,3 +138,11 @@ sudo docker compose exec -T app rails db:migrate || {
 }
 
 echo "Deployment completed successfully!"
+
+# Print container status
+echo "Container status:"
+sudo docker compose ps
+
+# Print application logs
+echo "Recent application logs:"
+sudo docker compose logs --tail=50 app

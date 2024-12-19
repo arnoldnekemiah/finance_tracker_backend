@@ -14,15 +14,17 @@ ENV RAILS_ENV="production" \
 
 FROM base as builder
 
-# Install packages needed for building
-RUN --mount=type=cache,target=/var/cache/apt \
+# Install packages needed for building (modified approach)
+RUN rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/lock* && \
+    apt-get clean && \
     apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     build-essential \
     git \
     libpq-dev \
     libvips \
-    pkg-config
+    pkg-config && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install specific bundler version
 RUN gem install bundler -v 2.5.22
@@ -44,11 +46,13 @@ RUN bundle exec bootsnap precompile app/ lib/
 FROM base
 
 # Install runtime dependencies only
-RUN --mount=type=cache,target=/var/cache/apt \
+RUN rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/lock* && \
+    apt-get clean && \
     apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     libvips \
-    postgresql-client
+    postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy built artifacts
 COPY --from=builder /usr/local/bundle /usr/local/bundle
