@@ -10,6 +10,9 @@ cleanup() {
     sudo rm -f /var/lib/apt/lists/lock
     sudo rm -f /var/cache/apt/archives/lock
     sudo rm -f /var/lib/dpkg/lock*
+    sudo killall apt-get || true
+    sudo killall dpkg || true
+    sudo dpkg --configure -a
 }
 
 # Update system packages
@@ -76,7 +79,8 @@ echo "Building Docker containers..."
 if ! sudo docker compose build --no-cache --parallel; then
     echo "Initial build failed, retrying after cleanup..."
     cleanup
-    sudo docker compose build --no-cache --parallel
+    sleep 10  # Add a delay to ensure locks are fully released
+    sudo docker compose build --no-cache
 fi
 
 echo "Starting containers..."
