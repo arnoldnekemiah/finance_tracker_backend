@@ -1,5 +1,22 @@
 #!/bin/bash -e
 
+# Define health check function
+check_service_health() {
+    local service=$1
+    local max_attempts=$2
+    local attempt=1
+
+    while [ $attempt -le $max_attempts ]; do
+        if sudo docker compose ps | grep -q "${service}.*healthy"; then
+            return 0
+        fi
+        echo "Waiting for $service to be healthy... Attempt $attempt/$max_attempts"
+        sleep 5
+        attempt=$((attempt + 1))
+    done
+    return 1
+}
+
 # Load environment variables
 if [ ! -f .env ]; then
     echo "Error: .env file not found!"
@@ -39,6 +56,15 @@ fi
 echo "Deploying main application..."
 sudo docker compose down --remove-orphans
 sudo docker compose build --no-cache
+
+# Start the database first
+sudo docker compose up -d db
+sleep 5  # Give the database time to start
+
+# Create the database if it doesn't exist
+sudo docker compose exec -T db psql -U ${POSTGRES_USER} -c "CREATE DATABASE ${POSTGRES_DB};" || true
+
+# Start the rest of the services
 sudo docker compose up -d
 
 # Wait for main application to be healthy
@@ -68,19 +94,3 @@ chmod +x /usr/local/bin/backup-db.sh
 (crontab -l 2>/dev/null; echo "0 0 * * * /usr/local/bin/backup-db.sh") | crontab -
 
 echo "Deployment completed successfully!"
-
-check_service_health() {
-    local service=$1
-    local max_attempts=$2
-    local attempt=1
-
-    while [ $attempt -le $max_attempts ]; do
-        if sudo docker compose ps | grep -q "${service}.*healthy"; then
-            return 0
-        fi
-        echo "Waiting for $service to be healthy... Attempt $attempt/$max_attempts"
-        sleep 5
-        attempt=$((attempt + 1))
-    done
-    return 1
-}

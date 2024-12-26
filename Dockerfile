@@ -62,6 +62,7 @@ COPY --from=builder /rails /rails
 # Setup non-root user and fix permissions
 RUN useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails /rails && \
+    chmod +x /rails/bin/* && \
     chmod +x /rails/bin/docker-entrypoint
 
 USER rails:rails
