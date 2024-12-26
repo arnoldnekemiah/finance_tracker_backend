@@ -41,31 +41,19 @@ sudo docker compose down --remove-orphans
 sudo docker compose build --no-cache
 sudo docker compose up -d
 
-# Deploy monitoring stack
-echo "Deploying monitoring stack..."
-sudo docker compose -f docker-compose.monitoring.yml down --remove-orphans
-sudo docker compose -f docker-compose.monitoring.yml up -d
-
-# Health check
-if ! check_service_health "application" 30; then
+# Wait for main application to be healthy
+if ! check_service_health "app" 30; then
     echo "Application failed to start properly"
     sudo docker compose logs
     exit 1
 fi
 
+# Deploy monitoring stack
+echo "Deploying monitoring stack..."
+sudo docker compose -f docker-compose.monitoring.yml up -d
+
 # Run migrations
 sudo docker compose exec app rails db:migrate
-
-# Install Prometheus and Grafana
-docker run -d \
-    --name prometheus \
-    -p 9090:9090 \
-    prom/prometheus
-
-docker run -d \
-    --name grafana \
-    -p 3000:3000 \
-    grafana/grafana
 
 # Create backup script
 echo '#!/bin/bash
@@ -80,3 +68,19 @@ chmod +x /usr/local/bin/backup-db.sh
 (crontab -l 2>/dev/null; echo "0 0 * * * /usr/local/bin/backup-db.sh") | crontab -
 
 echo "Deployment completed successfully!"
+
+check_service_health() {
+    local service=$1
+    local max_attempts=$2
+    local attempt=1
+
+    while [ $attempt -le $max_attempts ]; do
+        if sudo docker compose ps | grep -q "${service}.*healthy"; then
+            return 0
+        fi
+        echo "Waiting for $service to be healthy... Attempt $attempt/$max_attempts"
+        sleep 5
+        attempt=$((attempt + 1))
+    done
+    return 1
+}
