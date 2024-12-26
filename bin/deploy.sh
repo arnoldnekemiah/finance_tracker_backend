@@ -58,11 +58,19 @@ sudo docker compose down --remove-orphans
 sudo docker compose build --no-cache
 
 # Start the database first
+echo "Starting database..."
 sudo docker compose up -d db
-sleep 5  # Give the database time to start
 
-# Create the database if it doesn't exist
-sudo docker compose exec -T db psql -U ${POSTGRES_USER} -c "CREATE DATABASE ${POSTGRES_DB};" || true
+# Wait for database to be healthy
+if ! check_service_health "db" 30; then
+    echo "Database failed to start properly"
+    sudo docker compose logs db
+    exit 1
+fi
+
+# Create the database
+echo "Creating database..."
+sudo docker compose exec -T db psql -U postgres -c "CREATE DATABASE arnold;" || true
 
 # Start the rest of the services
 sudo docker compose up -d
@@ -79,7 +87,7 @@ echo "Deploying monitoring stack..."
 sudo docker compose -f docker-compose.monitoring.yml up -d
 
 # Run migrations
-sudo docker compose exec app rails db:migrate
+sudo docker compose exec app bundle exec rails db:migrate
 
 # Create backup script
 echo '#!/bin/bash
