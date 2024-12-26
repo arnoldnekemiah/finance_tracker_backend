@@ -50,9 +50,9 @@ services:
       - gem_cache:/usr/local/bundle
       - ./log:/rails/log
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/up"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD-SHELL", "ps aux | grep '[p]uma' || exit 1"]
+      interval: 10s
+      timeout: 5s
       retries: 3
     restart: unless-stopped
 
