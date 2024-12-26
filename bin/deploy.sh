@@ -29,32 +29,25 @@ fi
 # Setup SSL (modify with your domain)
 # sudo certbot --nginx -d yourdomain.com
 
-# Backup database
-timestamp=$(date +%Y%m%d_%H%M%S)
-sudo docker compose exec db pg_dump -U $POSTGRES_USER $POSTGRES_DB > "backup_${timestamp}.sql"
+# Backup database if containers are running
+if docker compose ps | grep -q "db.*running"; then
+    timestamp=$(date +%Y%m%d_%H%M%S)
+    sudo docker compose exec db pg_dump -U $POSTGRES_USER $POSTGRES_DB > "backup_${timestamp}.sql"
+fi
 
-# Deploy application
-sudo docker compose down
-sudo docker system prune -af
+# Deploy main application
+echo "Deploying main application..."
+sudo docker compose down --remove-orphans
 sudo docker compose build --no-cache
 sudo docker compose up -d
 
+# Deploy monitoring stack
+echo "Deploying monitoring stack..."
+sudo docker compose -f docker-compose.monitoring.yml down --remove-orphans
+sudo docker compose -f docker-compose.monitoring.yml up -d
+
 # Health check
-echo "Performing health check..."
-max_attempts=30
-attempt=1
-
-while [ $attempt -le $max_attempts ]; do
-    if curl -f http://localhost:3001/health > /dev/null 2>&1; then
-        echo "Application is healthy!"
-        break
-    fi
-    echo "Waiting for application (attempt $attempt/$max_attempts)..."
-    sleep 5
-    attempt=$((attempt + 1))
-done
-
-if [ $attempt -gt $max_attempts ]; then
+if ! check_service_health "application" 30; then
     echo "Application failed to start properly"
     sudo docker compose logs
     exit 1
