@@ -17,6 +17,8 @@ services:
     restart: unless-stopped
     ports:
       - "5432:5432"
+    command: postgres -c shared_buffers=256MB -c max_connections=200
+    shm_size: '256mb'
 
   app:
     build:
@@ -33,10 +35,16 @@ services:
       RAILS_ENV: production
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}
       RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+      RAILS_MAX_THREADS: 5
+      WEB_CONCURRENCY: 2
+      MALLOC_ARENA_MAX: 2
     deploy:
       resources:
         limits:
           cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
           memory: 512M
     volumes:
       - gem_cache:/usr/local/bundle
