@@ -14,7 +14,7 @@ ENV RAILS_ENV="production" \
 
 FROM base as builder
 
-# Install packages needed for building (modified approach)
+# Install packages needed for building
 RUN rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/lock* && \
     apt-get clean && \
     apt-get update -qq && \
@@ -26,14 +26,12 @@ RUN rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/loc
     pkg-config && \
     rm -rf /var/lib/apt/lists/*
 
-# Install specific bundler version
-RUN gem install bundler -v 3.5.22
+# Install latest bundler
+RUN gem install bundler
 
 # Install gems
 COPY Gemfile Gemfile.lock ./
-RUN --mount=type=cache,target=/usr/local/bundle \
-    bundle _3.5.22_ config set --local without 'development test' && \
-    bundle _3.5.22_ install && \
+RUN bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
 
 # Copy application code
