@@ -37,6 +37,9 @@ RUN bundle install && \
 # Copy application code
 COPY . .
 
+# Make entrypoint script executable
+RUN chmod +x bin/docker-entrypoint
+
 # Precompile bootsnap code
 RUN bundle exec bootsnap precompile app/ lib/
 
@@ -56,9 +59,11 @@ RUN rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/loc
 COPY --from=builder /usr/local/bundle /usr/local/bundle
 COPY --from=builder /rails /rails
 
-# Setup non-root user
+# Setup non-root user and fix permissions
 RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
+    chown -R rails:rails /rails && \
+    chmod +x /rails/bin/docker-entrypoint
+
 USER rails:rails
 
 EXPOSE 3001
