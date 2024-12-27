@@ -70,7 +70,7 @@ fi
 
 # Create the database
 echo "Creating database..."
-sudo docker compose exec -T db psql -U postgres -c "CREATE DATABASE arnold;" || true
+sudo docker compose exec -T db psql -U ${POSTGRES_USER} -c "CREATE DATABASE ${POSTGRES_DB};" || true
 
 # Start the rest of the services
 sudo docker compose up -d
@@ -89,16 +89,21 @@ sudo docker compose -f docker-compose.monitoring.yml up -d
 # Run migrations
 sudo docker compose exec app bundle exec rails db:migrate
 
-# Create backup script
-echo '#!/bin/bash
+# Create backup script in the project directory
+echo "Creating backup script..."
+cat > bin/backup-db.sh << 'EOF'
+#!/bin/bash
 timestamp=$(date +%Y%m%d_%H%M%S)
-docker compose exec db pg_dump -U $POSTGRES_USER $POSTGRES_DB > "/backups/backup_${timestamp}.sql"
-find /backups -type f -mtime +7 -delete' > /usr/local/bin/backup-db.sh
+source .env
+docker compose exec -T db pg_dump -U $POSTGRES_USER $POSTGRES_DB > "backups/backup_${timestamp}.sql"
+find backups -type f -mtime +7 -delete
+EOF
 
-# Make it executable
-chmod +x /usr/local/bin/backup-db.sh
+chmod +x bin/backup-db.sh
 
-# Add to crontab
-(crontab -l 2>/dev/null; echo "0 0 * * * /usr/local/bin/backup-db.sh") | crontab -
+# Add to crontab if not already present
+if ! (crontab -l 2>/dev/null | grep -q "backup-db.sh"); then
+    (crontab -l 2>/dev/null; echo "0 0 * * * cd $(pwd) && ./bin/backup-db.sh") | crontab -
+fi
 
 echo "Deployment completed successfully!"

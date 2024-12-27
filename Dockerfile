@@ -52,7 +52,8 @@ RUN rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/loc
     apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     libvips \
-    postgresql-client && \
+    postgresql-client \
+    curl && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy built artifacts
