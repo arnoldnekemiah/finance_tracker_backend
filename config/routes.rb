@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       resources :recurring_transactions
       resources :budgets
       resources :saving_goals
+      resources :categories
 
       # Insights routes
       scope :insights do

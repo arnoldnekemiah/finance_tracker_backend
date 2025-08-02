@@ -10,20 +10,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_01_204147) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_02_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "budgets", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "category"
     t.decimal "limit"
     t.decimal "spent"
     t.datetime "start_date"
     t.datetime "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "category_id"
+    t.string "period"
+    t.index ["category_id"], name: "index_budgets_on_category_id"
     t.index ["user_id"], name: "index_budgets_on_user_id"
+  end
+
+  create_table "categories", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "icon"
+    t.string "color"
+    t.string "transaction_type", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_categories_on_user_id"
   end
 
   create_table "recurring_transactions", force: :cascade do |t|
@@ -55,14 +68,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_01_204147) do
   create_table "transactions", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.decimal "amount"
-    t.string "category"
     t.string "type"
     t.datetime "date"
     t.text "notes"
     t.string "recurring_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["category"], name: "index_transactions_on_category"
+    t.bigint "category_id"
+    t.string "payment_method"
+    t.index ["category_id"], name: "index_transactions_on_category_id"
     t.index ["date"], name: "index_transactions_on_date"
     t.index ["user_id"], name: "index_transactions_on_user_id"
   end
@@ -75,15 +89,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_01_204147) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "name"
     t.string "jti", null: false
+    t.string "first_name"
+    t.string "last_name"
+    t.string "currency", default: "USD"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "budgets", "categories"
   add_foreign_key "budgets", "users"
+  add_foreign_key "categories", "users"
   add_foreign_key "recurring_transactions", "users"
   add_foreign_key "saving_goals", "users"
+  add_foreign_key "transactions", "categories"
   add_foreign_key "transactions", "users"
 end
