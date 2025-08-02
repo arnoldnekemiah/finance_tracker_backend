@@ -18,17 +18,30 @@ Rails.application.routes.draw do
   # API routes
   namespace :api do
     namespace :v1 do
-      resources :transactions
-      resources :recurring_transactions
-      resources :budgets
-      resources :saving_goals
-      resources :categories
+      # Transaction routes
+      resources :transactions, only: [:index, :create, :show, :update, :destroy]
+      
+      # Recurring transaction routes
+      resources :recurring_transactions, only: [:index, :create, :show, :update, :destroy]
+      
+      # Budget routes
+      resources :budgets, only: [:index, :create, :show, :update, :destroy]
+      
+      # Saving goals routes
+      resources :saving_goals, only: [:index, :create, :show, :update, :destroy] do
+        member do
+          patch :update_progress
+        end
+      end
+      
+      # Category routes
+      resources :categories, only: [:index, :create, :show, :update, :destroy]
 
       # Insights routes
-      scope :insights do
-        get 'overview', to: 'insights#overview'
-        get 'spending_by_category', to: 'insights#spending_by_category'
-        get 'weekly_trends', to: 'insights#weekly_trends'
+      namespace :insights do
+        get :overview
+        get :spending_by_category
+        get :weekly_trends
       end
     end
   end
