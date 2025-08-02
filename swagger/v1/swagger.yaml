@@ -10,6 +10,20 @@ components:
       type: http
       scheme: bearer
       bearer_format: JWT
+  schemas:
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+        transaction_type:
+          type: string
 servers:
 - url: http://localhost:3001
   description: Development server
@@ -40,7 +54,11 @@ paths:
                     properties:
                       email:
                         type: string
-                      name:
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      currency:
                         type: string
                       avatar:
                         type: string
@@ -73,7 +91,11 @@ paths:
                       minimum: 6
                     password_confirmation:
                       type: string
-                    name:
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+                    currency:
                       type: string
                     avatar:
                       type: string
@@ -112,7 +134,11 @@ paths:
                     properties:
                       email:
                         type: string
-                      name:
+                      first_name:
+                        type: string
+                      last_name:
+                        type: string
+                      currency:
                         type: string
                       avatar:
                         type: string
@@ -175,7 +201,7 @@ paths:
                         id:
                           type: integer
                         category:
-                          type: string
+                          $ref: '#/components/schemas/Category'
                         limit:
                           type: number
                         spent:
@@ -192,6 +218,8 @@ paths:
                           type: number
                         is_over_budget:
                           type: boolean
+                        period:
+                          type: string
     post:
       summary: Creates a budget
       tags:
@@ -239,8 +267,8 @@ paths:
                 budget:
                   type: object
                   properties:
-                    category:
-                      type: string
+                    category_id:
+                      type: integer
                     limit:
                       type: number
                     spent:
@@ -251,11 +279,112 @@ paths:
                     end_date:
                       type: string
                       format: date-time
+                    period:
+                      type: string
                   required:
-                  - category
+                  - category_id
                   - limit
                   - start_date
                   - end_date
+  "/api/v1/categories":
+    get:
+      summary: Lists all categories
+      tags:
+      - Categories
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: categories found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+    post:
+      summary: Creates a category
+      tags:
+      - Categories
+      security:
+      - bearer_auth: []
+      responses:
+        '201':
+          description: category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '422':
+          description: invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    icon:
+                      type: string
+                    color:
+                      type: string
+                    transaction_type:
+                      type: string
+                  required:
+                  - name
+                  - transaction_type
+  "/api/v1/categories/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    put:
+      summary: Updates a category
+      tags:
+      - Categories
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '422':
+          description: invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    icon:
+                      type: string
+                    color:
+                      type: string
+                    transaction_type:
+                      type: string
+    delete:
+      summary: Deletes a category
+      tags:
+      - Categories
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: category deleted
   "/api/v1/insights/overview":
     get:
       summary: Get monthly overview
@@ -744,7 +873,7 @@ paths:
                         amount:
                           type: number
                         category:
-                          type: string
+                          $ref: '#/components/schemas/Category'
                         type:
                           type: string
                         date:
@@ -755,6 +884,8 @@ paths:
                         recurring_id:
                           type: string
                           nullable: true
+                        payment_method:
+                          type: string
         '401':
           description: unauthorized
           content:
@@ -815,8 +946,8 @@ paths:
                   properties:
                     amount:
                       type: number
-                    category:
-                      type: string
+                    category_id:
+                      type: integer
                     type:
                       type: string
                       enum:
@@ -830,8 +961,10 @@ paths:
                     recurring_id:
                       type: string
                       nullable: true
+                    payment_method:
+                      type: string
                   required:
                   - amount
-                  - category
+                  - category_id
                   - type
                   - date

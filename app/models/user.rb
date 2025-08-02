@@ -11,4 +11,5 @@ class User < ApplicationRecord
   has_many :budgets
   has_many :saving_goals
   has_many :recurring_transactions
+  has_many :categories
 end

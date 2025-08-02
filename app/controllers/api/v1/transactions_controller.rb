@@ -19,11 +19,12 @@ class Api::V1::TransactionsController < ApplicationController
     def transaction_params
         params.require(:transaction).permit(
           :amount, 
-          :category, 
+          :category_id,
           :type, 
           :date, 
           :notes, 
-          :recurring_id
+          :recurring_id,
+          :payment_method
         )
     end
 end

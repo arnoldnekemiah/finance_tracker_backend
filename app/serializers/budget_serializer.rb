@@ -1,6 +1,7 @@
 class BudgetSerializer < ActiveModel::Serializer
-    attributes :id, :category, :limit, :spent, :start_date, :end_date, 
-               :remaining_amount, :percentage_used, :is_over_budget
+    attributes :id, :limit, :spent, :start_date, :end_date,
+               :remaining_amount, :percentage_used, :is_over_budget, :period
+    belongs_to :category
   
     def remaining_amount
       object.limit - object.spent

@@ -19,11 +19,12 @@ class Api::V1::BudgetsController < ApplicationController
 
       def budget_params
         params.require(:budget).permit(
-          :category,
+          :category_id,
           :limit,
           :spent,
           :start_date,
-          :end_date
+          :end_date,
+          :period
         )
       end
 end
