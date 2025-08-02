@@ -21,8 +21,19 @@ Rails.application.routes.draw do
       # Transaction routes
       resources :transactions, only: [:index, :create, :show, :update, :destroy]
       
-      # Recurring transaction routes
-      resources :recurring_transactions, only: [:index, :create, :show, :update, :destroy]
+      # Debt routes (replaces recurring transactions)
+      resources :debts, only: [:index, :create, :show, :update, :destroy] do
+        member do
+          patch :mark_as_paid
+        end
+      end
+      
+      # Account routes
+      resources :accounts, only: [:index, :create, :show, :update, :destroy] do
+        member do
+          patch :update_balance
+        end
+      end
       
       # Budget routes
       resources :budgets, only: [:index, :create, :show, :update, :destroy]
@@ -37,10 +48,16 @@ Rails.application.routes.draw do
       # Category routes
       resources :categories, only: [:index, :create, :show, :update, :destroy]
 
+      # Profile routes
+      resource :profile, only: [:show, :update] do
+        get :dashboard_summary
+      end
+
       # Insights routes
       namespace :insights do
         get :overview
         get :spending_by_category
+        get :spending_comparison
         get :weekly_trends
       end
     end

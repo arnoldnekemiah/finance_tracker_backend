@@ -24,6 +24,138 @@ components:
           type: string
         transaction_type:
           type: string
+    Debt:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        amount:
+          type: number
+        creditor:
+          type: string
+        description:
+          type: string
+        due_date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [pending, paid, overdue]
+        debt_type:
+          type: string
+          enum: [loan, credit_card, mortgage, personal, business]
+        interest_rate:
+          type: number
+        is_recurring:
+          type: boolean
+        recurring_period:
+          type: string
+        overdue:
+          type: boolean
+        days_until_due:
+          type: integer
+    Account:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        account_type:
+          type: string
+          enum: [bank, mobile_money, savings, checking, credit]
+        account_number:
+          type: string
+        bank_name:
+          type: string
+        balance:
+          type: number
+        currency:
+          type: string
+        description:
+          type: string
+        is_active:
+          type: boolean
+        formatted_balance:
+          type: string
+        account_number_masked:
+          type: string
+    Budget:
+      type: object
+      properties:
+        id:
+          type: integer
+        category:
+          $ref: '#/components/schemas/Category'
+        limit:
+          type: number
+        spent:
+          type: number
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        period:
+          type: string
+        percentage_used:
+          type: number
+        remaining_amount:
+          type: number
+        over_budget:
+          type: boolean
+        days_remaining:
+          type: integer
+    SavingGoal:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        target_amount:
+          type: number
+        current_amount:
+          type: number
+        target_date:
+          type: string
+          format: date-time
+        notes:
+          type: string
+        progress_percentage:
+          type: number
+        remaining_amount:
+          type: number
+        achieved:
+          type: boolean
+        days_remaining:
+          type: integer
+        overdue:
+          type: boolean
+        monthly_savings_needed:
+          type: number
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        currency:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
 servers:
 - url: http://localhost:3001
   description: Development server
@@ -460,77 +592,159 @@ paths:
                     type: object
                     additionalProperties:
                       type: number
-  "/api/v1/recurring_transactions":
+  "/api/v1/insights/spending_comparison":
     get:
-      summary: Lists all active recurring transactions
+      summary: Get spending comparison between current and last month
       tags:
-      - Recurring Transactions
+      - Insights
       security:
       - bearer_auth: []
       responses:
         '200':
-          description: recurring transactions found
+          description: spending comparison retrieved
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                        amount:
-                          type: number
-                        category:
-                          type: string
-                        description:
-                          type: string
-                        period:
-                          type: string
-                        start_date:
-                          type: string
-                          format: date-time
-                        end_date:
-                          type: string
-                          format: date-time
-                        is_active:
-                          type: boolean
-    post:
-      summary: Creates a recurring transaction
+                    type: object
+                    properties:
+                      current_month:
+                        type: number
+                      last_month:
+                        type: number
+                      percentage_change:
+                        type: number
+  "/api/v1/profile":
+    get:
+      summary: Get user profile
       tags:
-      - Recurring Transactions
+      - Profile
       security:
       - bearer_auth: []
-      parameters: []
       responses:
-        '201':
-          description: recurring transaction created
+        '200':
+          description: profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      summary: Update user profile
+      tags:
+      - Profile
+      security:
+      - bearer_auth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+                    email:
+                      type: string
+                      format: email
+                    currency:
+                      type: string
+      responses:
+        '200':
+          description: profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '422':
+          description: invalid request
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: integer
-                  amount:
-                    type: number
-                  category:
-                    type: string
-                  description:
-                    type: string
-                  period:
-                    type: string
-                  start_date:
-                    type: string
-                    format: date-time
-                  end_date:
-                    type: string
-                    format: date-time
-                  is_active:
-                    type: boolean
+                  errors:
+                    type: object
+  "/api/v1/profile/dashboard_summary":
+    get:
+      summary: Get dashboard summary with financial overview
+      tags:
+      - Profile
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: dashboard summary retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      accounts_summary:
+                        type: object
+                        properties:
+                          total_accounts:
+                            type: integer
+                          total_balance:
+                            type: number
+                          account_types:
+                            type: object
+                            additionalProperties:
+                              type: integer
+                      financial_overview:
+                        type: object
+                        properties:
+                          total_income_this_month:
+                            type: number
+                          total_expenses_this_month:
+                            type: number
+                          active_budgets:
+                            type: integer
+                          saving_goals:
+                            type: integer
+                          pending_debts:
+                            type: integer
+                          overdue_debts:
+                            type: integer
+  "/api/v1/debts":
+    get:
+      summary: Lists all debts
+      tags:
+      - Debts
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: debts found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Debt'
+    post:
+      summary: Creates a debt
+      tags:
+      - Debts
+      security:
+      - bearer_auth: []
+      responses:
+        '201':
+          description: debt created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Debt'
         '422':
           description: invalid request
           content:
@@ -546,75 +760,165 @@ paths:
             schema:
               type: object
               properties:
-                recurring_transaction:
+                debt:
                   type: object
                   properties:
+                    title:
+                      type: string
                     amount:
                       type: number
-                    category:
+                    creditor:
                       type: string
                     description:
                       type: string
-                    period:
+                    due_date:
                       type: string
-                      enum:
-                      - daily
-                      - weekly
-                      - monthly
-                      - yearly
-                    start_date:
+                      format: date
+                    status:
                       type: string
-                      format: date-time
-                    end_date:
+                      enum: [pending, paid, overdue]
+                    debt_type:
                       type: string
-                      format: date-time
-                    is_active:
+                      enum: [loan, credit_card, mortgage, personal, business]
+                    interest_rate:
+                      type: number
+                    is_recurring:
                       type: boolean
+                    recurring_period:
+                      type: string
                   required:
+                  - title
                   - amount
-                  - category
-                  - period
-                  - start_date
-  "/api/v1/recurring_transactions/{id}":
+                  - creditor
+                  - due_date
+                  - debt_type
+  "/api/v1/debts/{id}":
     parameters:
     - name: id
       in: path
       required: true
       schema:
         type: integer
-    put:
-      summary: Updates a recurring transaction
+    get:
+      summary: Retrieves a debt
       tags:
-      - Recurring Transactions
+      - Debts
       security:
       - bearer_auth: []
-      parameters: []
       responses:
         '200':
-          description: recurring transaction updated
+          description: debt found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  amount:
-                    type: number
-                  category:
-                    type: string
-                  description:
-                    type: string
-                  period:
-                    type: string
-                  start_date:
-                    type: string
-                    format: date-time
-                  end_date:
-                    type: string
-                    format: date-time
-                  is_active:
-                    type: boolean
+                $ref: '#/components/schemas/Debt'
+        '404':
+          description: debt not found
+    put:
+      summary: Updates a debt
+      tags:
+      - Debts
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: debt updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Debt'
+        '422':
+          description: invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                debt:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    amount:
+                      type: number
+                    creditor:
+                      type: string
+                    description:
+                      type: string
+                    due_date:
+                      type: string
+                      format: date
+                    status:
+                      type: string
+                    debt_type:
+                      type: string
+                    interest_rate:
+                      type: number
+                    is_recurring:
+                      type: boolean
+                    recurring_period:
+                      type: string
+    delete:
+      summary: Deletes a debt
+      tags:
+      - Debts
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: debt deleted
+  "/api/v1/debts/{id}/mark_as_paid":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Mark debt as paid
+      tags:
+      - Debts
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: debt marked as paid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Debt'
+        '422':
+          description: invalid request
+  "/api/v1/accounts":
+    get:
+      summary: Lists all accounts
+      tags:
+      - Accounts
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: accounts found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+    post:
+      summary: Creates an account
+      tags:
+      - Accounts
+      security:
+      - bearer_auth: []
+      responses:
+        '201':
+          description: account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
         '422':
           description: invalid request
           content:
@@ -630,30 +934,134 @@ paths:
             schema:
               type: object
               properties:
-                recurring_transaction:
+                account:
                   type: object
                   properties:
-                    amount:
+                    name:
+                      type: string
+                    account_type:
+                      type: string
+                      enum: [bank, mobile_money, savings, checking, credit]
+                    account_number:
+                      type: string
+                    bank_name:
+                      type: string
+                    balance:
                       type: number
-                    category:
+                    currency:
                       type: string
                     description:
                       type: string
-                    period:
-                      type: string
-                      enum:
-                      - daily
-                      - weekly
-                      - monthly
-                      - yearly
-                    start_date:
-                      type: string
-                      format: date-time
-                    end_date:
-                      type: string
-                      format: date-time
                     is_active:
                       type: boolean
+                  required:
+                  - name
+                  - account_type
+                  - balance
+                  - currency
+  "/api/v1/accounts/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Retrieves an account
+      tags:
+      - Accounts
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: account found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '404':
+          description: account not found
+    put:
+      summary: Updates an account
+      tags:
+      - Accounts
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '422':
+          description: invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    account_type:
+                      type: string
+                    account_number:
+                      type: string
+                    bank_name:
+                      type: string
+                    balance:
+                      type: number
+                    currency:
+                      type: string
+                    description:
+                      type: string
+                    is_active:
+                      type: boolean
+    delete:
+      summary: Deactivates an account
+      tags:
+      - Accounts
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: account deactivated
+  "/api/v1/accounts/{id}/update_balance":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Update account balance
+      tags:
+      - Accounts
+      security:
+      - bearer_auth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                balance:
+                  type: number
+              required:
+              - balance
+      responses:
+        '200':
+          description: balance updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '422':
+          description: invalid request
   "/api/v1/saving_goals":
     get:
       summary: Lists all saving goals
@@ -848,6 +1256,47 @@ paths:
       responses:
         '204':
           description: saving goal deleted
+  "/api/v1/saving_goals/{id}/update_progress":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    patch:
+      summary: Update progress of a saving goal
+      tags:
+      - Saving Goals
+      security:
+      - bearer_auth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                current_amount:
+                  type: number
+                  description: Direct update of current amount
+                progress_amount:
+                  type: number
+                  description: Amount to add to current progress
+      responses:
+        '200':
+          description: progress updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavingGoal'
+        '422':
+          description: invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
   "/api/v1/transactions":
     get:
       summary: Lists all transactions

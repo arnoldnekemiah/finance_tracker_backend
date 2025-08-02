@@ -10,9 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_02_000003) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_02_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "accounts", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.string "account_type", null: false
+    t.string "account_number"
+    t.string "bank_name"
+    t.decimal "balance", precision: 15, scale: 2, default: "0.0"
+    t.string "currency", default: "USD"
+    t.text "description"
+    t.boolean "is_active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["is_active"], name: "index_accounts_on_is_active"
+    t.index ["user_id", "account_type"], name: "index_accounts_on_user_id_and_account_type"
+    t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
 
   create_table "budgets", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -39,18 +56,23 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_000003) do
     t.index ["user_id"], name: "index_categories_on_user_id"
   end
 
-  create_table "recurring_transactions", force: :cascade do |t|
+  create_table "debts", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.decimal "amount"
-    t.string "category"
+    t.string "title", null: false
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.string "creditor", null: false
     t.text "description"
-    t.string "period"
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.boolean "is_active"
+    t.date "due_date", null: false
+    t.string "status", default: "pending", null: false
+    t.string "debt_type", null: false
+    t.decimal "interest_rate", precision: 5, scale: 2
+    t.boolean "is_recurring", default: false
+    t.string "recurring_period"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_recurring_transactions_on_user_id"
+    t.index ["due_date"], name: "index_debts_on_due_date"
+    t.index ["user_id", "status"], name: "index_debts_on_user_id_and_status"
+    t.index ["user_id"], name: "index_debts_on_user_id"
   end
 
   create_table "saving_goals", force: :cascade do |t|
@@ -76,6 +98,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_000003) do
     t.datetime "updated_at", null: false
     t.bigint "category_id"
     t.string "payment_method"
+    t.bigint "account_id"
+    t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["category_id"], name: "index_transactions_on_category_id"
     t.index ["date"], name: "index_transactions_on_date"
     t.index ["user_id"], name: "index_transactions_on_user_id"
@@ -98,11 +122,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_02_000003) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "accounts", "users"
   add_foreign_key "budgets", "categories"
   add_foreign_key "budgets", "users"
   add_foreign_key "categories", "users"
-  add_foreign_key "recurring_transactions", "users"
+  add_foreign_key "debts", "users"
   add_foreign_key "saving_goals", "users"
+  add_foreign_key "transactions", "accounts"
   add_foreign_key "transactions", "categories"
   add_foreign_key "transactions", "users"
 end

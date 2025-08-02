@@ -28,5 +28,16 @@ module FinanceTrackerApi
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Add back cookies and session middleware for JWT
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use ActionDispatch::Session::CookieStore, key: '_finance_tracker_session', same_site: :lax, secure: Rails.env.production?
+
+    # Initialize JWT configuration
+    config.to_prepare do
+      Devise.setup do |config|
+        config.navigational_formats = []
+      end
+    end
   end
 end

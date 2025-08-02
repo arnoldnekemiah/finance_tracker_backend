@@ -1,6 +1,7 @@
 class Transaction < ApplicationRecord
   belongs_to :user
   belongs_to :category
+  belongs_to :account, optional: true
 
   scope :income, -> { where(type: 'income') }
   scope :expense, -> { where(type: 'expense') }
