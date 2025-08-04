@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: finance-tracker-backend
+    runtime: ruby
+    plan: free
+    buildCommand: './bin/render-build.sh'
+    # preDeployCommand: "bundle exec rails db:migrate"  # preDeployCommand only available on paid instance types
+    startCommand: './bin/rails server'
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: finance-tracker-db
+          property: connectionString
+      - key: RAILS_MASTER_KEY
+        sync: false  # You'll provide this value on Blueprint creation
+      - key: WEB_CONCURRENCY
+        value: 2  # Recommended default
+      - key: RAILS_ENV
+        value: production
+      - key: RACK_ENV
+        value: production
+      - key: RAILS_SERVE_STATIC_FILES
+        value: false
+
+databases:
+  - name: finance-tracker-db
+    plan: free
