@@ -12,9 +12,13 @@ services:
           name: financetrackerdb
           property: connectionString
       - key: RAILS_MASTER_KEY
-        sync: false  # You'll provide this value on Blueprint creation
+        sync: false 
+      - key: SECRET_KEY_BASE
+        sync: false 
+      - key: DEVISE_JWT_SECRET_KEY
+        sync: false 
       - key: WEB_CONCURRENCY
-        value: 2  # Recommended default
+        value: 2 
       - key: RAILS_ENV
         value: production
       - key: RACK_ENV
