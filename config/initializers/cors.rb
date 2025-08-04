@@ -16,17 +16,19 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     if Rails.env.development?
       # In development, allow requests from localhost:3001 (or your frontend port)
       origins 'http://localhost:3001', 'http://127.0.0.1:3001'
+      credentials true
     else
-      # In production, replace with your frontend URL
-      # Example: 'https://your-frontend-domain.com'
+      # In production, allow all origins but without credentials for security
+      # TODO: Replace with your specific frontend domain(s) for better security
+      # Example: origins 'https://your-frontend-domain.com'
       origins '*'
+      credentials false
     end
 
     resource '*',
       headers: %w[Authorization Content-Type X-User-Token X-User-Email X-CSRF-Token],
       expose: ['access-token', 'expiry', 'token-type', 'uid', 'client'],
       methods: [:get, :post, :put, :patch, :delete, :options, :head],
-      credentials: true,
       max_age: 0
   end
 end
