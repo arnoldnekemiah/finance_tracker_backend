@@ -59,6 +59,12 @@ Rails.application.routes.draw do
         get :spending_by_category
         get :spending_comparison
         get :weekly_trends
+end
+
+      # Reports routes
+      namespace :reports do
+        get :monthly_comparison
+        get :spending_by_category
       end
     end
   end

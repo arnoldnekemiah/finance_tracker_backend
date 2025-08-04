@@ -15,10 +15,6 @@ class CreateAccounts < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
-    # Add account reference to transactions
-    add_reference :transactions, :account, null: true, foreign_key: true
-    add_column :transactions, :payment_method, :string unless column_exists?(:transactions, :payment_method)
-
     # Add indexes for performance
     add_index :accounts, [:user_id, :account_type]
     add_index :accounts, :is_active

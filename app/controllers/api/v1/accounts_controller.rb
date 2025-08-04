@@ -50,7 +50,6 @@ class Api::V1::AccountsController < ApplicationController
     params.require(:account).permit(
       :name,
       :account_type,
-      :account_number,
       :bank_name,
       :balance,
       :currency,

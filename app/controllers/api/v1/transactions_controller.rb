@@ -44,7 +44,8 @@ class Api::V1::TransactionsController < ApplicationController
       :amount, 
       :category_id,
       :account_id,
-      :type, 
+      :transaction_type,
+      :description,
       :date, 
       :notes, 
       :payment_method

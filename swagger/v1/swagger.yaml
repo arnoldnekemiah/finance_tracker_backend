@@ -156,6 +156,37 @@ components:
         updated_at:
           type: string
           format: date-time
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        amount:
+          type: number
+        description:
+          type: string
+        transaction_type:
+          type: string
+          enum: [income, expense]
+        date:
+          type: string
+          format: date-time
+        notes:
+          type: string
+        payment_method:
+          type: string
+        category:
+          $ref: '#/components/schemas/Category'
+        account:
+          $ref: '#/components/schemas/Account'
+        user_id:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
 servers:
 - url: http://localhost:3001
   description: Development server
@@ -165,10 +196,39 @@ paths:
       summary: Register a new user
       tags:
       - Authentication
-      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+                    email:
+                      type: string
+                      format: email
+                    password:
+                      type: string
+                    password_confirmation:
+                      type: string
+                    currency:
+                      type: string
+        required:
+          - first_name
+          - last_name
+          - email
+          - password
+          - password_confirmation
+          - currency
       responses:
-        '200':
-          description: user registered
+        '201':
+          description: User registered successfully
           content:
             application/json:
               schema:
@@ -183,17 +243,18 @@ paths:
                         type: string
                   data:
                     type: object
-                    properties:
-                      email:
-                        type: string
-                      first_name:
-                        type: string
-                      last_name:
-                        type: string
-                      currency:
-                        type: string
-                      avatar:
-                        type: string
+                    $ref: '#/components/schemas/User'
+        '422':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
         '422':
           description: invalid request
           content:
@@ -616,61 +677,61 @@ paths:
                         type: number
                       percentage_change:
                         type: number
-  "/api/v1/profile":
-    get:
-      summary: Get user profile
-      tags:
-      - Profile
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: profile retrieved
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-    put:
-      summary: Update user profile
-      tags:
-      - Profile
-      security:
-      - bearer_auth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                user:
-                  type: object
-                  properties:
-                    first_name:
-                      type: string
-                    last_name:
-                      type: string
-                    email:
-                      type: string
-                      format: email
-                    currency:
-                      type: string
-      responses:
-        '200':
-          description: profile updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '422':
-          description: invalid request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  errors:
-                    type: object
-  "/api/v1/profile/dashboard_summary":
+  # "/api/v1/profile":
+  #   get:
+  #     summary: Get user profile
+  #     tags:
+  #     - Profile
+  #     security:
+  #     - bearer_auth: []
+  #     responses:
+  #       '200':
+  #         description: profile retrieved
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/User'
+  #   put:
+  #     summary: Update user profile
+  #     tags:
+  #     - Profile
+  #     security:
+  #     - bearer_auth: []
+  #     requestBody:
+  #       content:
+  #         application/json:
+  #           schema:
+  #             type: object
+  #             properties:
+  #               user:
+  #                 type: object
+  #                 properties:
+  #                   first_name:
+  #                     type: string
+  #                   last_name:
+  #                     type: string
+  #                   email:
+  #                     type: string
+  #                     format: email
+  #                   currency:
+  #                     type: string
+  #     responses:
+  #       '200':
+  #         description: profile updated
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/User'
+  #       '422':
+  #         description: invalid request
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: object
+  #               properties:
+  #                 errors:
+  #                   type: object
+  # "/api/v1/profile/dashboard_summary":
     get:
       summary: Get dashboard summary with financial overview
       tags:

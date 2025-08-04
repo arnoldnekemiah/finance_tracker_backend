@@ -28,7 +28,7 @@ class SavingGoal < ApplicationRecord
 
   def days_remaining
     return 0 if target_date < Date.current
-    (target_date - Date.current).to_i
+(target_date - Date.today).to_i
   end
 
   def overdue?
