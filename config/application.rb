@@ -24,10 +24,13 @@ module FinanceTrackerApi
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
-    # Only loads a smaller set of middleware suitable for API only apps.
-    # Middleware like session, flash, cookies can be added back manually.
-    # Skip views, helpers and assets when generating a new resource.
-    config.api_only = true
+    # Enable views for admin interface while keeping API functionality
+    # We'll use both API and web views for the admin panel
+    config.api_only = false
+    
+    # Require and add custom analytics tracking middleware
+    require Rails.root.join('lib/middleware/analytics_tracker')
+    config.middleware.use AnalyticsTracker
 
     # Add back cookies and session middleware for JWT
     config.middleware.use ActionDispatch::Cookies

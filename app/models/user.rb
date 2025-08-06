@@ -19,7 +19,23 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates :currency, presence: true
 
+  # Admin scopes
+  scope :admins, -> { where(admin: true) }
+  scope :regular_users, -> { where(admin: false) }
+
   def full_name
     "#{first_name} #{last_name}"
+  end
+
+  def admin?
+    admin == true
+  end
+
+  def make_admin!
+    update!(admin: true)
+  end
+
+  def remove_admin!
+    update!(admin: false)
   end
 end

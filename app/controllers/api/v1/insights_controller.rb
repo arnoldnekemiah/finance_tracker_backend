@@ -55,7 +55,7 @@ class Api::V1::InsightsController < ApplicationController
     weekly_data = current_user.transactions
                             .expense
                             .where('date >= ?', 1.week.ago)
-                            .group_by_day(:date)
+                            .group("DATE(date)")
                             .sum(:amount)
     
     render json: { data: weekly_data }, status: :ok

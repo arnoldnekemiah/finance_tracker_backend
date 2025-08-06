@@ -1,10 +1,11 @@
-class ApplicationController < ActionController::API
+class ApplicationController < ActionController::Base
   include ActionController::Cookies
+  protect_from_forgery with: :null_session
   
   before_action :authenticate_user!, unless: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  respond_to :json
+  respond_to :json, :html
 
   rescue_from CanCan::AccessDenied do |exception|
     user_not_authorized
@@ -17,7 +18,12 @@ class ApplicationController < ActionController::API
   private
   
   def current_user
-    @current_user ||= super || User.find_by(id: session[:user_id])
+    @current_user ||= super || User.find_by(id: session[:user_id]) || admin_user_from_session
+  end
+  
+  def admin_user_from_session
+    return nil unless session[:admin_user_id]
+    @admin_user ||= User.find_by(id: session[:admin_user_id], admin: true)
   end
   
   def authenticate_user!(_options = {})

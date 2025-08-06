@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_02_000001) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_06_084700) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -29,6 +29,21 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_02_000001) do
     t.index ["is_active"], name: "index_accounts_on_is_active"
     t.index ["user_id", "account_type"], name: "index_accounts_on_user_id_and_account_type"
     t.index ["user_id"], name: "index_accounts_on_user_id"
+  end
+
+  create_table "admin_audit_logs", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "action", null: false
+    t.string "resource_type"
+    t.integer "resource_id"
+    t.text "details"
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["action"], name: "index_admin_audit_logs_on_action"
+    t.index ["resource_type", "resource_id"], name: "index_admin_audit_logs_on_resource_type_and_resource_id"
+    t.index ["user_id"], name: "index_admin_audit_logs_on_user_id"
   end
 
   create_table "budgets", force: :cascade do |t|
@@ -105,6 +120,21 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_02_000001) do
     t.index ["user_id"], name: "index_transactions_on_user_id"
   end
 
+  create_table "user_analytics", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "event_type", null: false
+    t.json "event_data", default: {}, null: false
+    t.string "ip_address"
+    t.text "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_user_analytics_on_created_at"
+    t.index ["event_type"], name: "index_user_analytics_on_event_type"
+    t.index ["user_id", "created_at"], name: "index_user_analytics_on_user_id_and_created_at"
+    t.index ["user_id", "event_type"], name: "index_user_analytics_on_user_id_and_event_type"
+    t.index ["user_id"], name: "index_user_analytics_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -117,12 +147,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_02_000001) do
     t.string "first_name"
     t.string "last_name"
     t.string "currency", default: "USD"
+    t.boolean "admin", default: false
+    t.boolean "active", default: true, null: false
+    t.index ["active"], name: "index_users_on_active"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "accounts", "users"
+  add_foreign_key "admin_audit_logs", "users"
   add_foreign_key "budgets", "categories"
   add_foreign_key "budgets", "users"
   add_foreign_key "categories", "users"
@@ -131,4 +165,5 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_02_000001) do
   add_foreign_key "transactions", "accounts"
   add_foreign_key "transactions", "categories"
   add_foreign_key "transactions", "users"
+  add_foreign_key "user_analytics", "users"
 end

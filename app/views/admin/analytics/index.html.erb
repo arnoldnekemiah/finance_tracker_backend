@@ -1,0 +1,217 @@
+<% content_for :page_title, "Analytics" %>
+<% content_for :page_description, "User activity and system analytics" %>
+
+<div class="space-y-6">
+  <!-- Analytics Overview Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="admin-card bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+          <i class="fas fa-chart-line text-xl"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">User Growth</p>
+          <p class="text-2xl font-semibold text-gray-900">+12%</p>
+          <p class="text-xs text-green-600">vs last month</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="admin-card bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-green-100 text-green-600">
+          <i class="fas fa-exchange-alt text-xl"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Transaction Volume</p>
+          <p class="text-2xl font-semibold text-gray-900">$24.5K</p>
+          <p class="text-xs text-green-600">+8% this month</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="admin-card bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+          <i class="fas fa-users text-xl"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Active Users</p>
+          <p class="text-2xl font-semibold text-gray-900">89%</p>
+          <p class="text-xs text-green-600">retention rate</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="admin-card bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+          <i class="fas fa-chart-bar text-xl"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Avg Session</p>
+          <p class="text-2xl font-semibold text-gray-900">12m</p>
+          <p class="text-xs text-red-600">-2m vs last week</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Analytics Actions -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+      <i class="fas fa-tools mr-2 text-blue-600"></i>
+      Analytics Tools
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <%= link_to admin_analytics_user_growth_path, 
+          class: "flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" do %>
+        <div class="p-2 bg-blue-100 rounded-lg">
+          <i class="fas fa-chart-area text-blue-600"></i>
+        </div>
+        <div class="ml-3">
+          <p class="font-medium text-gray-900">User Growth</p>
+          <p class="text-sm text-gray-600">Track user registration trends</p>
+        </div>
+      <% end %>
+      
+      <%= link_to admin_analytics_transaction_volume_path, 
+          class: "flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" do %>
+        <div class="p-2 bg-green-100 rounded-lg">
+          <i class="fas fa-chart-bar text-green-600"></i>
+        </div>
+        <div class="ml-3">
+          <p class="font-medium text-gray-900">Transaction Volume</p>
+          <p class="text-sm text-gray-600">Analyze transaction patterns</p>
+        </div>
+      <% end %>
+      
+      <%= link_to admin_analytics_user_activity_path, 
+          class: "flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" do %>
+        <div class="p-2 bg-purple-100 rounded-lg">
+          <i class="fas fa-clock text-purple-600"></i>
+        </div>
+        <div class="ml-3">
+          <p class="font-medium text-gray-900">User Activity</p>
+          <p class="text-sm text-gray-600">Monitor user engagement</p>
+        </div>
+      <% end %>
+      
+      <%= link_to admin_analytics_financial_insights_path, 
+          class: "flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" do %>
+        <div class="p-2 bg-yellow-100 rounded-lg">
+          <i class="fas fa-chart-pie text-yellow-600"></i>
+        </div>
+        <div class="ml-3">
+          <p class="font-medium text-gray-900">Financial Insights</p>
+          <p class="text-sm text-gray-600">Financial activity analysis</p>
+        </div>
+      <% end %>
+      
+      <%= link_to admin_analytics_revenue_analytics_path, 
+          class: "flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" do %>
+        <div class="p-2 bg-red-100 rounded-lg">
+          <i class="fas fa-dollar-sign text-red-600"></i>
+        </div>
+        <div class="ml-3">
+          <p class="font-medium text-gray-900">Revenue Analytics</p>
+          <p class="text-sm text-gray-600">Revenue and growth metrics</p>
+        </div>
+      <% end %>
+      
+      <%= link_to admin_analytics_export_data_path(format: 'csv'), 
+          class: "flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" do %>
+        <div class="p-2 bg-indigo-100 rounded-lg">
+          <i class="fas fa-download text-indigo-600"></i>
+        </div>
+        <div class="ml-3">
+          <p class="font-medium text-gray-900">Export Data</p>
+          <p class="text-sm text-gray-600">Download analytics data</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  
+  <!-- Quick Analytics Charts -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- User Activity Chart -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-users mr-2 text-blue-600"></i>
+        User Activity (Last 7 Days)
+      </h3>
+      <canvas id="userActivityChart" width="400" height="200"></canvas>
+    </div>
+    
+    <!-- Transaction Trends Chart -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-chart-line mr-2 text-green-600"></i>
+        Transaction Trends
+      </h3>
+      <canvas id="transactionTrendsChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // User Activity Chart
+  const userActivityCtx = document.getElementById('userActivityChart').getContext('2d');
+  new Chart(userActivityCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Logins', 'Transactions', 'Budget Updates', 'Profile Updates'],
+      datasets: [{
+        data: [45, 30, 15, 10],
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.8)',
+          'rgba(34, 197, 94, 0.8)',
+          'rgba(168, 85, 247, 0.8)',
+          'rgba(251, 191, 36, 0.8)'
+        ],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+  
+  // Transaction Trends Chart
+  const transactionTrendsCtx = document.getElementById('transactionTrendsChart').getContext('2d');
+  new Chart(transactionTrendsCtx, {
+    type: 'line',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Transactions',
+        data: [12, 19, 15, 25, 22, 18, 24],
+        borderColor: 'rgb(34, 197, 94)',
+        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+});
+</script>

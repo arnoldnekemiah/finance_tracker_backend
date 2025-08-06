@@ -1,0 +1,269 @@
+<% content_for :page_title, "Dashboard" %>
+<% content_for :page_description, "Overview of your finance tracker system" %>
+
+<div class="space-y-6">
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="admin-card bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+          <i class="fas fa-users text-xl"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Total Users</p>
+          <p class="text-2xl font-semibold text-gray-900" id="total-users">
+            <%= @stats[:total_users] %>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="admin-card bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-green-100 text-green-600">
+          <i class="fas fa-user-plus text-xl"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">New Today</p>
+          <p class="text-2xl font-semibold text-gray-900">
+            <%= @stats[:new_registrations_today] %>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="admin-card bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+          <i class="fas fa-exchange-alt text-xl"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Transactions</p>
+          <p class="text-2xl font-semibold text-gray-900">
+            <%= @stats[:total_transactions] %>
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="admin-card bg-white rounded-lg shadow p-6">
+      <div class="flex items-center">
+        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
+          <i class="fas fa-chart-line text-xl"></i>
+        </div>
+        <div class="ml-4">
+          <p class="text-sm font-medium text-gray-600">Active Today</p>
+          <p class="text-2xl font-semibold text-gray-900">
+            <%= @stats[:active_users_today] %>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Charts Row -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- User Growth Chart -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-chart-area mr-2 text-blue-600"></i>
+        User Growth (Last 30 Days)
+      </h3>
+      <canvas id="userGrowthChart" width="400" height="200"></canvas>
+    </div>
+    
+    <!-- Transaction Volume Chart -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-chart-bar mr-2 text-green-600"></i>
+        Transaction Volume
+      </h3>
+      <canvas id="transactionChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+  
+  <!-- Recent Activity and System Health -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Activity -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-clock mr-2 text-purple-600"></i>
+        Recent Activity
+      </h3>
+      <div class="space-y-3">
+        <% @recent_activity.each do |activity| %>
+          <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-blue-600 text-sm"></i>
+              </div>
+            </div>
+            <div class="ml-3 flex-1">
+              <p class="text-sm font-medium text-gray-900">
+                <%= activity[:user][:name] %>
+              </p>
+              <p class="text-sm text-gray-600">
+                <%= activity[:event_type].humanize %>
+              </p>
+            </div>
+            <div class="text-xs text-gray-500">
+              <%= time_ago_in_words(activity[:created_at]) %> ago
+            </div>
+          </div>
+        <% end %>
+      </div>
+      
+      <%= link_to admin_analytics_user_activity_path, class: "inline-flex items-center mt-4 text-sm text-blue-600 hover:text-blue-800" do %>
+        View all activity
+        <i class="fas fa-arrow-right ml-1"></i>
+      <% end %>
+    </div>
+    
+    <!-- System Health -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">
+        <i class="fas fa-heartbeat mr-2 text-red-600"></i>
+        System Health
+      </h3>
+      
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium text-gray-600">Database Status</span>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            <i class="fas fa-check-circle mr-1"></i>
+            Healthy
+          </span>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium text-gray-600">Memory Usage</span>
+          <span class="text-sm text-gray-900">
+            <%= number_to_human_size(@health[:memory_usage] * 1024) %>
+          </span>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium text-gray-600">Rails Environment</span>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            <%= @health[:rails_env].capitalize %>
+          </span>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <span class="text-sm font-medium text-gray-600">Ruby Version</span>
+          <span class="text-sm text-gray-900">
+            <%= @health[:ruby_version] %>
+          </span>
+        </div>
+      </div>
+      
+      <%= link_to admin_dashboard_health_path, class: "inline-flex items-center mt-4 text-sm text-blue-600 hover:text-blue-800" do %>
+        View detailed health metrics
+        <i class="fas fa-arrow-right ml-1"></i>
+      <% end %>
+    </div>
+  </div>
+  
+  <!-- Quick Actions -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+      <i class="fas fa-bolt mr-2 text-yellow-600"></i>
+      Quick Actions
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <%= link_to admin_users_path, class: "flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" do %>
+        <div class="p-2 bg-blue-100 rounded-lg">
+          <i class="fas fa-users text-blue-600"></i>
+        </div>
+        <div class="ml-3">
+          <p class="font-medium text-gray-900">Manage Users</p>
+          <p class="text-sm text-gray-600">View and edit user accounts</p>
+        </div>
+      <% end %>
+      
+      <%= link_to admin_reports_generate_daily_path, method: :post, class: "flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" do %>
+        <div class="p-2 bg-green-100 rounded-lg">
+          <i class="fas fa-file-alt text-green-600"></i>
+        </div>
+        <div class="ml-3">
+          <p class="font-medium text-gray-900">Generate Report</p>
+          <p class="text-sm text-gray-600">Create daily system report</p>
+        </div>
+      <% end %>
+      
+      <%= link_to admin_analytics_export_data_path(format: 'csv'), class: "flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" do %>
+        <div class="p-2 bg-purple-100 rounded-lg">
+          <i class="fas fa-download text-purple-600"></i>
+        </div>
+        <div class="ml-3">
+          <p class="font-medium text-gray-900">Export Data</p>
+          <p class="text-sm text-gray-600">Download user analytics</p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // User Growth Chart
+  const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+  new Chart(userGrowthCtx, {
+    type: 'line',
+    data: {
+      labels: <%= raw @user_metrics[:registrations_by_day].keys.to_json %>,
+      datasets: [{
+        label: 'New Users',
+        data: <%= raw @user_metrics[:registrations_by_day].values.to_json %>,
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+  
+  // Transaction Chart
+  const transactionCtx = document.getElementById('transactionChart').getContext('2d');
+  new Chart(transactionCtx, {
+    type: 'bar',
+    data: {
+      labels: <%= raw @financial_metrics[:transactions_by_day].keys.to_json %>,
+      datasets: [{
+        label: 'Transactions',
+        data: <%= raw @financial_metrics[:transactions_by_day].values.to_json %>,
+        backgroundColor: 'rgba(34, 197, 94, 0.8)',
+        borderColor: 'rgb(34, 197, 94)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+});
+</script>

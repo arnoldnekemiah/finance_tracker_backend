@@ -68,4 +68,59 @@ end
       end
     end
   end
+
+  # Admin routes
+  namespace :admin do
+    # Root route for admin
+    root 'dashboard#index'
+    
+    # Admin authentication
+    get 'login', to: 'sessions#new'
+    post 'login', to: 'sessions#create'
+    delete 'logout', to: 'sessions#destroy'
+    get 'validate_token', to: 'sessions#validate_token'
+    
+    # Password reset
+    post 'password_reset', to: 'password_resets#create'
+    patch 'password_reset', to: 'password_resets#update'
+    patch 'change_password', to: 'password_resets#change_password'
+    
+    # Admin dashboard
+    get 'dashboard', to: 'dashboard#index'
+    get 'dashboard/health', to: 'dashboard#health_metrics'
+    
+    # User management
+    resources :users, only: [:index, :show, :update, :destroy] do
+      member do
+        patch :activate
+        patch :deactivate
+        patch :make_admin
+        patch :remove_admin
+      end
+    end
+    
+    # Analytics
+    get 'analytics', to: 'analytics#index'
+    namespace :analytics do
+      get :user_growth
+      get :transaction_volume
+      get :financial_insights
+      get :user_activity
+      get :revenue_analytics
+      get :export_data
+    end
+    
+    # Reports
+    get 'reports', to: 'reports#index'
+    namespace :reports do
+      post :generate_daily
+      post :generate_weekly
+      post :generate_monthly
+      post :generate_custom
+      get :schedule_reports
+    end
+    
+    # Settings
+    get 'settings', to: 'settings#index'
+  end
 end
