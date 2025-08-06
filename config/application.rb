@@ -30,7 +30,7 @@ module FinanceTrackerApi
     
     # Require and add custom analytics tracking middleware
     require Rails.root.join('lib/middleware/analytics_tracker')
-    config.middleware.use AnalyticsTracker
+    config.middleware.use Middleware::AnalyticsTracker
 
     # Add back cookies and session middleware for JWT
     config.middleware.use ActionDispatch::Cookies

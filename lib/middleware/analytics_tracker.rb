@@ -1,4 +1,5 @@
-class AnalyticsTracker
+module Middleware
+  class AnalyticsTracker
   def initialize(app)
     @app = app
   end
@@ -112,4 +113,5 @@ class AnalyticsTracker
     sanitized = params.except('password', 'password_confirmation', 'current_password')
     sanitized.to_h.slice(*%w[controller action id])
   end
+end
 end
