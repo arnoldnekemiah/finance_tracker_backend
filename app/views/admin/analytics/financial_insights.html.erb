@@ -1,0 +1,128 @@
+<div class="p-6">
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Financial Insights Analytics</h1>
+    <p class="text-gray-600">Deep dive into financial patterns and user behavior</p>
+  </div>
+
+  <!-- Date Range Filter -->
+  <div class="bg-white rounded-lg shadow mb-6 p-6">
+    <%= form_with url: admin_analytics_financial_insights_path, method: :get, local: true, class: "flex items-end space-x-4" do |form| %>
+      <div>
+        <%= form.label :start_date, "Start Date", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.date_field :start_date, value: @start_date&.strftime('%Y-%m-%d'), class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm" %>
+      </div>
+      <div>
+        <%= form.label :end_date, "End Date", class: "block text-sm font-medium text-gray-700" %>
+        <%= form.date_field :end_date, value: @end_date&.strftime('%Y-%m-%d'), class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm" %>
+      </div>
+      <div>
+        <%= form.submit "Update", class: "gold-bg text-black px-4 py-2 rounded-md font-medium hover:opacity-90" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Financial Insights Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <% if @insights.present? %>
+      <% @insights.each do |key, value| %>
+        <div class="admin-card bg-white p-6 rounded-lg shadow">
+          <div class="flex items-center">
+            <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600"><%= key.to_s.humanize %></p>
+              <p class="text-2xl font-semibold text-gray-900">
+                <% if value.is_a?(Numeric) %>
+                  <% if key.to_s.include?('amount') || key.to_s.include?('value') %>
+                    $<%= number_with_delimiter(value) %>
+                  <% else %>
+                    <%= number_with_delimiter(value) %>
+                  <% end %>
+                <% else %>
+                  <%= value %>
+                <% end %>
+              </p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="col-span-full">
+        <div class="admin-card bg-white p-6 rounded-lg shadow text-center">
+          <div class="p-3 rounded-full bg-gray-100 text-gray-400 mx-auto w-16 h-16 flex items-center justify-center mb-4">
+            <i class="fas fa-chart-pie text-2xl"></i>
+          </div>
+          <p class="text-gray-600">No financial insights data available for the selected period.</p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Insights Summary -->
+  <div class="bg-white rounded-lg shadow mb-8">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900">Financial Insights Summary</h3>
+    </div>
+    <div class="p-6">
+      <% if @insights.present? %>
+        <div class="space-y-4">
+          <% @insights.each do |key, value| %>
+            <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+              <span class="text-sm font-medium text-gray-700"><%= key.to_s.humanize %></span>
+              <span class="text-sm text-gray-900">
+                <% if value.is_a?(Numeric) %>
+                  <% if key.to_s.include?('amount') || key.to_s.include?('value') %>
+                    $<%= number_with_delimiter(value) %>
+                  <% else %>
+                    <%= number_with_delimiter(value) %>
+                  <% end %>
+                <% else %>
+                  <%= value %>
+                <% end %>
+              </span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-600 text-center py-8">No financial insights available for the selected date range.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Export Options -->
+  <div class="bg-white rounded-lg shadow mb-8">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900">Export Financial Data</h3>
+    </div>
+    <div class="p-6">
+      <div class="flex space-x-4">
+        <%= link_to admin_analytics_export_data_path(format: 'csv'), 
+            class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
+          <i class="fas fa-file-csv mr-2"></i>
+          Export as CSV
+        <% end %>
+        
+        <%= link_to admin_analytics_export_data_path(format: 'json'), 
+            class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
+          <i class="fas fa-file-code mr-2"></i>
+          Export as JSON
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back to Analytics -->
+  <div class="mt-8">
+    <%= link_to admin_analytics_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
+      <i class="fas fa-arrow-left mr-2"></i>
+      Back to Analytics Overview
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .gold-bg {
+    background: linear-gradient(45deg, #FFD700, #FFA500);
+  }
+</style>

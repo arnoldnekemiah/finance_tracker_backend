@@ -3,26 +3,24 @@ class Admin::DashboardController < ApplicationController
   skip_before_action :authenticate_user!
   before_action :authenticate_admin_user!
   before_action :ensure_admin_access
+  
+  rescue_from StandardError, with: :handle_dashboard_error
+  rescue_from CanCan::AccessDenied, with: :handle_access_denied
 
   def index
     authorize! :manage, :admin_dashboard
     
-    @stats = system_statistics
-    @user_metrics = user_metrics
-    @financial_metrics = financial_metrics
-    @recent_activity = recent_activity
-    @health = system_health
-    
-    respond_to do |format|
-      format.html # Render the view
-      format.json {
-        render json: {
-          system_stats: @stats,
-          user_metrics: @user_metrics,
-          financial_metrics: @financial_metrics,
-          recent_activity: @recent_activity
-        }
-      }
+    begin
+      @stats = system_statistics
+      @user_metrics = user_metrics
+      @financial_metrics = financial_metrics
+      @recent_activity = recent_activity
+      @health = system_health
+      
+      # Admin dashboard only supports HTML views
+      render :index
+    rescue => e
+      handle_dashboard_error(e)
     end
   end
 
@@ -127,5 +125,27 @@ class Admin::DashboardController < ApplicationController
       requests_per_minute: 0, # This would be calculated from logs in production
       error_rate: '< 1%' # This would be calculated from logs in production
     }
+  end
+  
+  # Error handling methods
+  def handle_dashboard_error(exception)
+    Rails.logger.error "Dashboard Error: #{exception.message}"
+    Rails.logger.error exception.backtrace.join("\n")
+    
+    flash[:alert] = "Unable to load dashboard data. Please refresh the page or try again later."
+    
+    # Set safe default values for dashboard
+    @stats = { total_users: 0, admin_users: 0, active_users_today: 0, new_users_today: 0, total_transactions: 0, transactions_today: 0 }
+    @user_metrics = { total_users: 0, new_users_period: 0, active_users_period: 0, registrations_by_day: {} }
+    @financial_metrics = { total_transactions: 0, transactions_period: 0, transaction_volume: 0, transactions_by_day: {}, avg_transaction_amount: 0 }
+    @recent_activity = []
+    @health = { rails_env: Rails.env, ruby_version: RUBY_VERSION, rails_version: Rails.version, uptime: 'Unknown', memory_usage: 0 }
+    
+    render :index
+  end
+  
+  def handle_access_denied(exception)
+    flash[:alert] = "You don't have permission to access the admin dashboard."
+    redirect_to admin_login_path
   end
 end

@@ -3,6 +3,9 @@ class Admin::AnalyticsController < ApplicationController
   skip_before_action :authenticate_user!
   before_action :authenticate_admin_user!
   before_action :ensure_admin_access
+  
+  rescue_from StandardError, with: :handle_error
+  rescue_from CanCan::AccessDenied, with: :handle_access_denied
 
   def index
     authorize! :manage, :analytics
@@ -12,28 +15,55 @@ class Admin::AnalyticsController < ApplicationController
   def user_growth
     authorize! :manage, :analytics
     
-    start_date = parse_date(params[:start_date]) || 30.days.ago
-    end_date = parse_date(params[:end_date]) || Time.current
-    
-    render json: UserAnalytics.user_growth_metrics(start_date, end_date)
+    begin
+      start_date = parse_date(params[:start_date]) || 30.days.ago
+      end_date = parse_date(params[:end_date]) || Time.current
+      
+      @metrics = UserAnalytics.user_growth_metrics(start_date, end_date)
+      @start_date = start_date
+      @end_date = end_date
+      
+      # Admin analytics only supports HTML views
+      render :user_growth
+    rescue => e
+      handle_analytics_error(e, 'user growth')
+    end
   end
 
   def transaction_volume
     authorize! :manage, :analytics
     
-    start_date = parse_date(params[:start_date]) || 30.days.ago
-    end_date = parse_date(params[:end_date]) || Time.current
-    
-    render json: UserAnalytics.transaction_volume_metrics(start_date, end_date)
+    begin
+      start_date = parse_date(params[:start_date]) || 30.days.ago
+      end_date = parse_date(params[:end_date]) || Time.current
+      
+      @metrics = UserAnalytics.transaction_volume_metrics(start_date, end_date)
+      @start_date = start_date
+      @end_date = end_date
+      
+      # Admin analytics only supports HTML views
+      render :transaction_volume
+    rescue => e
+      handle_analytics_error(e, 'transaction volume')
+    end
   end
 
   def financial_insights
     authorize! :manage, :analytics
     
-    start_date = parse_date(params[:start_date]) || 30.days.ago
-    end_date = parse_date(params[:end_date]) || Time.current
-    
-    render json: UserAnalytics.financial_insights(start_date, end_date)
+    begin
+      start_date = parse_date(params[:start_date]) || 30.days.ago
+      end_date = parse_date(params[:end_date]) || Time.current
+      
+      @insights = UserAnalytics.financial_insights(start_date, end_date)
+      @start_date = start_date
+      @end_date = end_date
+      
+      # Admin analytics only supports HTML views
+      render :financial_insights
+    rescue => e
+      handle_analytics_error(e, 'financial insights')
+    end
   end
 
   def user_activity
@@ -54,30 +84,28 @@ class Admin::AnalyticsController < ApplicationController
     @top_active_users = top_active_users
     @recent_activities = recent_activities
     
-    respond_to do |format|
-      format.html # Render the view
-      format.json {
-        render json: {
-          activity_summary: activities,
-          activity_timeline: activity_by_day,
-          top_active_users: top_active_users,
-          recent_activities: recent_activities
-        }
-      }
-    end
+    # Admin analytics only supports HTML views
+    render :user_activity
   end
 
   def revenue_analytics
     authorize! :manage, :analytics
     
-    # This would be more relevant if you had subscription or premium features
-    render json: {
-      total_users: User.count,
-      premium_users: 0, # Placeholder for premium feature
-      monthly_recurring_revenue: 0, # Placeholder
-      user_lifetime_value: calculate_user_lifetime_value,
-      churn_rate: calculate_churn_rate
-    }
+    begin
+      # This would be more relevant if you had subscription or premium features
+      @revenue_data = {
+        total_users: User.count,
+        premium_users: 0, # Placeholder for premium feature
+        monthly_recurring_revenue: 0, # Placeholder
+        user_lifetime_value: calculate_user_lifetime_value,
+        churn_rate: calculate_churn_rate
+      }
+      
+      # Admin analytics only supports HTML views
+      render :revenue_analytics
+    rescue => e
+      handle_analytics_error(e, 'revenue analytics')
+    end
   end
 
   def export_data
@@ -297,5 +325,26 @@ class Admin::AnalyticsController < ApplicationController
       accounts_count: user.accounts.count,
       budgets_count: user.budgets.count
     }
+  end
+  
+  # Error handling methods
+  def handle_error(exception)
+    Rails.logger.error "Analytics Error: #{exception.message}"
+    Rails.logger.error exception.backtrace.join("\n")
+    
+    flash[:alert] = "An error occurred while loading analytics data. Please try again."
+    redirect_to admin_analytics_path
+  end
+  
+  def handle_access_denied(exception)
+    flash[:alert] = "You don't have permission to access this analytics feature."
+    redirect_to admin_root_path
+  end
+  
+  def handle_analytics_error(exception, feature_name)
+    Rails.logger.error "Analytics #{feature_name} Error: #{exception.message}"
+    
+    flash[:alert] = "Unable to load #{feature_name} data. Please try again later."
+    redirect_to admin_analytics_path
   end
 end

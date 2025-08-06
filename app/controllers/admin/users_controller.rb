@@ -4,6 +4,10 @@ class Admin::UsersController < ApplicationController
   before_action :authenticate_admin_user!
   before_action :ensure_admin_access
   before_action :set_user, only: [:show, :update, :destroy, :activate, :deactivate, :make_admin, :remove_admin]
+  
+  rescue_from StandardError, with: :handle_user_management_error
+  rescue_from CanCan::AccessDenied, with: :handle_access_denied
+  rescue_from ActiveRecord::RecordNotFound, with: :handle_user_not_found
 
   def index
     authorize! :manage, :user_management
@@ -278,5 +282,24 @@ class Admin::UsersController < ApplicationController
         Date.current
       ).sum(:amount)
     }
+  end
+  
+  # Error handling methods
+  def handle_user_management_error(exception)
+    Rails.logger.error "User Management Error: #{exception.message}"
+    Rails.logger.error exception.backtrace.join("\n")
+    
+    flash[:alert] = "An error occurred while managing users. Please try again."
+    redirect_to admin_users_path
+  end
+  
+  def handle_access_denied(exception)
+    flash[:alert] = "You don't have permission to perform this user management action."
+    redirect_to admin_root_path
+  end
+  
+  def handle_user_not_found(exception)
+    flash[:alert] = "User not found."
+    redirect_to admin_users_path
   end
 end
