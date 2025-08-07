@@ -3,9 +3,17 @@ class Api::V1::DashboardController < ApplicationController
   skip_authorization_check
 
   def index
+    user_currency = current_user.effective_currency
+    currency_info = current_user.currency_info
+    
     render json: {
       status: { success: true, message: "Dashboard data retrieved successfully" },
       data: {
+        currency: {
+          code: user_currency,
+          symbol: currency_info[:symbol],
+          name: currency_info[:name]
+        },
         balance_overview: balance_overview,
         monthly_summary: monthly_summary,
         weekly_spending: weekly_spending,
@@ -24,10 +32,10 @@ class Api::V1::DashboardController < ApplicationController
     monthly_expenses = current_month_expenses
     
     {
-      current_balance: current_balance,
-      monthly_income: monthly_income,
-      monthly_expenses: monthly_expenses,
-      net_income: monthly_income - monthly_expenses
+      current_balance: format_money(current_balance),
+      monthly_income: format_money(monthly_income),
+      monthly_expenses: format_money(monthly_expenses),
+      net_income: format_money(monthly_income - monthly_expenses)
     }
   end
 
@@ -139,5 +147,9 @@ class Api::V1::DashboardController < ApplicationController
     current_user.transactions
       .where(transaction_type: 'expense', date: start_of_month..end_of_month)
       .sum(:amount)
+  end
+  
+  def format_money(amount)
+    CurrencyService.format_money(amount, current_user.effective_currency)
   end
 end

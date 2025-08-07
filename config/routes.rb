@@ -50,6 +50,11 @@ Rails.application.routes.draw do
       
       # Dashboard route
       get 'dashboard', to: 'dashboard#index'
+      
+      # Currency routes
+      get 'currencies', to: 'currencies#index'
+      patch 'currencies/preference', to: 'currencies#update_preference'
+      get 'currencies/exchange_rates', to: 'currencies#exchange_rates'
 
       # Profile routes
       resource :profile, only: [:show, :update] do

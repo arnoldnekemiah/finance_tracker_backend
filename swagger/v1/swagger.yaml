@@ -11,6 +11,52 @@ components:
       scheme: bearer
       bearer_format: JWT
   schemas:
+    Money:
+      type: object
+      properties:
+        amount:
+          type: number
+          example: 1500.75
+        formatted:
+          type: string
+          example: $1,500.75
+        currency_code:
+          type: string
+          example: USD
+        currency_symbol:
+          type: string
+          example: $
+        currency_name:
+          type: string
+          example: US Dollar
+    Currency:
+      type: object
+      properties:
+        code:
+          type: string
+          example: USD
+        name:
+          type: string
+          example: US Dollar
+        symbol:
+          type: string
+          example: $
+    ExchangeRate:
+      type: object
+      properties:
+        from:
+          type: string
+          example: USD
+        to:
+          type: string
+          example: EUR
+        rate:
+          type: number
+          example: 0.85
+        updated_at:
+          type: string
+          format: date-time
+          example: 2025-08-07T16:30:00Z
     Category:
       type: object
       properties:
@@ -475,21 +521,93 @@ paths:
                   data:
                     type: object
                     properties:
+                      currency:
+                        type: object
+                        properties:
+                          code:
+                            type: string
+                            example: USD
+                          symbol:
+                            type: string
+                            example: $
+                          name:
+                            type: string
+                            example: US Dollar
                       balance_overview:
                         type: object
                         properties:
                           current_balance:
-                            type: number
-                            example: 2500.75
+                            type: object
+                            properties:
+                              amount:
+                                type: number
+                                example: 2500.75
+                              formatted:
+                                type: string
+                                example: $2,500.75
+                              currency_code:
+                                type: string
+                                example: USD
+                              currency_symbol:
+                                type: string
+                                example: $
+                              currency_name:
+                                type: string
+                                example: US Dollar
                           monthly_income:
-                            type: number
-                            example: 5000.00
+                            type: object
+                            properties:
+                              amount:
+                                type: number
+                                example: 5000.00
+                              formatted:
+                                type: string
+                                example: $5,000.00
+                              currency_code:
+                                type: string
+                                example: USD
+                              currency_symbol:
+                                type: string
+                                example: $
+                              currency_name:
+                                type: string
+                                example: US Dollar
                           monthly_expenses:
-                            type: number
-                            example: 2200.50
+                            type: object
+                            properties:
+                              amount:
+                                type: number
+                                example: 2200.50
+                              formatted:
+                                type: string
+                                example: $2,200.50
+                              currency_code:
+                                type: string
+                                example: USD
+                              currency_symbol:
+                                type: string
+                                example: $
+                              currency_name:
+                                type: string
+                                example: US Dollar
                           net_income:
-                            type: number
-                            example: 2799.50
+                            type: object
+                            properties:
+                              amount:
+                                type: number
+                                example: 2799.50
+                              formatted:
+                                type: string
+                                example: $2,799.50
+                              currency_code:
+                                type: string
+                                example: USD
+                              currency_symbol:
+                                type: string
+                                example: $
+                              currency_name:
+                                type: string
+                                example: US Dollar
                       monthly_summary:
                         type: object
                         properties:
@@ -580,6 +698,201 @@ paths:
                           transactions_this_month:
                             type: integer
                             example: 47
+        '401':
+          description: Unauthorized
+  "/api/v1/currencies":
+    get:
+      summary: Get supported currencies and exchange rates
+      description: Returns list of supported currencies, user's current currency preference, and exchange rates
+      tags:
+      - Currencies
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Currencies retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: Currencies retrieved successfully
+                  data:
+                    type: object
+                    properties:
+                      supported_currencies:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              example: US Dollar
+                            symbol:
+                              type: string
+                              example: $
+                            code:
+                              type: string
+                              example: USD
+                      user_currency:
+                        type: string
+                        example: USD
+                      exchange_rates:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            from:
+                              type: string
+                              example: USD
+                            to:
+                              type: string
+                              example: EUR
+                            rate:
+                              type: number
+                              example: 0.85
+        '401':
+          description: Unauthorized
+  "/api/v1/currencies/preference":
+    patch:
+      summary: Update user currency preference
+      description: Updates the user's preferred currency for displaying financial data
+      tags:
+      - Currencies
+      security:
+      - bearer_auth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    preferred_currency:
+                      type: string
+                      example: EUR
+                      enum: [USD, EUR, GBP, JPY, CAD, AUD, CHF, CNY, KES, NGN, ZAR, UGX, TZS, RWF, ETB, GHS]
+                    timezone:
+                      type: string
+                      example: UTC
+                  required:
+                  - preferred_currency
+              required:
+              - user
+      responses:
+        '200':
+          description: Currency preference updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: Currency preference updated successfully
+                  data:
+                    type: object
+                    properties:
+                      preferred_currency:
+                        type: string
+                        example: EUR
+                      currency_info:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            example: Euro
+                          symbol:
+                            type: string
+                            example: €
+                          code:
+                            type: string
+                            example: EUR
+        '422':
+          description: Invalid currency code
+        '401':
+          description: Unauthorized
+  "/api/v1/currencies/exchange_rates":
+    get:
+      summary: Get exchange rates
+      description: Get current exchange rates from base currency to target currencies
+      tags:
+      - Currencies
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: from
+        in: query
+        description: Base currency code (defaults to user's preferred currency)
+        required: false
+        schema:
+          type: string
+          example: USD
+      - name: to
+        in: query
+        description: Comma-separated list of target currency codes
+        required: false
+        schema:
+          type: string
+          example: EUR,GBP,JPY
+      responses:
+        '200':
+          description: Exchange rates retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: Exchange rates retrieved successfully
+                  data:
+                    type: object
+                    properties:
+                      base_currency:
+                        type: string
+                        example: USD
+                      rates:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            from:
+                              type: string
+                              example: USD
+                            to:
+                              type: string
+                              example: EUR
+                            rate:
+                              type: number
+                              example: 0.85
+                            updated_at:
+                              type: string
+                              format: date-time
+                              example: 2025-08-07T16:30:00Z
         '401':
           description: Unauthorized
   "/api/v1/budgets":

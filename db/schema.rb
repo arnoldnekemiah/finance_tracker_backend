@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_06_150000) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_07_131500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -26,7 +26,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_06_150000) do
     t.boolean "is_active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "original_currency", default: "USD"
+    t.integer "original_amount_cents"
     t.index ["is_active"], name: "index_accounts_on_is_active"
+    t.index ["original_currency"], name: "index_accounts_on_original_currency"
     t.index ["user_id", "account_type"], name: "index_accounts_on_user_id_and_account_type"
     t.index ["user_id"], name: "index_accounts_on_user_id"
   end
@@ -56,7 +59,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_06_150000) do
     t.datetime "updated_at", null: false
     t.bigint "category_id"
     t.string "period"
+    t.string "original_currency", default: "USD"
+    t.integer "original_amount_cents"
+    t.decimal "exchange_rate", precision: 10, scale: 6
     t.index ["category_id"], name: "index_budgets_on_category_id"
+    t.index ["original_currency"], name: "index_budgets_on_original_currency"
     t.index ["user_id"], name: "index_budgets_on_user_id"
   end
 
@@ -85,7 +92,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_06_150000) do
     t.string "recurring_period"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "original_currency", default: "USD"
+    t.integer "original_amount_cents"
     t.index ["due_date"], name: "index_debts_on_due_date"
+    t.index ["original_currency"], name: "index_debts_on_original_currency"
     t.index ["user_id", "status"], name: "index_debts_on_user_id_and_status"
     t.index ["user_id"], name: "index_debts_on_user_id"
   end
@@ -99,6 +109,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_06_150000) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "original_currency", default: "USD"
+    t.integer "original_amount_cents"
+    t.index ["original_currency"], name: "index_saving_goals_on_original_currency"
     t.index ["user_id"], name: "index_saving_goals_on_user_id"
   end
 
@@ -114,9 +127,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_06_150000) do
     t.bigint "account_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "original_currency", default: "USD"
+    t.integer "original_amount_cents"
+    t.decimal "exchange_rate", precision: 10, scale: 6
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["category_id"], name: "index_transactions_on_category_id"
     t.index ["date"], name: "index_transactions_on_date"
+    t.index ["original_currency"], name: "index_transactions_on_original_currency"
     t.index ["user_id"], name: "index_transactions_on_user_id"
   end
 
@@ -149,10 +166,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_06_150000) do
     t.string "currency", default: "USD"
     t.boolean "admin", default: false
     t.boolean "active", default: true, null: false
+    t.string "preferred_currency", default: "USD", null: false
+    t.string "timezone", default: "UTC"
     t.index ["active"], name: "index_users_on_active"
     t.index ["admin"], name: "index_users_on_admin"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
+    t.index ["preferred_currency"], name: "index_users_on_preferred_currency"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 

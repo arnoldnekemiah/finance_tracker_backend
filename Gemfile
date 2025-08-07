@@ -23,6 +23,10 @@ gem 'active_model_serializers'
 
 gem 'cancancan'
 
+# Money and Currency Support
+gem 'money-rails'
+gem 'httparty'
+
 # API Documentation
 gem 'rswag-api'
 gem 'rswag-ui'

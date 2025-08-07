@@ -18,6 +18,7 @@ class User < ApplicationRecord
   validates :last_name, presence: true
   validates :email, presence: true, uniqueness: true
   validates :currency, presence: true
+  validates :preferred_currency, inclusion: { in: -> { CurrencyService.supported_currencies.keys } }
 
   # Admin scopes
   scope :admins, -> { where(admin: true) }
@@ -37,5 +38,13 @@ class User < ApplicationRecord
 
   def remove_admin!
     update!(admin: false)
+  end
+  
+  def currency_info
+    CurrencyService.supported_currencies[preferred_currency || currency]
+  end
+  
+  def effective_currency
+    preferred_currency || currency || 'USD'
   end
 end
