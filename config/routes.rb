@@ -66,6 +66,10 @@ end
         get :monthly_comparison
         get :spending_by_category
       end
+      
+      # Password reset routes
+      post 'password_reset', to: 'password_resets#create'
+      patch 'password_reset', to: 'password_resets#update'
     end
   end
 

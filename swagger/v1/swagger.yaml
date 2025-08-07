@@ -370,7 +370,83 @@ paths:
       - bearer_auth: []
       responses:
         '200':
-          description: logged out successfully
+          description: Successfully logged out
+        '401':
+          description: Unauthorized
+  "/api/v1/password_reset":
+    post:
+      summary: Request password reset
+      tags:
+      - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+              required:
+              - email
+      responses:
+        '200':
+          description: Password reset instructions sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: If an account with that email exists, password reset instructions have been sent.
+                  reset_token:
+                    type: string
+                    description: Only returned in development mode
+    patch:
+      summary: Reset password with token
+      tags:
+      - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reset_token:
+                  type: string
+                  example: abc123def456
+                user:
+                  type: object
+                  properties:
+                    password:
+                      type: string
+                      example: newpassword123
+                    password_confirmation:
+                      type: string
+                      example: newpassword123
+                  required:
+                  - password
+                  - password_confirmation
+              required:
+              - reset_token
+              - user
+      responses:
+        '200':
+          description: Password successfully reset
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password has been successfully reset. You can now log in with your new password.
+        '422':
+          description: Invalid or expired token
   "/api/v1/budgets":
     get:
       summary: Lists all budgets
