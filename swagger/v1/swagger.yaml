@@ -447,6 +447,141 @@ paths:
                     example: Password has been successfully reset. You can now log in with your new password.
         '422':
           description: Invalid or expired token
+  "/api/v1/dashboard":
+    get:
+      summary: Get dashboard data
+      description: Returns comprehensive financial dashboard data including balance overview, monthly summary, spending trends, and quick stats
+      tags:
+      - Dashboard
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: Dashboard data retrieved successfully
+                  data:
+                    type: object
+                    properties:
+                      balance_overview:
+                        type: object
+                        properties:
+                          current_balance:
+                            type: number
+                            example: 2500.75
+                          monthly_income:
+                            type: number
+                            example: 5000.00
+                          monthly_expenses:
+                            type: number
+                            example: 2200.50
+                          net_income:
+                            type: number
+                            example: 2799.50
+                      monthly_summary:
+                        type: object
+                        properties:
+                          budget_utilization:
+                            type: number
+                            example: 0.44
+                          income:
+                            type: number
+                            example: 5000.00
+                          expenses:
+                            type: number
+                            example: 2200.50
+                          savings_rate:
+                            type: number
+                            example: 0.56
+                      weekly_spending:
+                        type: object
+                        properties:
+                          current_week:
+                            type: array
+                            items:
+                              type: number
+                            example: [120.50, 85.30, 200.00, 45.75, 180.25, 95.40, 75.80]
+                          labels:
+                            type: array
+                            items:
+                              type: string
+                            example: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+                      top_spending_categories:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            category_id:
+                              type: integer
+                              example: 1
+                            category_name:
+                              type: string
+                              example: "Food & Dining"
+                            amount:
+                              type: number
+                              example: 650.00
+                            percentage:
+                              type: number
+                              example: 29.5
+                            icon:
+                              type: string
+                              example: "restaurant"
+                            color:
+                              type: string
+                              example: "#FF6B6B"
+                      recent_transactions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                              example: 123
+                            amount:
+                              type: number
+                              example: 45.50
+                            description:
+                              type: string
+                              example: "Coffee Shop"
+                            category:
+                              type: string
+                              example: "Food & Dining"
+                            date:
+                              type: string
+                              format: date-time
+                              example: "2025-08-07T10:30:00Z"
+                            type:
+                              type: string
+                              example: "expense"
+                      quick_stats:
+                        type: object
+                        properties:
+                          total_budgets:
+                            type: integer
+                            example: 5
+                          active_debts:
+                            type: integer
+                            example: 2
+                          saving_goals:
+                            type: integer
+                            example: 3
+                          transactions_this_month:
+                            type: integer
+                            example: 47
+        '401':
+          description: Unauthorized
   "/api/v1/budgets":
     get:
       summary: Lists all budgets

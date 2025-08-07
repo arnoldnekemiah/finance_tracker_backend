@@ -47,6 +47,9 @@ Rails.application.routes.draw do
       
       # Category routes
       resources :categories, only: [:index, :create, :show, :update, :destroy]
+      
+      # Dashboard route
+      get 'dashboard', to: 'dashboard#index'
 
       # Profile routes
       resource :profile, only: [:show, :update] do
