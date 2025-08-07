@@ -1,7 +1,23 @@
 class Users::SessionsController < Devise::SessionsController
   include RackSessionsFix
+  
+  skip_before_action :verify_authenticity_token
 
   respond_to :json
+
+  # Override the create method to handle login
+  def create
+    user = User.find_by(email: sign_in_params[:email])
+    
+    if user && user.valid_password?(sign_in_params[:password])
+      sign_in(user)
+      respond_with(user)
+    else
+      render json: {
+        status: { code: 401, message: 'Invalid email or password.' }
+      }, status: :unauthorized
+    end
+  end
 
   private
   def respond_with(current_user, _opts = {})

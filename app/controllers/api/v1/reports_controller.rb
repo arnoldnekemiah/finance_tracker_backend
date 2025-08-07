@@ -1,4 +1,6 @@
 class Api::V1::ReportsController < ApplicationController
+  skip_before_action :verify_authenticity_token
+  
   def monthly_comparison
     current_month = Date.current.beginning_of_month
     previous_month = current_month - 1.month

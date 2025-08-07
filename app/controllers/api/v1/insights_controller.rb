@@ -1,6 +1,8 @@
 class Api::V1::InsightsController < ApplicationController
   # Skip CanCanCan authorization since we're already authenticating the user
   # and all data is scoped to current_user
+  # 
+  skip_before_action :verify_authenticity_token
   skip_authorization_check
   
   rescue_from StandardError do |e|

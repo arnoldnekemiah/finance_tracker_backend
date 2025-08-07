@@ -1,4 +1,5 @@
 class Api::V1::SavingGoalsController < ApplicationController
+  skip_before_action :verify_authenticity_token
   load_and_authorize_resource
   before_action :set_saving_goal, only: %i[show update destroy update_progress]
   

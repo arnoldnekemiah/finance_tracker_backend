@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
   include ActionController::Cookies
-  protect_from_forgery with: :null_session
+  protect_from_forgery with: :exception
   
   before_action :authenticate_user!, unless: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
@@ -18,7 +18,27 @@ class ApplicationController < ActionController::Base
   private
   
   def current_user
-    @current_user ||= super || User.find_by(id: session[:user_id]) || admin_user_from_session
+    @current_user ||= super || User.find_by(id: session[:user_id]) || admin_user_from_session || user_from_jwt
+  end
+  
+  def user_from_jwt
+    return nil unless request.headers['Authorization'].present?
+    token = request.headers['Authorization'].split(' ').last
+    
+    begin
+      decoded_token = JWT.decode(
+        token,
+        Rails.application.credentials.devise_jwt_secret_key,
+        true,
+        { algorithm: 'HS256' }
+      )
+      
+      # Devise JWT stores the user ID in the 'sub' claim
+      user_id = decoded_token.first['sub']
+      User.find_by(id: user_id)
+    rescue JWT::DecodeError, JWT::ExpiredSignature
+      nil
+    end
   end
   
   def admin_user_from_session

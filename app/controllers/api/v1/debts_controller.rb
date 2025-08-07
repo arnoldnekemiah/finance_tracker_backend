@@ -1,4 +1,5 @@
 class Api::V1::DebtsController < ApplicationController
+  skip_before_action :verify_authenticity_token
   load_and_authorize_resource
   
   def index

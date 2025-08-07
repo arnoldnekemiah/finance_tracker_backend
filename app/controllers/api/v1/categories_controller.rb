@@ -1,4 +1,5 @@
 class Api::V1::CategoriesController < ApplicationController
+  skip_before_action :verify_authenticity_token
   load_and_authorize_resource
   before_action :set_category, only: %i[show update destroy]
 
