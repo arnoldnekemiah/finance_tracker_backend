@@ -27,6 +27,9 @@ gem 'cancancan'
 gem 'money-rails'
 gem 'httparty'
 
+# Email Service
+gem 'sendgrid-ruby'
+
 # API Documentation
 gem 'rswag-api'
 gem 'rswag-ui'

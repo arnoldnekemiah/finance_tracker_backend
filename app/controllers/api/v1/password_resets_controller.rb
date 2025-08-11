@@ -15,12 +15,17 @@ class Api::V1::PasswordResetsController < ApplicationController
         reset_password_sent_at: Time.current
       )
       
-      # In production, send email with reset_token
-      # For now, return success message
+      # Send password reset email
+      begin
+        UserMailer.password_reset(user, reset_token).deliver_now
+        Rails.logger.info "Password reset email sent to #{user.email}"
+      rescue => e
+        Rails.logger.error "Failed to send password reset email: #{e.message}"
+        # Don't reveal email sending failures to prevent enumeration
+      end
+      
       render json: {
-        message: 'If an account with that email exists, password reset instructions have been sent.',
-        # Remove this line in production for security
-        reset_token: reset_token
+        message: 'If an account with that email exists, password reset instructions have been sent.'
       }, status: :ok
     else
       # Always return success to prevent email enumeration
