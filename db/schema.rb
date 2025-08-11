@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_07_131500) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_11_093003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -75,6 +75,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_07_131500) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "parent_category_id"
+    t.index ["parent_category_id"], name: "index_categories_on_parent_category_id"
     t.index ["user_id"], name: "index_categories_on_user_id"
   end
 
@@ -130,10 +132,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_07_131500) do
     t.string "original_currency", default: "USD"
     t.integer "original_amount_cents"
     t.decimal "exchange_rate", precision: 10, scale: 6
+    t.integer "from_account_id"
+    t.integer "to_account_id"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["category_id"], name: "index_transactions_on_category_id"
     t.index ["date"], name: "index_transactions_on_date"
+    t.index ["from_account_id"], name: "index_transactions_on_from_account_id"
     t.index ["original_currency"], name: "index_transactions_on_original_currency"
+    t.index ["to_account_id"], name: "index_transactions_on_to_account_id"
     t.index ["user_id"], name: "index_transactions_on_user_id"
   end
 
@@ -180,10 +186,13 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_07_131500) do
   add_foreign_key "admin_audit_logs", "users"
   add_foreign_key "budgets", "categories"
   add_foreign_key "budgets", "users"
+  add_foreign_key "categories", "categories", column: "parent_category_id"
   add_foreign_key "categories", "users"
   add_foreign_key "debts", "users"
   add_foreign_key "saving_goals", "users"
   add_foreign_key "transactions", "accounts"
+  add_foreign_key "transactions", "accounts", column: "from_account_id"
+  add_foreign_key "transactions", "accounts", column: "to_account_id"
   add_foreign_key "transactions", "categories"
   add_foreign_key "transactions", "users"
   add_foreign_key "user_analytics", "users"

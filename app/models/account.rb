@@ -3,13 +3,15 @@ class Account < ApplicationRecord
   has_many :transactions
 
   validates :name, presence: true
-  validates :account_type, presence: true, inclusion: { in: %w[bank mobile_money savings checking credit] }
+  validates :account_type, presence: true, inclusion: { in: %w[regular debt savings] }
   validates :balance, presence: true, numericality: true
   validates :currency, presence: true
 
   scope :active, -> { where(is_active: true) }
-  scope :bank_accounts, -> { where(account_type: %w[bank savings checking]) }
-  scope :mobile_money, -> { where(account_type: 'mobile_money') }
+  scope :asset_accounts, -> { where(account_type: %w[regular savings]) }
+  scope :debt_accounts, -> { where(account_type: 'debt') }
+  scope :regular_accounts, -> { where(account_type: 'regular') }
+  scope :savings_accounts, -> { where(account_type: 'savings') }
 
   def formatted_balance
     "#{currency} #{balance.to_f}"

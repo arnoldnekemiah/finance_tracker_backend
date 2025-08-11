@@ -3,6 +3,8 @@ class Budget < ApplicationRecord
   belongs_to :category
 
   validates :limit, presence: true, numericality: { greater_than: 0 }
+  
+  before_validation :set_default_spent, on: :create
   validates :spent, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :period, presence: true, inclusion: { in: %w[weekly monthly quarterly yearly] }
   validates :start_date, :end_date, presence: true
@@ -19,7 +21,7 @@ class Budget < ApplicationRecord
   end
 
   def remaining_amount
-    [limit - spent, 0].max
+    limit - spent
   end
 
   def over_budget?
@@ -41,6 +43,10 @@ class Budget < ApplicationRecord
   end
 
   private
+
+  def set_default_spent
+    self.spent ||= 0
+  end
 
   def end_date_after_start_date
     return unless start_date && end_date

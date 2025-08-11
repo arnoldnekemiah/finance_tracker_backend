@@ -48,8 +48,10 @@ Rails.application.routes.draw do
       # Category routes
       resources :categories, only: [:index, :create, :show, :update, :destroy]
       
-      # Dashboard route
+      # Dashboard routes
       get 'dashboard', to: 'dashboard#index'
+      get 'dashboard/financial_overview', to: 'dashboard#financial_overview'
+      get 'dashboard/monthly_summary', to: 'dashboard#monthly_summary_by_month'
       
       # Currency routes
       get 'currencies', to: 'currencies#index'

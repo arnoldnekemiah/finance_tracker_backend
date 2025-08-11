@@ -56,7 +56,7 @@ components:
         updated_at:
           type: string
           format: date-time
-          example: 2025-08-07T16:30:00Z
+          example: "2025-08-07T16:30:00Z"
     Category:
       type: object
       properties:
@@ -70,6 +70,10 @@ components:
           type: string
         transaction_type:
           type: string
+        parent_category_id:
+          type: integer
+          nullable: true
+          description: ID of parent category for subcategories
     Debt:
       type: object
       properties:
@@ -111,7 +115,7 @@ components:
           type: string
         account_type:
           type: string
-          enum: [bank, mobile_money, savings, checking, credit]
+          enum: [regular, debt, savings]
         account_number:
           type: string
         bank_name:
@@ -213,7 +217,7 @@ components:
           type: string
         transaction_type:
           type: string
-          enum: [income, expense]
+          enum: [income, expense, transfer]
         date:
           type: string
           format: date-time
@@ -224,6 +228,18 @@ components:
         category:
           $ref: '#/components/schemas/Category'
         account:
+          $ref: '#/components/schemas/Account'
+        from_account_id:
+          type: integer
+          nullable: true
+          description: Source account ID for expenses and transfers
+        to_account_id:
+          type: integer
+          nullable: true
+          description: Destination account ID for income and transfers
+        from_account:
+          $ref: '#/components/schemas/Account'
+        to_account:
           $ref: '#/components/schemas/Account'
         user_id:
           type: integer
@@ -236,6 +252,8 @@ components:
 servers:
 - url: http://localhost:3001
   description: Development server
+- url: https://finance-tracker-backend-5djo.onrender.com
+  description: Production server
 paths:
   "/signup":
     post:
@@ -700,6 +718,107 @@ paths:
                             example: 47
         '401':
           description: Unauthorized
+  "/api/v1/dashboard/financial_overview":
+    get:
+      summary: Get financial overview
+      description: Returns net worth calculation with total assets and total debts
+      tags:
+      - Dashboard
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Financial overview retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: Financial overview retrieved successfully
+                  data:
+                    type: object
+                    properties:
+                      currency:
+                        $ref: '#/components/schemas/Currency'
+                      total_assets:
+                        $ref: '#/components/schemas/Money'
+                      total_debts:
+                        $ref: '#/components/schemas/Money'
+                      net_worth:
+                        $ref: '#/components/schemas/Money'
+        '401':
+          description: Unauthorized
+  "/api/v1/dashboard/monthly_summary":
+    get:
+      summary: Get monthly summary with balances
+      description: Returns monthly financial summary including starting balance, ending balance, income, and expenses for a specific month
+      tags:
+      - Dashboard
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: month
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 12
+        description: Month (1-12), defaults to current month
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Year, defaults to current year
+      responses:
+        '200':
+          description: Monthly summary retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    properties:
+                      success:
+                        type: boolean
+                        example: true
+                      message:
+                        type: string
+                        example: Monthly summary retrieved successfully
+                  data:
+                    type: object
+                    properties:
+                      currency:
+                        $ref: '#/components/schemas/Currency'
+                      month:
+                        type: integer
+                        example: 8
+                      year:
+                        type: integer
+                        example: 2025
+                      starting_balance:
+                        $ref: '#/components/schemas/Money'
+                      ending_balance:
+                        $ref: '#/components/schemas/Money'
+                      total_income:
+                        $ref: '#/components/schemas/Money'
+                      total_expenses:
+                        $ref: '#/components/schemas/Money'
+                      net_change:
+                        $ref: '#/components/schemas/Money'
+        '401':
+          description: Unauthorized
   "/api/v1/currencies":
     get:
       summary: Get supported currencies and exchange rates
@@ -892,7 +1011,7 @@ paths:
                             updated_at:
                               type: string
                               format: date-time
-                              example: 2025-08-07T16:30:00Z
+                              example: "2025-08-07T16:30:00Z"
         '401':
           description: Unauthorized
   "/api/v1/budgets":
