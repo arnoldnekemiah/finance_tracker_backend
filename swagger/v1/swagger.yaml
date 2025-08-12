@@ -1016,14 +1016,31 @@ paths:
           description: Unauthorized
   "/api/v1/budgets":
     get:
-      summary: Lists all budgets
+      summary: Lists all budgets with pagination and calculated fields
+      description: Returns paginated list of budgets with calculated fields like percentage used, remaining amount, over budget status, and days remaining. Includes complete category details.
       tags:
       - Budgets
       security:
       - bearer_auth: []
+      parameters:
+      - name: page
+        in: query
+        description: Page number for pagination
+        required: false
+        schema:
+          type: integer
+          default: 1
+      - name: per_page
+        in: query
+        description: Number of items per page (max 100)
+        required: false
+        schema:
+          type: integer
+          default: 20
+          maximum: 100
       responses:
         '200':
-          description: budgets found
+          description: Budgets retrieved successfully with pagination
           content:
             application/json:
               schema:
@@ -1036,65 +1053,95 @@ paths:
                       properties:
                         id:
                           type: integer
+                          description: Unique budget identifier
+                          example: 1
                         category:
-                          $ref: '#/components/schemas/Category'
+                          type: object
+                          description: Complete category information
+                          properties:
+                            id:
+                              type: integer
+                              example: 3
+                            name:
+                              type: string
+                              example: "Food & Dining"
+                            icon:
+                              type: string
+                              example: "restaurant"
+                            color:
+                              type: string
+                              example: "#FF6B6B"
+                            transaction_type:
+                              type: string
+                              example: "expense"
                         limit:
-                          type: number
+                          type: string
+                          description: Budget limit amount
+                          example: "500.0"
                         spent:
-                          type: number
+                          type: string
+                          description: Amount spent so far
+                          example: "320.50"
                         start_date:
                           type: string
                           format: date-time
+                          description: Budget start date
+                          example: "2025-08-01T00:00:00.000Z"
                         end_date:
                           type: string
                           format: date-time
-                        remaining_amount:
-                          type: number
-                        percentage_used:
-                          type: number
-                        is_over_budget:
-                          type: boolean
+                          description: Budget end date
+                          example: "2025-08-31T00:00:00.000Z"
                         period:
                           type: string
+                          description: Budget period
+                          example: "monthly"
+                          enum: [weekly, monthly, yearly]
+                        percentage_used:
+                          type: string
+                          description: Percentage of budget used (calculated field)
+                          example: "64.1"
+                        remaining_amount:
+                          type: string
+                          description: Remaining budget amount (calculated field)
+                          example: "179.50"
+                        over_budget:
+                          type: boolean
+                          description: Whether budget is exceeded (calculated field)
+                          example: false
+                        days_remaining:
+                          type: integer
+                          description: Days remaining in budget period (calculated field)
+                          example: 19
+                  pagination:
+                    type: object
+                    description: Pagination metadata
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      total_pages:
+                        type: integer
+                        example: 3
+                      total_count:
+                        type: integer
+                        example: 45
+                      per_page:
+                        type: integer
+                        example: 20
+        '401':
+          description: Unauthorized - Invalid or missing JWT token
+        '500':
+          description: Internal server error
     post:
-      summary: Creates a budget
+      summary: Creates a new budget
+      description: Creates a new budget with automatic calculation of derived fields
       tags:
       - Budgets
       security:
       - bearer_auth: []
-      parameters: []
-      responses:
-        '201':
-          description: budget created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  category:
-                    type: string
-                  limit:
-                    type: number
-                  spent:
-                    type: number
-                  start_date:
-                    type: string
-                    format: date-time
-                  end_date:
-                    type: string
-                    format: date-time
-        '422':
-          description: invalid request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  errors:
-                    type: object
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -1105,23 +1152,316 @@ paths:
                   properties:
                     category_id:
                       type: integer
+                      description: ID of the category for this budget
+                      example: 3
                     limit:
                       type: number
-                    spent:
-                      type: number
+                      description: Budget limit amount
+                      example: 500.00
                     start_date:
                       type: string
                       format: date-time
+                      description: Budget start date
+                      example: "2025-08-01T00:00:00.000Z"
                     end_date:
                       type: string
                       format: date-time
+                      description: Budget end date
+                      example: "2025-08-31T00:00:00.000Z"
                     period:
                       type: string
+                      description: Budget period
+                      example: "monthly"
+                      enum: [weekly, monthly, yearly]
                   required:
                   - category_id
                   - limit
                   - start_date
                   - end_date
+      responses:
+        '201':
+          description: Budget created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  category:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 3
+                      name:
+                        type: string
+                        example: "Food & Dining"
+                      icon:
+                        type: string
+                        example: "restaurant"
+                      color:
+                        type: string
+                        example: "#FF6B6B"
+                      transaction_type:
+                        type: string
+                        example: "expense"
+                  limit:
+                    type: string
+                    example: "500.0"
+                  spent:
+                    type: string
+                    example: "0.0"
+                  start_date:
+                    type: string
+                    format: date-time
+                    example: "2025-08-01T00:00:00.000Z"
+                  end_date:
+                    type: string
+                    format: date-time
+                    example: "2025-08-31T00:00:00.000Z"
+                  period:
+                    type: string
+                    example: "monthly"
+                  percentage_used:
+                    type: string
+                    example: "0.0"
+                  remaining_amount:
+                    type: string
+                    example: "500.0"
+                  over_budget:
+                    type: boolean
+                    example: false
+                  days_remaining:
+                    type: integer
+                    example: 31
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+                    description: Validation error details
+                    example:
+                      category_id: ["can't be blank"]
+                      limit: ["must be greater than 0"]
+        '401':
+          description: Unauthorized - Invalid or missing JWT token
+        '500':
+          description: Internal server error
+  "/api/v1/budgets/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      description: Budget ID
+      schema:
+        type: integer
+    get:
+      summary: Get a specific budget
+      description: Returns a single budget with calculated fields and complete category details
+      tags:
+      - Budgets
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Budget retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  category:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 3
+                      name:
+                        type: string
+                        example: "Food & Dining"
+                      icon:
+                        type: string
+                        example: "restaurant"
+                      color:
+                        type: string
+                        example: "#FF6B6B"
+                      transaction_type:
+                        type: string
+                        example: "expense"
+                  limit:
+                    type: string
+                    example: "500.0"
+                  spent:
+                    type: string
+                    example: "320.50"
+                  start_date:
+                    type: string
+                    format: date-time
+                    example: "2025-08-01T00:00:00.000Z"
+                  end_date:
+                    type: string
+                    format: date-time
+                    example: "2025-08-31T00:00:00.000Z"
+                  period:
+                    type: string
+                    example: "monthly"
+                  percentage_used:
+                    type: string
+                    example: "64.1"
+                  remaining_amount:
+                    type: string
+                    example: "179.50"
+                  over_budget:
+                    type: boolean
+                    example: false
+                  days_remaining:
+                    type: integer
+                    example: 19
+        '404':
+          description: Budget not found
+        '401':
+          description: Unauthorized - Invalid or missing JWT token
+        '500':
+          description: Internal server error
+    put:
+      summary: Update a budget
+      description: Updates an existing budget and recalculates derived fields
+      tags:
+      - Budgets
+      security:
+      - bearer_auth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                budget:
+                  type: object
+                  properties:
+                    category_id:
+                      type: integer
+                      description: ID of the category for this budget
+                      example: 3
+                    limit:
+                      type: number
+                      description: Budget limit amount
+                      example: 600.00
+                    start_date:
+                      type: string
+                      format: date-time
+                      description: Budget start date
+                      example: "2025-08-01T00:00:00.000Z"
+                    end_date:
+                      type: string
+                      format: date-time
+                      description: Budget end date
+                      example: "2025-08-31T00:00:00.000Z"
+                    period:
+                      type: string
+                      description: Budget period
+                      example: "monthly"
+                      enum: [weekly, monthly, yearly]
+      responses:
+        '200':
+          description: Budget updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  category:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        example: 3
+                      name:
+                        type: string
+                        example: "Food & Dining"
+                      icon:
+                        type: string
+                        example: "restaurant"
+                      color:
+                        type: string
+                        example: "#FF6B6B"
+                      transaction_type:
+                        type: string
+                        example: "expense"
+                  limit:
+                    type: string
+                    example: "600.0"
+                  spent:
+                    type: string
+                    example: "320.50"
+                  start_date:
+                    type: string
+                    format: date-time
+                    example: "2025-08-01T00:00:00.000Z"
+                  end_date:
+                    type: string
+                    format: date-time
+                    example: "2025-08-31T00:00:00.000Z"
+                  period:
+                    type: string
+                    example: "monthly"
+                  percentage_used:
+                    type: string
+                    example: "53.4"
+                  remaining_amount:
+                    type: string
+                    example: "279.50"
+                  over_budget:
+                    type: boolean
+                    example: false
+                  days_remaining:
+                    type: integer
+                    example: 19
+        '404':
+          description: Budget not found
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: object
+                    description: Validation error details
+        '401':
+          description: Unauthorized - Invalid or missing JWT token
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete a budget
+      description: Permanently deletes a budget
+      tags:
+      - Budgets
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: Budget deleted successfully
+        '404':
+          description: Budget not found
+        '401':
+          description: Unauthorized - Invalid or missing JWT token
+        '500':
+          description: Internal server error
   "/api/v1/categories":
     get:
       summary: Lists all categories
