@@ -7,7 +7,6 @@ class Transaction < ApplicationRecord
 
   # Money gem integration
   monetize :original_amount_cents, as: :original_amount, with_model_currency: :original_currency
-  monetize :amount_cents, as: :amount_money, with_model_currency: :user_currency
 
   scope :income, -> { where(transaction_type: 'income') }
   scope :expense, -> { where(transaction_type: 'expense') }

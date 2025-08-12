@@ -27,6 +27,9 @@ gem 'cancancan'
 gem 'money-rails'
 gem 'httparty'
 
+# Pagination
+gem 'kaminari'
+
 # API Documentation
 gem 'rswag-api'
 gem 'rswag-ui'

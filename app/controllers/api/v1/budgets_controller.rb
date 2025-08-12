@@ -4,15 +4,53 @@ class Api::V1::BudgetsController < ApplicationController
   before_action :set_budget, only: %i[show update destroy]
   
   def index
-    budgets = current_user.budgets.includes(:category)
-    serialized_budgets = budgets.map { |budget| BudgetSerializer.new(budget).as_json }
-    render json: { data: serialized_budgets }
+    # Get budgets with Kaminari pagination
+    page = params[:page] || 1
+    per_page = params[:per_page] || 20
+    
+    # Get budgets with pagination
+    budgets = current_user.budgets
+                          .includes(:category)
+                          .order(created_at: :desc)
+                          .page(page)
+                          .per(per_page)
+    
+    # Update spent amounts for all budgets before serializing
+    budgets.each(&:update_spent_amount!)
+    
+    # Serialize budgets with all calculated fields
+    serialized_budgets = budgets.map do |budget|
+      BudgetSerializer.new(budget).as_json
+    end
+    
+    # Build pagination metadata
+    pagination = {
+      current_page: budgets.current_page,
+      total_pages: budgets.total_pages,
+      total_count: budgets.total_count,
+      per_page: per_page.to_i
+    }
+    
+    render json: {
+      data: serialized_budgets,
+      pagination: pagination
+    }
+  rescue => e
+    Rails.logger.error "Budget index error: #{e.message}"
+    render json: { error: 'Failed to fetch budgets' }, status: :internal_server_error
   end
 
   def show
-    render json: @budget, serializer: BudgetSerializer
+    # Update spent amount before showing
+    @budget.update_spent_amount!
+    
+    serialized_budget = BudgetSerializer.new(@budget).as_json
+    render json: { data: serialized_budget }
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Budget not found" }, status: :not_found
+  rescue => e
+    Rails.logger.error "Budget show error: #{e.message}"
+    render json: { error: 'Failed to fetch budget' }, status: :internal_server_error
   end
 
   def create
@@ -30,10 +68,13 @@ class Api::V1::BudgetsController < ApplicationController
     
     if budget.save
       Rails.logger.info "Budget saved successfully: #{budget.id}"
-      render json: budget, serializer: BudgetSerializer, status: :created
+      # Update spent amount and serialize
+      budget.update_spent_amount!
+      serialized_budget = BudgetSerializer.new(budget).as_json
+      render json: { data: serialized_budget }, status: :created
     else
       Rails.logger.error "Budget save failed: #{budget.errors.full_messages}"
-      render json: { errors: budget.errors }, status: :unprocessable_entity
+      render json: { errors: budget.errors.full_messages }, status: :unprocessable_entity
     end
   rescue => e
     Rails.logger.error "Budget creation error: #{e.message}"
@@ -43,12 +84,18 @@ class Api::V1::BudgetsController < ApplicationController
 
   def update
     if @budget.update(budget_params)
-      render json: @budget, serializer: BudgetSerializer
+      # Update spent amount and serialize
+      @budget.update_spent_amount!
+      serialized_budget = BudgetSerializer.new(@budget).as_json
+      render json: { data: serialized_budget }
     else
-      render json: { errors: @budget.errors }, status: :unprocessable_entity
+      render json: { errors: @budget.errors.full_messages }, status: :unprocessable_entity
     end
   rescue ActiveRecord::RecordNotFound
     render json: { error: "Budget not found" }, status: :not_found
+  rescue => e
+    Rails.logger.error "Budget update error: #{e.message}"
+    render json: { error: 'Failed to update budget' }, status: :internal_server_error
   end
 
   def destroy

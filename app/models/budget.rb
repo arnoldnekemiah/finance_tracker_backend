@@ -29,8 +29,8 @@ class Budget < ApplicationRecord
   end
 
   def days_remaining
-    return 0 if end_date < Date.current
-    (end_date - Date.current).to_i
+    return 0 if end_date.to_date < Date.current
+    (end_date.to_date - Date.current).to_i
   end
 
   def update_spent_amount!
