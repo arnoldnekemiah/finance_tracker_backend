@@ -16,10 +16,14 @@ Rails.application.routes.draw do
   }
 
   # API routes
-  namespace :api do
-    namespace :v1 do
+  namespace :api, defaults: { format: :json } do
+    scope module: :v1, constraints: ApiVersion.new('v1', true) do
       # Transaction routes
-      resources :transactions, only: [:index, :create, :show, :update, :destroy]
+      resources :transactions, only: [:index, :create, :show, :update, :destroy] do
+        collection do
+          post :bulk_create
+        end
+      end
       
       # Debt routes (replaces recurring transactions)
       resources :debts, only: [:index, :create, :show, :update, :destroy] do
@@ -36,7 +40,11 @@ Rails.application.routes.draw do
       end
       
       # Budget routes
-      resources :budgets, only: [:index, :create, :show, :update, :destroy]
+      resources :budgets, only: [:index, :create, :show, :update, :destroy] do
+        collection do
+          post :bulk_create
+        end
+      end
       
       # Saving goals routes
       resources :saving_goals, only: [:index, :create, :show, :update, :destroy] do
@@ -69,7 +77,7 @@ Rails.application.routes.draw do
         get :spending_by_category
         get :spending_comparison
         get :weekly_trends
-end
+      end
 
       # Reports routes
       namespace :reports do

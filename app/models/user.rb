@@ -17,8 +17,9 @@ class User < ApplicationRecord
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :email, presence: true, uniqueness: true
-  validates :currency, presence: true
-  validates :preferred_currency, inclusion: { in: -> { CurrencyService.supported_currencies.keys } }
+  validates :preferred_currency, presence: true, inclusion: { in: -> { CurrencyService.supported_currencies.keys } }
+
+  after_create :create_default_categories
 
   # Admin scopes
   scope :admins, -> { where(admin: true) }
@@ -41,10 +42,16 @@ class User < ApplicationRecord
   end
   
   def currency_info
-    CurrencyService.supported_currencies[preferred_currency || currency]
+    CurrencyService.supported_currencies[preferred_currency]
   end
   
   def effective_currency
-    preferred_currency || currency || 'USD'
+    preferred_currency
+  end
+
+  private
+
+  def create_default_categories
+    DefaultCategoryCreatorService.new(self).call
   end
 end

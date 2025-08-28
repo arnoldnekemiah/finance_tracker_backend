@@ -1,6 +1,8 @@
 class Debt < ApplicationRecord
   belongs_to :user
 
+  monetize :original_amount_cents, as: :amount, with_model_currency: :original_currency
+
   validates :title, presence: true
   validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :creditor, presence: true

@@ -4,16 +4,27 @@ class Api::V1::BudgetsController < ApplicationController
   before_action :set_budget, only: %i[show update destroy]
   
   def index
-    # Get budgets with Kaminari pagination
+    budgets = current_user.budgets.includes(:category)
+
+    # Filtering
+    budgets = budgets.where(period: params[:period]) if params[:period].present?
+    budgets = budgets.where(category_id: params[:category_id]) if params[:category_id].present?
+
+    # Sorting
+    if params[:sort_by].present?
+      direction = params[:sort_direction] == 'desc' ? :desc : :asc
+      sort_column = "limit_cents" if params[:sort_by] == "limit"
+      sort_column = "spent_cents" if params[:sort_by] == "spent"
+      sort_column ||= params[:sort_by]
+      budgets = budgets.order(sort_column => direction)
+    else
+      budgets = budgets.order(end_date: :desc)
+    end
+
+    # Pagination
     page = params[:page] || 1
     per_page = params[:per_page] || 20
-    
-    # Get budgets with pagination
-    budgets = current_user.budgets
-                          .includes(:category)
-                          .order(created_at: :desc)
-                          .page(page)
-                          .per(per_page)
+    budgets = budgets.page(page).per(per_page)
     
     # Update spent amounts for all budgets before serializing
     budgets.each(&:update_spent_amount!)
@@ -54,32 +65,21 @@ class Api::V1::BudgetsController < ApplicationController
   end
 
   def create
-    Rails.logger.info "=== BUDGET CREATE DEBUG ==="
-    Rails.logger.info "Params: #{params.inspect}"
-    Rails.logger.info "Budget params: #{budget_params.inspect}"
-    Rails.logger.info "Current user: #{current_user&.id}"
-    
-    budget = current_user.budgets.build(budget_params)
-    Rails.logger.info "Built budget: #{budget.inspect}"
-    Rails.logger.info "Budget valid?: #{budget.valid?}"
-    Rails.logger.info "Budget errors: #{budget.errors.full_messages}" unless budget.valid?
-    
-    authorize! :create, budget
-    
-    if budget.save
-      Rails.logger.info "Budget saved successfully: #{budget.id}"
-      # Update spent amount and serialize
+    authorize! :create, Budget
+    result = Budgets::CreatorService.new(current_user, budget_params).call
+    if result[:success]
+      budget = result[:budget]
       budget.update_spent_amount!
       serialized_budget = BudgetSerializer.new(budget).as_json
       render json: { data: serialized_budget }, status: :created
     else
-      Rails.logger.error "Budget save failed: #{budget.errors.full_messages}"
-      render json: { errors: budget.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: result[:errors].full_messages }, status: :unprocessable_entity
     end
+  rescue CanCan::AccessDenied => e
+    render json: { error: e.message }, status: :forbidden
   rescue => e
     Rails.logger.error "Budget creation error: #{e.message}"
-    Rails.logger.error e.backtrace.join("\n")
-    render json: { error: e.message }, status: :internal_server_error
+    render json: { error: 'Failed to create budget' }, status: :internal_server_error
   end
 
   def update
@@ -105,6 +105,44 @@ class Api::V1::BudgetsController < ApplicationController
     render json: { error: "Budget not found" }, status: :not_found
   end
 
+  def bulk_create
+    authorize! :create, Budget
+    budgets_params = params.require(:budgets).map do |p|
+      p.permit(
+        :category_id,
+        :limit,
+        :original_currency,
+        :start_date,
+        :end_date,
+        :period
+      )
+    end
+
+    created_budgets = []
+    errors = []
+
+    budgets_params.each do |budget_params|
+      result = Budgets::CreatorService.new(current_user, budget_params).call
+      if result[:success]
+        created_budgets << result[:budget]
+      else
+        errors << { params: budget_params, errors: result[:errors].full_messages }
+      end
+    end
+
+    if errors.empty?
+      serialized_budgets = created_budgets.map { |b| BudgetSerializer.new(b).as_json }
+      render json: { data: serialized_budgets }, status: :created
+    else
+      render json: { errors: errors }, status: :unprocessable_entity
+    end
+  rescue CanCan::AccessDenied => e
+    render json: { error: e.message }, status: :forbidden
+  rescue => e
+    Rails.logger.error "Budget bulk creation error: #{e.message}"
+    render json: { error: 'Failed to create budgets' }, status: :internal_server_error
+  end
+
   private
 
   def set_budget
@@ -117,7 +155,7 @@ class Api::V1::BudgetsController < ApplicationController
     params.require(:budget).permit(
       :category_id,
       :limit,
-      :spent,
+      :original_currency,
       :start_date,
       :end_date,
       :period

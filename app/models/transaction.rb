@@ -14,7 +14,6 @@ class Transaction < ApplicationRecord
   scope :this_month, -> { where(date: Time.current.beginning_of_month..Time.current.end_of_month) }
   scope :last_month, -> { where(date: 1.month.ago.beginning_of_month..1.month.ago.end_of_month) }
 
-  validates :amount, presence: true, numericality: { greater_than: 0 }
   validates :transaction_type, presence: true, inclusion: { in: %w[income expense transfer] }
   validates :date, presence: true
   
@@ -26,33 +25,7 @@ class Transaction < ApplicationRecord
   validate :different_accounts_for_transfer, if: -> { transaction_type == 'transfer' }
   validates :original_currency, inclusion: { in: -> { CurrencyService.supported_currencies.keys } }
 
-  before_save :set_original_amount_and_currency
-  before_save :convert_to_user_currency
-
   private
-
-  def set_original_amount_and_currency
-    if original_amount_cents.blank? && amount.present?
-      self.original_amount_cents = (amount * 100).to_i
-    end
-    
-    if original_currency.blank?
-      self.original_currency = user.effective_currency
-    end
-  end
-
-  def convert_to_user_currency
-    user_curr = user.effective_currency
-    
-    if original_currency != user_curr
-      self.exchange_rate = CurrencyService.get_exchange_rate(original_currency, user_curr)
-      converted_amount = CurrencyService.convert_amount(original_amount_cents / 100.0, original_currency, user_curr)
-      self.amount = converted_amount
-    else
-      self.amount = original_amount_cents / 100.0 if original_amount_cents.present?
-      self.exchange_rate = 1.0
-    end
-  end
 
   def user_currency
     user.effective_currency

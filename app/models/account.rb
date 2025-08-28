@@ -2,9 +2,10 @@ class Account < ApplicationRecord
   belongs_to :user
   has_many :transactions
 
+  monetize :balance_cents, with_model_currency: :currency
+
   validates :name, presence: true
   validates :account_type, presence: true, inclusion: { in: %w[regular debt savings] }
-  validates :balance, presence: true, numericality: true
   validates :currency, presence: true
 
   scope :active, -> { where(is_active: true) }
@@ -14,7 +15,7 @@ class Account < ApplicationRecord
   scope :savings_accounts, -> { where(account_type: 'savings') }
 
   def formatted_balance
-    "#{currency} #{balance.to_f}"
+    balance.format
   end
 
   def account_number_masked

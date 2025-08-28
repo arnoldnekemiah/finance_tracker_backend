@@ -25,24 +25,7 @@ else
   puts "ℹ️  Admin user already exists with email: #{default_admin_email}"
 end
 
-# Create sample categories for demo purposes
-default_categories = [
-  { name: 'Food & Dining', color: '#FF6B6B' },
-  { name: 'Transportation', color: '#4ECDC4' },
-  { name: 'Shopping', color: '#45B7D1' },
-  { name: 'Entertainment', color: '#96CEB4' },
-  { name: 'Bills & Utilities', color: '#FFEAA7' },
-  { name: 'Healthcare', color: '#DDA0DD' },
-  { name: 'Income', color: '#98D8C8' },
-  { name: 'Savings', color: '#F7DC6F' }
-]
+# Default categories are now created for each user upon registration.
+# See User model and DefaultCategoryCreatorService.
 
-default_categories.each do |category_attrs|
-  Category.find_or_create_by(name: category_attrs[:name]) do |category|
-    category.color = category_attrs[:color]
-    category.user_id = User.first&.id # Assign to first user if exists
-  end
-end
-
-puts "✅ Default categories created"
 puts "🚀 Seeding completed successfully!"
