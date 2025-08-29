@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_11_093003) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_28_115413) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,7 +20,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_11_093003) do
     t.string "account_type", null: false
     t.string "account_number"
     t.string "bank_name"
-    t.decimal "balance", precision: 15, scale: 2, default: "0.0"
     t.string "currency", default: "USD"
     t.text "description"
     t.boolean "is_active", default: true
@@ -28,31 +27,15 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_11_093003) do
     t.datetime "updated_at", null: false
     t.string "original_currency", default: "USD"
     t.integer "original_amount_cents"
+    t.integer "balance_cents", default: 0, null: false
     t.index ["is_active"], name: "index_accounts_on_is_active"
     t.index ["original_currency"], name: "index_accounts_on_original_currency"
     t.index ["user_id", "account_type"], name: "index_accounts_on_user_id_and_account_type"
     t.index ["user_id"], name: "index_accounts_on_user_id"
   end
 
-  create_table "admin_audit_logs", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.string "action", null: false
-    t.string "resource_type"
-    t.integer "resource_id"
-    t.text "details"
-    t.string "ip_address"
-    t.string "user_agent"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["action"], name: "index_admin_audit_logs_on_action"
-    t.index ["resource_type", "resource_id"], name: "index_admin_audit_logs_on_resource_type_and_resource_id"
-    t.index ["user_id"], name: "index_admin_audit_logs_on_user_id"
-  end
-
   create_table "budgets", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.decimal "limit"
-    t.decimal "spent"
     t.datetime "start_date"
     t.datetime "end_date"
     t.datetime "created_at", null: false
@@ -62,6 +45,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_11_093003) do
     t.string "original_currency", default: "USD"
     t.integer "original_amount_cents"
     t.decimal "exchange_rate", precision: 10, scale: 6
+    t.integer "limit_cents", default: 0, null: false
+    t.integer "spent_cents", default: 0, null: false
     t.index ["category_id"], name: "index_budgets_on_category_id"
     t.index ["original_currency"], name: "index_budgets_on_original_currency"
     t.index ["user_id"], name: "index_budgets_on_user_id"
@@ -83,7 +68,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_11_093003) do
   create_table "debts", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "title", null: false
-    t.decimal "amount", precision: 10, scale: 2, null: false
     t.string "creditor", null: false
     t.text "description"
     t.date "due_date", null: false
@@ -119,7 +103,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_11_093003) do
 
   create_table "transactions", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.decimal "amount"
     t.bigint "category_id"
     t.string "transaction_type"
     t.datetime "date"
@@ -131,7 +114,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_11_093003) do
     t.datetime "updated_at", null: false
     t.string "original_currency", default: "USD"
     t.integer "original_amount_cents"
-    t.decimal "exchange_rate", precision: 10, scale: 6
     t.integer "from_account_id"
     t.integer "to_account_id"
     t.index ["account_id"], name: "index_transactions_on_account_id"
@@ -169,9 +151,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_11_093003) do
     t.string "jti", null: false
     t.string "first_name"
     t.string "last_name"
-    t.string "currency", default: "USD"
-    t.boolean "admin", default: false
     t.boolean "active", default: true, null: false
+    t.boolean "admin", default: false
     t.string "preferred_currency", default: "USD", null: false
     t.string "timezone", default: "UTC"
     t.index ["active"], name: "index_users_on_active"
@@ -183,7 +164,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_11_093003) do
   end
 
   add_foreign_key "accounts", "users"
-  add_foreign_key "admin_audit_logs", "users"
   add_foreign_key "budgets", "categories"
   add_foreign_key "budgets", "users"
   add_foreign_key "categories", "categories", column: "parent_category_id"

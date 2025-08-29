@@ -54,7 +54,14 @@ Rails.application.routes.draw do
       end
       
       # Category routes
-      resources :categories, only: [:index, :create, :show, :update, :destroy]
+      resources :categories, only: [:index, :create, :show, :update, :destroy] do
+        collection do
+          post :bulk_create
+          patch :bulk_update
+          delete :bulk_destroy
+          patch :move_transactions
+        end
+      end
       
       # Dashboard routes
       get 'dashboard', to: 'dashboard#index'
