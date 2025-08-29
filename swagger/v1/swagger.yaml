@@ -1513,6 +1513,154 @@ paths:
                   required:
                   - name
                   - transaction_type
+  "/api/v1/categories/bulk_create":
+    post:
+      summary: Creates multiple categories
+      tags:
+      - Categories
+      security:
+      - bearer_auth: []
+      responses:
+        '201':
+          description: categories created
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        '422':
+          description: invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categories:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      icon:
+                        type: string
+                      color:
+                        type: string
+                      transaction_type:
+                        type: string
+                    required:
+                    - name
+                    - transaction_type
+  "/api/v1/categories/bulk_update":
+    patch:
+      summary: Updates multiple categories
+      tags:
+      - Categories
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: categories updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  updated_count:
+                    type: integer
+        '422':
+          description: invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categories:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      icon:
+                        type: string
+                      color:
+                        type: string
+                      transaction_type:
+                        type: string
+                    required:
+                    - id
+  "/api/v1/categories/bulk_destroy":
+    delete:
+      summary: Deletes multiple categories
+      tags:
+      - Categories
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: categories deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted_count:
+                    type: integer
+        '422':
+          description: invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category_ids:
+                  type: array
+                  items:
+                    type: integer
+              required:
+              - category_ids
+  "/api/v1/categories/move_transactions":
+    patch:
+      summary: Moves transactions from one category to another
+      tags:
+      - Categories
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: transactions moved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  moved_count:
+                    type: integer
+        '422':
+          description: invalid request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                move_transactions:
+                  type: object
+                  properties:
+                    from_category_id:
+                      type: integer
+                    to_category_id:
+                      type: integer
+                  required:
+                  - from_category_id
+                  - to_category_id
   "/api/v1/categories/{id}":
     parameters:
     - name: id

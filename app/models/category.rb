@@ -18,4 +18,12 @@ class Category < ApplicationRecord
   def is_subcategory?
     parent_category_id.present?
   end
+
+  after_commit :clear_cache
+
+  private
+
+  def clear_cache
+    Rails.cache.delete("user_#{user_id}_categories")
+  end
 end
