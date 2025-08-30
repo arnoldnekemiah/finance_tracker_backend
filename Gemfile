@@ -30,6 +30,9 @@ gem 'httparty'
 # Pagination
 gem 'kaminari'
 
+# Caching
+gem 'actionpack-action_caching'
+
 # Use Redis for caching
 gem 'redis-rails'
 
