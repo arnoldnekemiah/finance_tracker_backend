@@ -9,7 +9,7 @@ class Transactions::CreatorService
     transaction_params = if @params.is_a?(ActionController::Parameters)
       @params.require(:transaction).permit(
         :amount, :description, :transaction_type, :date, :notes,
-        :payment_method, :category_id, :from_account_id, :to_account_id, :account_id
+        :payment_method, :category_id, :account_id
       ).to_h.symbolize_keys
     else
       (@params[:transaction] || @params).to_unsafe_h.symbolize_keys
@@ -23,8 +23,6 @@ class Transactions::CreatorService
       notes: transaction_params[:notes],
       payment_method: transaction_params[:payment_method],
       category_id: transaction_params[:category_id],
-      from_account_id: transaction_params[:from_account_id],
-      to_account_id: transaction_params[:to_account_id],
       account_id: transaction_params[:account_id],
       original_currency: 'USD',
       user: @user
@@ -41,7 +39,7 @@ class Transactions::CreatorService
     transaction = Transaction.new(attributes)
     
     if transaction.save
-      update_account_balances(transaction) if transaction.persisted?
+      update_account_balance(transaction)
       success(transaction)
     else
       failure(transaction.errors)
@@ -58,16 +56,18 @@ class Transactions::CreatorService
     { success: false, errors: errors }
   end
 
-  def update_account_balances(transaction)
+  def update_account_balance(transaction)
+    account = transaction.account
+    return unless account
+
     case transaction.transaction_type
     when 'income'
-      update_balance(transaction.to_account, transaction.original_amount)
+      account.balance_cents += transaction.original_amount_cents
     when 'expense'
-      update_balance(transaction.from_account, -transaction.original_amount)
-    when 'transfer'
-      update_balance(transaction.from_account, -transaction.original_amount)
-      update_balance(transaction.to_account, transaction.original_amount)
+      account.balance_cents -= transaction.original_amount_cents
     end
+
+    account.save!
   end
 
   def update_balance(account, amount)

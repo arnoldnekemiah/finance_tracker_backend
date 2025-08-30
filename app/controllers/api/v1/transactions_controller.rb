@@ -4,7 +4,7 @@ class Api::V1::TransactionsController < ApplicationController
   before_action :set_transaction, only: %i[show update destroy]
   
   def index
-    transactions = current_user.transactions.includes(:category, :from_account, :to_account)
+    transactions = current_user.transactions.includes(:category, :account)
 
     # Filtering
     transactions = transactions.where(transaction_type: params[:transaction_type]) if params[:transaction_type].present?
@@ -20,29 +20,27 @@ class Api::V1::TransactionsController < ApplicationController
     else
       transactions = transactions.order(date: :desc)
     end
-
-    # Pagination
-    page = params[:page] || 1
-    per_page = params[:per_page] || 20
-    transactions = transactions.page(page).per(per_page)
-
-    render json: transactions, each_serializer: TransactionSerializer, meta: {
-      pagination: {
-        current_page: transactions.current_page,
-        total_pages: transactions.total_pages,
-        total_count: transactions.total_count,
-        per_page: per_page.to_i
-      }
-    }
+    
+    render json: transactions, each_serializer: TransactionSerializer
   end
-
+  
   def show
     render json: @transaction, serializer: TransactionSerializer
   end
-
+  
   def create
-    # Pass the raw parameters to the service
+    transaction_type = params.dig(:transaction, :transaction_type) || params[:transaction_type]
+    
+    unless %w[income expense].include?(transaction_type)
+      return render json: { 
+        errors: { 
+          transaction_type: ["must be either 'income' or 'expense'"] 
+        } 
+      }, status: :unprocessable_entity
+    end
+    
     result = Transactions::CreatorService.new(current_user, params).call
+    
     if result[:success]
       @transaction = result[:transaction]
       authorize! :create, @transaction
@@ -51,58 +49,20 @@ class Api::V1::TransactionsController < ApplicationController
       render json: { errors: result[:errors] }, status: :unprocessable_entity
     end
   end
-
+  
   def update
-    result = Transactions::UpdaterService.new(@transaction, transaction_params).call
-    if result[:success]
-      render json: result[:transaction], serializer: TransactionSerializer
+    if @transaction.update(transaction_params)
+      render json: @transaction, serializer: TransactionSerializer
     else
-      render json: { errors: result[:errors] }, status: :unprocessable_entity
+      render json: { errors: @transaction.errors }, status: :unprocessable_entity
     end
   end
-
+  
   def destroy
-    result = Transactions::DestroyerService.new(@transaction).call
-    if result[:success]
+    if @transaction.destroy
       head :no_content
     else
-      render json: { errors: result[:errors] }, status: :unprocessable_entity
-    end
-  end
-
-  def bulk_create
-    transactions_params = params.require(:transactions).map do |p|
-      p.permit(
-        :original_amount,
-        :original_currency,
-        :category_id,
-        :account_id,
-        :from_account_id,
-        :to_account_id,
-        :transaction_type,
-        :description,
-        :date,
-        :notes,
-        :payment_method
-      )
-    end
-
-    created_transactions = []
-    errors = []
-
-    transactions_params.each do |transaction_params|
-      result = Transactions::CreatorService.new(current_user, transaction_params).call
-      if result[:success]
-        created_transactions << result[:transaction]
-      else
-        errors << { params: transaction_params, errors: result[:errors] }
-      end
-    end
-
-    if errors.empty?
-      render json: created_transactions, each_serializer: TransactionSerializer, status: :created
-    else
-      render json: { errors: errors }, status: :unprocessable_entity
+      render json: { errors: @transaction.errors }, status: :unprocessable_entity
     end
   end
 
@@ -114,17 +74,14 @@ class Api::V1::TransactionsController < ApplicationController
       
   def transaction_params
     params.require(:transaction).permit(
-      :original_amount,
-      :original_currency,
-      :category_id,
-      :account_id,
-      :from_account_id,
-      :to_account_id,
-      :transaction_type,
+      :amount,
       :description,
-      :date, 
-      :notes, 
-      :payment_method
+      :transaction_type,
+      :date,
+      :notes,
+      :payment_method,
+      :category_id,
+      :account_id
     )
   end
 end

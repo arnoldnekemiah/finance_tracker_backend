@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_30_122256) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_30_161711) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -114,15 +114,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_30_122256) do
     t.datetime "updated_at", null: false
     t.string "original_currency", default: "USD"
     t.integer "original_amount_cents"
-    t.integer "from_account_id"
-    t.integer "to_account_id"
     t.text "notes"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["category_id"], name: "index_transactions_on_category_id"
     t.index ["date"], name: "index_transactions_on_date"
-    t.index ["from_account_id"], name: "index_transactions_on_from_account_id"
     t.index ["original_currency"], name: "index_transactions_on_original_currency"
-    t.index ["to_account_id"], name: "index_transactions_on_to_account_id"
     t.index ["user_id"], name: "index_transactions_on_user_id"
   end
 
@@ -172,8 +168,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_30_122256) do
   add_foreign_key "debts", "users"
   add_foreign_key "saving_goals", "users"
   add_foreign_key "transactions", "accounts"
-  add_foreign_key "transactions", "accounts", column: "from_account_id"
-  add_foreign_key "transactions", "accounts", column: "to_account_id"
   add_foreign_key "transactions", "categories"
   add_foreign_key "transactions", "users"
   add_foreign_key "user_analytics", "users"

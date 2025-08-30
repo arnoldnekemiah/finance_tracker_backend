@@ -1,0 +1,4874 @@
+{
+	"info": {
+		"_postman_id": "c7cf3e89-9d6f-4b92-bd05-1eefc7e53bc1",
+		"name": "Finance Tracker API",
+		"description": "Comprehensive API for Finance Tracker application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29341864"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"email\": \"user@example.com\",\n        \"password\": \"password123\",\n        \"password_confirmation\": \"password123\",\n        \"first_name\": \"John\",\n        \"last_name\": \"Doe\",\n        \"currency\": \"USD\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/signup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"signup"
+							]
+						},
+						"description": "Register a new user"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"email\": \"user@example.com\",\n        \"password\": \"password123\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "Authenticate and get JWT token"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"logout"
+							]
+						},
+						"description": "Logout user and invalidate token"
+					},
+					"response": []
+				},
+				{
+					"name": "Request Password Reset",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"user@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/password_reset",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"password_reset"
+							]
+						},
+						"description": "Request password reset instructions"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reset_token\": \"abc123def456\",\n    \"user\": {\n        \"password\": \"newpassword123\",\n        \"password_confirmation\": \"newpassword123\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/password_reset",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"password_reset"
+							]
+						},
+						"description": "Reset password with token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dashboard",
+			"item": [
+				{
+					"name": "Get Dashboard Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer  {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"dashboard"
+							]
+						},
+						"description": "Get comprehensive financial dashboard data including balance overview, monthly summary, spending trends, and quick stats"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer  {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/dashboard",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"dashboard"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "date",
+									"value": "Sat, 30 Aug 2025 08:35:33 GMT"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=3600, public"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=FVtgIzs8WKu1Yb2sriQmKxlXPOLDkup1ogA1BoGK40j4Cm7NaprK%2BJra2FrUNaZ364f61%2BtFWEHfaDL%2Bq6QWnKwW5eJsYTkZtKNgTZ2dgcvbDDCPZD72X%2B9GwXIPGAFYdEIW52t%2F4rIOOdUs3yDuVPP6MpNJOwSh0PReeklAZqYIpexqaPTqS9y8ZFkkFybir8OB0pZCbi9AspYDGNOTR8bJwynUBh7yvCqBPwX0xMtuWu0cdsY05YAa1xDSAt0tezEGdM6e36SxlBSw0GyIxx3GySgLljiERg1quBkIMPw%3D--jn2wxx%2FHHzoZsz%2Bn--Cd3%2B70kAw3nxjNnoOdWbmg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=FVtgIzs8WKu1Yb2sriQmKxlXPOLDkup1ogA1BoGK40j4Cm7NaprK%2BJra2FrUNaZ364f61%2BtFWEHfaDL%2Bq6QWnKwW5eJsYTkZtKNgTZ2dgcvbDDCPZD72X%2B9GwXIPGAFYdEIW52t%2F4rIOOdUs3yDuVPP6MpNJOwSh0PReeklAZqYIpexqaPTqS9y8ZFkkFybir8OB0pZCbi9AspYDGNOTR8bJwynUBh7yvCqBPwX0xMtuWu0cdsY05YAa1xDSAt0tezEGdM6e36SxlBSw0GyIxx3GySgLljiERg1quBkIMPw%3D--jn2wxx%2FHHzoZsz%2Bn--Cd3%2B70kAw3nxjNnoOdWbmg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=MXqSPtIvK7kIGaVkVg%2BVlPKXL%2FkFO1GI0CPwW47hXcQrGxnBpMetcz59qRHRKmHs7TDpW09X3Gb9jGRDhZIofqWiD3yLnTevjBpY69MS9C2OhkrtREJ4PeKGjECXFxxXlMFeoteknuHcfAOCIm35%2F3mkxLhQQ2vnfp%2Bpc8x9rw2gVEsiIYmUidNQ5B3nQJKtGYpFnYjEneDmakuinm8AE6uyT6X2yNCCljAmctyS87pkynU0xSrG7fG3ie8JnDMuvGo4C6ysPQwDq3o99MNU9aRvy2qEX%2FmXwstE2VMAkA70YOT9--KsKkk%2BxR0FWl3olT--fE0dv0jH1GuO%2BurqbvyBow%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"4b51679a35fdce9aa3db8022f8bfd858\""
+								},
+								{
+									"key": "x-request-id",
+									"value": "c12fbe0e-1d0e-42e2-8d91-aa8f8c4e5c55"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.134173"
+								},
+								{
+									"key": "server-timing",
+									"value": "sql.active_record;dur=25.32, instantiation.active_record;dur=0.12, start_processing.action_controller;dur=0.01, cache_read.active_support;dur=0.56, cache_fetch_hit.active_support;dur=0.03, render.active_model_serializers;dur=0.40, process_action.action_controller;dur=106.34"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1341"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": {\n        \"success\": true,\n        \"message\": \"Dashboard data retrieved successfully\"\n    },\n    \"data\": {\n        \"currency\": {\n            \"code\": \"RWF\",\n            \"symbol\": \"RF\",\n            \"name\": \"Rwandan Franc\"\n        },\n        \"balance_overview\": {\n            \"current_balance\": {\n                \"amount\": 0,\n                \"formatted\": \"RF0.00\",\n                \"currency_code\": \"RWF\",\n                \"currency_symbol\": \"RF\",\n                \"currency_name\": \"Rwandan Franc\"\n            },\n            \"monthly_income\": {\n                \"amount\": 0,\n                \"formatted\": \"RF0.00\",\n                \"currency_code\": \"RWF\",\n                \"currency_symbol\": \"RF\",\n                \"currency_name\": \"Rwandan Franc\"\n            },\n            \"monthly_expenses\": {\n                \"amount\": 0,\n                \"formatted\": \"RF0.00\",\n                \"currency_code\": \"RWF\",\n                \"currency_symbol\": \"RF\",\n                \"currency_name\": \"Rwandan Franc\"\n            },\n            \"net_income\": {\n                \"amount\": 0,\n                \"formatted\": \"RF0.00\",\n                \"currency_code\": \"RWF\",\n                \"currency_symbol\": \"RF\",\n                \"currency_name\": \"Rwandan Franc\"\n            }\n        },\n        \"monthly_summary\": {\n            \"income\": {\n                \"amount\": 0,\n                \"formatted\": \"RF0.00\",\n                \"currency_code\": \"RWF\",\n                \"currency_symbol\": \"RF\",\n                \"currency_name\": \"Rwandan Franc\"\n            },\n            \"expenses\": {\n                \"amount\": 0,\n                \"formatted\": \"RF0.00\",\n                \"currency_code\": \"RWF\",\n                \"currency_symbol\": \"RF\",\n                \"currency_name\": \"Rwandan Franc\"\n            },\n            \"savings\": {\n                \"amount\": 0,\n                \"formatted\": \"RF0.00\",\n                \"currency_code\": \"RWF\",\n                \"currency_symbol\": \"RF\",\n                \"currency_name\": \"Rwandan Franc\"\n            },\n            \"budget_utilization\": 0\n        },\n        \"weekly_spending\": {\n            \"current_week\": [\n                0,\n                0,\n                0,\n                0,\n                0,\n                0,\n                0\n            ],\n            \"labels\": [\n                \"Mon\",\n                \"Tue\",\n                \"Wed\",\n                \"Thu\",\n                \"Fri\",\n                \"Sat\",\n                \"Sun\"\n            ]\n        },\n        \"top_spending_categories\": [],\n        \"recent_transactions\": [],\n        \"quick_stats\": {\n            \"total_budgets\": 0,\n            \"active_debts\": 0,\n            \"saving_goals\": 0,\n            \"transactions_this_month\": 0\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Financial Overview",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/dashboard/financial_overview",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"dashboard",
+								"financial_overview"
+							]
+						},
+						"description": "Get net worth calculation with total assets and total debts"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/dashboard/financial_overview",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"dashboard",
+										"financial_overview"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "date",
+									"value": "Sat, 30 Aug 2025 08:17:50 GMT"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=3600, public"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=Ez4BFLTWvVWMszTULh0%2BJsHVdY5eMOMLeT7LdA88mtKh7yuTTnilaZ%2BwUmSRg%2F5vI8B4BGBXtpTB1d4ZLJWIDFyZjM8ErFw8GM7hhGk1YY8ZjMlIA920riPgB%2FiyrpEM2OYj6k6UL0PWpIgftXFUBbVmK4%2BeDN8g%2F9rmtVNtpmI1OF1oB015L2jxsInqjDROn7dEsf7MAhk3cIV%2F7wMg03HK1jf2FO7v038c5JW78KGEzJiFAiu0kVrFjjSGM%2Bv3CU7qycEVBbDwZ1dT8rIcgqVlR86ZXxMbaZwauwyywGc%3D--EvM7IxKN0myNrKxR--RjvrYqiSqo%2FERJThxRmQlA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=Ez4BFLTWvVWMszTULh0%2BJsHVdY5eMOMLeT7LdA88mtKh7yuTTnilaZ%2BwUmSRg%2F5vI8B4BGBXtpTB1d4ZLJWIDFyZjM8ErFw8GM7hhGk1YY8ZjMlIA920riPgB%2FiyrpEM2OYj6k6UL0PWpIgftXFUBbVmK4%2BeDN8g%2F9rmtVNtpmI1OF1oB015L2jxsInqjDROn7dEsf7MAhk3cIV%2F7wMg03HK1jf2FO7v038c5JW78KGEzJiFAiu0kVrFjjSGM%2Bv3CU7qycEVBbDwZ1dT8rIcgqVlR86ZXxMbaZwauwyywGc%3D--EvM7IxKN0myNrKxR--RjvrYqiSqo%2FERJThxRmQlA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=wRBGieinWuloeznAqRM6iE6gE33dllEiAA20%2FOfNBlXNvI9wIamU%2BzIlFX3fnlLAp%2BGMTpBmmBFDwmCJyku1Kb%2BjRCgw%2F0ucyCMEcd3ZxuB1k0MaL3qFo7t80C8gLqdnoMMQBTf4NG8qfBRtApAQyKf43F519f7BDXEH0gOECOuqTyuCIdrKQHNerFtkrN3R7d3MGUBcO1nUFD%2BDMN%2FcoOmUwyuQg4D%2Behv7TF3nJs667g5rDpDyXIUSBnibbWyBUAn9ZJElLuidJXV3uNYig0i3iIVTVdJ%2FFHnK%2Fi3LUpjjSFwK--Rk2vJQjzDOSeNXjA--G7hprfi6APKOa0Q%2Fs8Mp%2FA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"2ab6ae9dd7e70da1a37457dee32fe3e3\""
+								},
+								{
+									"key": "x-request-id",
+									"value": "6e792219-c435-4a7a-bafc-c6ea19172124"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.383222"
+								},
+								{
+									"key": "server-timing",
+									"value": "sql.active_record;dur=61.65, instantiation.active_record;dur=84.17, start_processing.action_controller;dur=0.01, cache_read.active_support;dur=0.28, cache_generate.active_support;dur=0.03, cache_write.active_support;dur=0.18, cache_fetch_hit.active_support;dur=0.01, render.active_model_serializers;dur=0.26, process_action.action_controller;dur=63.62"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "510"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": {\n        \"success\": true,\n        \"message\": \"Financial overview retrieved successfully\"\n    },\n    \"data\": {\n        \"currency\": {\n            \"code\": \"USD\",\n            \"symbol\": \"$\",\n            \"name\": \"US Dollar\"\n        },\n        \"total_assets\": {\n            \"amount\": 0,\n            \"formatted\": \"$0.00\",\n            \"currency_code\": \"USD\",\n            \"currency_symbol\": \"$\",\n            \"currency_name\": \"US Dollar\"\n        },\n        \"total_debts\": {\n            \"amount\": 0,\n            \"formatted\": \"$0.00\",\n            \"currency_code\": \"USD\",\n            \"currency_symbol\": \"$\",\n            \"currency_name\": \"US Dollar\"\n        },\n        \"net_worth\": {\n            \"amount\": 0,\n            \"formatted\": \"$0.00\",\n            \"currency_code\": \"USD\",\n            \"currency_symbol\": \"$\",\n            \"currency_name\": \"US Dollar\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Monthly Summary",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/dashboard/monthly_summary?month=8&year=2025",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"dashboard",
+								"monthly_summary"
+							],
+							"query": [
+								{
+									"key": "month",
+									"value": "8",
+									"description": "Month (1-12)"
+								},
+								{
+									"key": "year",
+									"value": "2025",
+									"description": "Year"
+								}
+							]
+						},
+						"description": "Get monthly financial summary including starting balance, ending balance, income, and expenses"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/dashboard/monthly_summary?month=8&year=2025",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"dashboard",
+										"monthly_summary"
+									],
+									"query": [
+										{
+											"key": "month",
+											"value": "8",
+											"description": "Month (1-12)"
+										},
+										{
+											"key": "year",
+											"value": "2025",
+											"description": "Year"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "date",
+									"value": "Sat, 30 Aug 2025 08:20:01 GMT"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=3600, public"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=Tpp8voJc7WP1tHyh4GrE7khV7WfEqRl9rvj47wubBgw6C5%2Bsq1KXfENBnAtAVFMp%2F5OZUowW8%2Fw5ASQ07c4T9JLPt9AZWkZMvXdlOsUSC69ykxOAUH%2B2SkM2eg5UV%2FWxGw14ovAuzGGO28c1sQhBcT3jiysiQOLc6Kx7uUc0%2BU3yzjgE7CnyodsUYxyI3pCitxDb8PYWmYUqEa%2BRa%2FtDkzE0IIiwuU3Cnj45dzvmtMChUQTDdm8SbY4d%2Bz1gFjk12KMxSih9IIrKi5jPjrr0drZ1YfMo9oxenMTPF9LcX5A%3D--9uEAKKDmgnbOtC0D--afEz93I30GiKQgHeOhEZEQ%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=Tpp8voJc7WP1tHyh4GrE7khV7WfEqRl9rvj47wubBgw6C5%2Bsq1KXfENBnAtAVFMp%2F5OZUowW8%2Fw5ASQ07c4T9JLPt9AZWkZMvXdlOsUSC69ykxOAUH%2B2SkM2eg5UV%2FWxGw14ovAuzGGO28c1sQhBcT3jiysiQOLc6Kx7uUc0%2BU3yzjgE7CnyodsUYxyI3pCitxDb8PYWmYUqEa%2BRa%2FtDkzE0IIiwuU3Cnj45dzvmtMChUQTDdm8SbY4d%2Bz1gFjk12KMxSih9IIrKi5jPjrr0drZ1YfMo9oxenMTPF9LcX5A%3D--9uEAKKDmgnbOtC0D--afEz93I30GiKQgHeOhEZEQ%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=%2BnrcydHai%2FUN7PYLrF0ZclBrYYefZfo%2F0UHmlkcCuSMQRw%2BsiFqKOj7wZGk1M%2BQGQV8CFYtsBP7FopFQVKv41IANIYl3QuXgaqOyQmca4Wal8wChmJ1v5NlkOGj5OsUXuo8owkVMytto%2BdfnKetXbCmfXr0WaEvIu1luhj2S4tJboXc69B8v0gj0%2FgMRzcUlAMn8asFfowuptxqnt1jexJU%2BcjLInOKr61WucJCof87pTBpKLA1ieYToFh2kjkWcASlfWpp4QDnVvse4EewnZtEQevMe7Oo%2F8BgRJD%2Bfc2iXXgYj--%2BQptDQpO15C7f0GV--9roPI2DHhM4XR%2Bno4DAntw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"56a185577c7c18c57d63a2a625014ce5\""
+								},
+								{
+									"key": "x-request-id",
+									"value": "7ac1d02b-902c-429c-9723-0410b64076fd"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.306428"
+								},
+								{
+									"key": "server-timing",
+									"value": "sql.active_record;dur=33.88, instantiation.active_record;dur=87.25, start_processing.action_controller;dur=0.01, cache_read.active_support;dur=0.40, cache_generate.active_support;dur=0.03, cache_write.active_support;dur=0.15, cache_fetch_hit.active_support;dur=0.02, render.active_model_serializers;dur=0.18, process_action.action_controller;dur=54.69"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "783"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": {\n        \"success\": true,\n        \"message\": \"Monthly summary retrieved successfully\"\n    },\n    \"data\": {\n        \"currency\": {\n            \"code\": \"USD\",\n            \"symbol\": \"$\",\n            \"name\": \"US Dollar\"\n        },\n        \"month\": 8,\n        \"year\": 2025,\n        \"starting_balance\": {\n            \"amount\": 0,\n            \"formatted\": \"$0.00\",\n            \"currency_code\": \"USD\",\n            \"currency_symbol\": \"$\",\n            \"currency_name\": \"US Dollar\"\n        },\n        \"ending_balance\": {\n            \"amount\": 0,\n            \"formatted\": \"$0.00\",\n            \"currency_code\": \"USD\",\n            \"currency_symbol\": \"$\",\n            \"currency_name\": \"US Dollar\"\n        },\n        \"total_income\": {\n            \"amount\": 0,\n            \"formatted\": \"$0.00\",\n            \"currency_code\": \"USD\",\n            \"currency_symbol\": \"$\",\n            \"currency_name\": \"US Dollar\"\n        },\n        \"total_expenses\": {\n            \"amount\": 0,\n            \"formatted\": \"$0.00\",\n            \"currency_code\": \"USD\",\n            \"currency_symbol\": \"$\",\n            \"currency_name\": \"US Dollar\"\n        },\n        \"net_change\": {\n            \"amount\": 0,\n            \"formatted\": \"$0.00\",\n            \"currency_code\": \"USD\",\n            \"currency_symbol\": \"$\",\n            \"currency_name\": \"US Dollar\"\n        }\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Currencies",
+			"item": [
+				{
+					"name": "Get Currencies",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/currencies",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"currencies"
+							]
+						},
+						"description": "Get supported currencies and exchange rates"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/currencies",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"currencies"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=64TO2XIf9guL9J90XiNisPzYFChH%2BxYF2EIPdpfR5MUi75V5RkCEIzcdSa8LQRYqHE8cCQPRXysbMKxojPgTEOKf0Cf5EUHvwTUlBkLyxE%2Ba5Pt6c6ngP6ZqqYb65M%2BpJcEHcmrA8xTcD6nfBMAg%2BWUtNZZHhFb7EHBuNJoyQxgs7qhc6MLI%2BkU2Gw1YDTHKTE8L7A9gRVa7qEf7W7ixpVp8RMgen7MYduh57SA2q1ZKg%2FzqPfXGqc0XSbGH06%2BRopYBNxYirT9WWBZdJW2jC63FTzXBXBslxGrMFrk54eA%3D--SalJ1uobvFe0ZQIw--jUMhe0CTAVUThQX91VQHTA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=64TO2XIf9guL9J90XiNisPzYFChH%2BxYF2EIPdpfR5MUi75V5RkCEIzcdSa8LQRYqHE8cCQPRXysbMKxojPgTEOKf0Cf5EUHvwTUlBkLyxE%2Ba5Pt6c6ngP6ZqqYb65M%2BpJcEHcmrA8xTcD6nfBMAg%2BWUtNZZHhFb7EHBuNJoyQxgs7qhc6MLI%2BkU2Gw1YDTHKTE8L7A9gRVa7qEf7W7ixpVp8RMgen7MYduh57SA2q1ZKg%2FzqPfXGqc0XSbGH06%2BRopYBNxYirT9WWBZdJW2jC63FTzXBXBslxGrMFrk54eA%3D--SalJ1uobvFe0ZQIw--jUMhe0CTAVUThQX91VQHTA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=%2FysEEBM3AYoiKW3BdYqLkhmJDxYteXFpr6qWu0bXdIQIMvBtoDqEHMGggVD6n86WwPONr3z%2BEM8A8K4vvjrC9a1kxvAS0W9SD%2BPQlDtCrQ7%2BFNoW0stWn8CM%2B%2B%2BRYVOh8Kf99Onlf%2BFVUZ%2F3WQveSxwZt4X7hKodTbrBW6bHIBECVwjXTTLgQdfEbWNtjW365f1vw0%2FP%2Bzv9lVLjkiGD7MnyWr89a0cNiEZD4kESSewONwh9v4X7E0zxsYyt9jmIPRZXPpOZWpPSqjHyYbsUUNZY5X38r3dWb5gQRWAqWSUUYxZ%2F--6xj8XUAQnCMPj%2FLJ--frSAalb%2BJPq1ePCde3UJzw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"fc1f0f89c4c344da5fbb419b674d529c\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "b6dafed6-26ae-4e48-9103-831ed2df9baa"
+								},
+								{
+									"key": "x-runtime",
+									"value": "13.161475"
+								},
+								{
+									"key": "server-timing",
+									"value": "sql.active_record;dur=1.03, instantiation.active_record;dur=0.22, start_processing.action_controller;dur=0.01, cache_read.active_support;dur=0.39, cache_fetch_hit.active_support;dur=0.01, cache_generate.active_support;dur=13121.58, cache_write.active_support;dur=1.01, render.active_model_serializers;dur=0.34, process_action.action_controller;dur=13128.79"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1717"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": {\n        \"success\": true,\n        \"message\": \"Currencies retrieved successfully\"\n    },\n    \"data\": {\n        \"supported_currencies\": {\n            \"USD\": {\n                \"name\": \"US Dollar\",\n                \"symbol\": \"$\",\n                \"code\": \"USD\"\n            },\n            \"EUR\": {\n                \"name\": \"Euro\",\n                \"symbol\": \"€\",\n                \"code\": \"EUR\"\n            },\n            \"GBP\": {\n                \"name\": \"British Pound\",\n                \"symbol\": \"£\",\n                \"code\": \"GBP\"\n            },\n            \"JPY\": {\n                \"name\": \"Japanese Yen\",\n                \"symbol\": \"¥\",\n                \"code\": \"JPY\"\n            },\n            \"CAD\": {\n                \"name\": \"Canadian Dollar\",\n                \"symbol\": \"C$\",\n                \"code\": \"CAD\"\n            },\n            \"AUD\": {\n                \"name\": \"Australian Dollar\",\n                \"symbol\": \"A$\",\n                \"code\": \"AUD\"\n            },\n            \"CHF\": {\n                \"name\": \"Swiss Franc\",\n                \"symbol\": \"CHF\",\n                \"code\": \"CHF\"\n            },\n            \"CNY\": {\n                \"name\": \"Chinese Yuan\",\n                \"symbol\": \"¥\",\n                \"code\": \"CNY\"\n            },\n            \"KES\": {\n                \"name\": \"Kenyan Shilling\",\n                \"symbol\": \"KSh\",\n                \"code\": \"KES\"\n            },\n            \"NGN\": {\n                \"name\": \"Nigerian Naira\",\n                \"symbol\": \"₦\",\n                \"code\": \"NGN\"\n            },\n            \"ZAR\": {\n                \"name\": \"South African Rand\",\n                \"symbol\": \"R\",\n                \"code\": \"ZAR\"\n            },\n            \"UGX\": {\n                \"name\": \"Ugandan Shilling\",\n                \"symbol\": \"USh\",\n                \"code\": \"UGX\"\n            },\n            \"TZS\": {\n                \"name\": \"Tanzanian Shilling\",\n                \"symbol\": \"TSh\",\n                \"code\": \"TZS\"\n            },\n            \"RWF\": {\n                \"name\": \"Rwandan Franc\",\n                \"symbol\": \"RF\",\n                \"code\": \"RWF\"\n            },\n            \"ETB\": {\n                \"name\": \"Ethiopian Birr\",\n                \"symbol\": \"Br\",\n                \"code\": \"ETB\"\n            },\n            \"GHS\": {\n                \"name\": \"Ghanaian Cedi\",\n                \"symbol\": \"₵\",\n                \"code\": \"GHS\"\n            }\n        },\n        \"user_currency\": \"USD\",\n        \"exchange_rates\": [\n            {\n                \"from\": \"USD\",\n                \"to\": \"USD\",\n                \"rate\": 1\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"EUR\",\n                \"rate\": 0.856\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"GBP\",\n                \"rate\": 0.741\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"JPY\",\n                \"rate\": 147.04\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"CAD\",\n                \"rate\": 1.37\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"AUD\",\n                \"rate\": 1.53\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"CHF\",\n                \"rate\": 0.801\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"CNY\",\n                \"rate\": 7.13\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"KES\",\n                \"rate\": 129.08\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"NGN\",\n                \"rate\": 1531.69\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"ZAR\",\n                \"rate\": 17.67\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"UGX\",\n                \"rate\": 3522.78\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"TZS\",\n                \"rate\": 2491.52\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"RWF\",\n                \"rate\": 1448.79\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"ETB\",\n                \"rate\": 140.79\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"GHS\",\n                \"rate\": 11.66\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Currency Preference",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"preferred_currency\": \"USh\"\n        // \"timezone\": \"UTC+3\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/currencies/preference",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"currencies",
+								"preference"
+							]
+						},
+						"description": "Update user's preferred currency for displaying financial data"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"user\": {\n        \"preferred_currency\": \"RWF\"\n        // \"timezone\": \"UTC+3\"\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/currencies/preference",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"currencies",
+										"preference"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=KJTCF0%2B%2FjJe5%2BlIxync1jIVDFxB65UULD%2Baacll%2BZcSjgXJFapKQvZ0VzO08bVJ1vu%2BtCb56msh7xr7K7ubB8EjPjyyh%2B%2BO%2BKYsapEbHUN%2B%2FPsdadU%2FpombMY6TPZmln8ps5X4sICTYK%2B%2B%2FM6zepLODLeNFVbh%2FubNoIIspI7yQvePgC%2FBBzJYLmcoUhLZeCb2Nqe%2FmvC6Fwi5TQ0K8aWwQDurrgR9ZfNl0ahyzasSLIfFnItarT6R1Dx2hmqEPzXAhNE5A9s1acmOxGvGcvmylURNGLh%2BYrR2iTchxNCsk%3D--gcvVrjcvKbRJxrop--%2FXEzSmjYvU8f5qHhovgIOA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=KJTCF0%2B%2FjJe5%2BlIxync1jIVDFxB65UULD%2Baacll%2BZcSjgXJFapKQvZ0VzO08bVJ1vu%2BtCb56msh7xr7K7ubB8EjPjyyh%2B%2BO%2BKYsapEbHUN%2B%2FPsdadU%2FpombMY6TPZmln8ps5X4sICTYK%2B%2B%2FM6zepLODLeNFVbh%2FubNoIIspI7yQvePgC%2FBBzJYLmcoUhLZeCb2Nqe%2FmvC6Fwi5TQ0K8aWwQDurrgR9ZfNl0ahyzasSLIfFnItarT6R1Dx2hmqEPzXAhNE5A9s1acmOxGvGcvmylURNGLh%2BYrR2iTchxNCsk%3D--gcvVrjcvKbRJxrop--%2FXEzSmjYvU8f5qHhovgIOA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=jrDD7QVtraYVSt0sfCFkUJ0GOYQlmPSLSQzBEvrfemN3tXiJEevjmg9Rrw1j8VmwdsbxyfUJjBQ6miJf%2BussgKqnBRMUB65bPHcUBYRCyVA17byFSsAL1eQktoCC%2FnwUpYGwQGRJ2uYZYXOLzMLWZ1H4yss2BiylBw2wk%2F3X802FuIqXoKcRa6a%2FaNmU2QDSQCtAeClelwwh%2Blvy6GJjMcHjgXHIR5AJjJS5%2BTchI7ezrZRv%2BjtOS6OHUbCndsIyRdHfsoGlMcysJxYLeAmS0ptKIO6V9EQrGc6frE4XQMNdrjNp--s2YEFy%2FXSiblO81z--BDdkbIbr1BL2an0BhpOTDQ%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"15c0b620095eef4cc54beff1cac793f4\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "68a4b571-3983-4193-8812-d75e231e85a7"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.404092"
+								},
+								{
+									"key": "server-timing",
+									"value": "sql.active_record;dur=37.98, instantiation.active_record;dur=19.32, start_processing.action_controller;dur=0.01, cache_read.active_support;dur=0.14, cache_generate.active_support;dur=0.03, cache_write.active_support;dur=0.15, transaction.active_record;dur=12.64, cache_fetch_hit.active_support;dur=0.00, render.active_model_serializers;dur=0.14, process_action.action_controller;dur=27.74"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "184"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": {\n        \"success\": true,\n        \"message\": \"Currency preference updated successfully\"\n    },\n    \"data\": {\n        \"preferred_currency\": \"RWF\",\n        \"currency_info\": {\n            \"name\": \"Rwandan Franc\",\n            \"symbol\": \"RF\",\n            \"code\": \"RWF\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Exchange Rates",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/currencies/exchange_rates?from=USD&to=EUR,GBP,JPY",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"currencies",
+								"exchange_rates"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "USD",
+									"description": "Base currency code"
+								},
+								{
+									"key": "to",
+									"value": "EUR,GBP,JPY",
+									"description": "Comma-separated list of target currency codes"
+								}
+							]
+						},
+						"description": "Get current exchange rates from base currency to target currencies"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/currencies/exchange_rates?from=USD&to=EUR,GBP,JPY",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"currencies",
+										"exchange_rates"
+									],
+									"query": [
+										{
+											"key": "from",
+											"value": "USD",
+											"description": "Base currency code"
+										},
+										{
+											"key": "to",
+											"value": "EUR,GBP,JPY",
+											"description": "Comma-separated list of target currency codes"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=8pPdMQnVRx573AhMHRlW%2BoejHxVMzPDfbiqhQRgyhMTxksQym1FoM%2F9BV5vbnnkYBazVgu5vfLyobx0MrqbjLsbLppHfJUBUDe3G6%2FfCsLEzoHx4g0FKuW%2ByTPV%2Bwqo2rv646Ph6C2P4KMZLhvSb5cae2V5hfMiE7wBQAWV%2Fn2jmvhzqNxd87bUnBqIxc4Wo3XzQum9UP5Vk1NsL4M96i8r7B1qA4Iauk8GYDI%2FUcuvpLfrMhO%2BsSt%2FP9UE6XEV%2FFyAfDGBhAydJpoCKJbCOI%2Fg6JNK1%2F9eboWYrnSl2uHY%3D--cexNqUjoGB8NVDD4--yntZXWXWCnkyrAiGdJt2Og%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=8pPdMQnVRx573AhMHRlW%2BoejHxVMzPDfbiqhQRgyhMTxksQym1FoM%2F9BV5vbnnkYBazVgu5vfLyobx0MrqbjLsbLppHfJUBUDe3G6%2FfCsLEzoHx4g0FKuW%2ByTPV%2Bwqo2rv646Ph6C2P4KMZLhvSb5cae2V5hfMiE7wBQAWV%2Fn2jmvhzqNxd87bUnBqIxc4Wo3XzQum9UP5Vk1NsL4M96i8r7B1qA4Iauk8GYDI%2FUcuvpLfrMhO%2BsSt%2FP9UE6XEV%2FFyAfDGBhAydJpoCKJbCOI%2Fg6JNK1%2F9eboWYrnSl2uHY%3D--cexNqUjoGB8NVDD4--yntZXWXWCnkyrAiGdJt2Og%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=oWnC%2B3DcRd0qmUydTrnMdWBN2usL9ONvP%2FsToz%2B0h9fx5CV%2BH06rH5GT5y0kCkUOgfYxRx6HNUADTL1vS68xG8MsROSADK1zEaTywl77xJbX6lTub6KLHngjRRHN3Vtu4%2BgOIebCt5xBLoVO9FEKkspo9radA5yqpEdNqFnH8t6cICKNR%2BQpT0mkfSj8upRlaScBXmN68btvfkLifLxP0xzSYCnNcyPm3ipInaN2BBHttII3ksU6oQGMko3REpUY0jNRSCexclLi3WnYNRe8VlbvT43ZgXq09nzAUhC8SH6u2p7o--FWVO5Gq9czmI7aq6--Etc7kQai%2Fv%2FLLTN6xkPvbg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"abad13bc08bf1d8c350f5558eb416c2f\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "3b680c95-2c91-4928-bb9a-ab91943fef46"
+								},
+								{
+									"key": "x-runtime",
+									"value": "2.592769"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=0.28, instantiation.active_record;dur=0.06, cache_read.active_support;dur=0.05, cache_generate.active_support;dur=2540.70, cache_write.active_support;dur=0.37, render.active_model_serializers;dur=0.10, process_action.action_controller;dur=2547.57"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "344"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": {\n        \"success\": true,\n        \"message\": \"Exchange rates retrieved successfully\"\n    },\n    \"data\": {\n        \"base_currency\": \"USD\",\n        \"rates\": [\n            {\n                \"from\": \"USD\",\n                \"to\": \"EUR\",\n                \"rate\": 0.856,\n                \"updated_at\": \"2025-08-30T08:38:12Z\"\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"GBP\",\n                \"rate\": 0.741,\n                \"updated_at\": \"2025-08-30T08:38:12Z\"\n            },\n            {\n                \"from\": \"USD\",\n                \"to\": \"JPY\",\n                \"rate\": 147.04,\n                \"updated_at\": \"2025-08-30T08:38:13Z\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Budgets",
+			"item": [
+				{
+					"name": "List Budgets",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/budgets?page=1&per_page=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"budgets"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number for pagination"
+								},
+								{
+									"key": "per_page",
+									"value": "20",
+									"description": "Number of items per page (max 100)"
+								}
+							]
+						},
+						"description": "List all budgets with pagination and calculated fields"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/budgets?page=1&per_page=20",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"budgets"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "Page number for pagination"
+										},
+										{
+											"key": "per_page",
+											"value": "20",
+											"description": "Number of items per page (max 100)"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=m2z%2FvWq%2BsBLorLGh6LDCa%2BIQIOkHyJaj1XmZrMs9%2BOs729f0CeayfjF5hGVd8oGE4uVncOEyJZioxiDXDh1XFHTIPSSF1jnlBpbCjq9QOepdjWnIEVaY%2BVcUD2L2Kbd1MLOqRCYwuHFK37LlJWYdD53wN2jFHIiCerSUpLSMpbiXUT4u%2Fm5pa3Jasv1Bbnx490rjNnhD7wswlwQKBt1Q6u5NkNpy4Mf1%2BJEgOjVf5vx7NWUjqd%2Fz5v0AEvcDriTrk0qT7Z89NeXatlbiIwdj66vXucGT6qXc5y609hj33ZI%3D--HN07LqI3%2F7nSZ9YM--KjGJF815PT8Vn8AYIJ2GBA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=m2z%2FvWq%2BsBLorLGh6LDCa%2BIQIOkHyJaj1XmZrMs9%2BOs729f0CeayfjF5hGVd8oGE4uVncOEyJZioxiDXDh1XFHTIPSSF1jnlBpbCjq9QOepdjWnIEVaY%2BVcUD2L2Kbd1MLOqRCYwuHFK37LlJWYdD53wN2jFHIiCerSUpLSMpbiXUT4u%2Fm5pa3Jasv1Bbnx490rjNnhD7wswlwQKBt1Q6u5NkNpy4Mf1%2BJEgOjVf5vx7NWUjqd%2Fz5v0AEvcDriTrk0qT7Z89NeXatlbiIwdj66vXucGT6qXc5y609hj33ZI%3D--HN07LqI3%2F7nSZ9YM--KjGJF815PT8Vn8AYIJ2GBA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=1%2F0w7d3eEjidLgY4obVQMhlrK2nc9B6%2FBHVhG2OO6KK6O3EDhvHLMCfR8BtjryoEVHTgjNp76hY1luIlEgI0gdxGECD71Qwp1%2BpQ4FB2%2FIZBdYyVtSGB%2FWx393N9hoflrA8EXkKMh3XkbgMyjdlOi16Owk5IL6EIT6F53pvA%2BTl3%2B7c4G1RRV0gFNGu2LhCGuNx%2BH%2B%2BKjA7hKmGB1MZebq9113KsU4dQ%2BFMhe5zOn5AAyei2JLze9AoiMeQwRQkZ4NwLHm17c9c3sl%2BRYSPjXsB3PYj4n0z1O1YYwQQuFPbQpYk8--SNSNuYzK5tllXNN5--HVlkdf3MTwnPY2oPH69kIw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"84c240b07e940db47e0234157667c5d9\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "9669bd66-f8b8-45b3-9e00-f6e1b970ed8d"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.371151"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.05, sql.active_record;dur=18.99, instantiation.active_record;dur=28.18, render.active_model_serializers;dur=0.29, process_action.action_controller;dur=250.96"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "501"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 1,\n            \"category\": {\n                \"id\": 3,\n                \"name\": \"Water\",\n                \"icon\": \"fas fa-water\",\n                \"color\": \"#45B7D1\",\n                \"transaction_type\": \"expense\"\n            },\n            \"limit\": {\n                \"cents\": 50000,\n                \"currency_iso\": \"USD\"\n            },\n            \"spent\": {\n                \"cents\": 0,\n                \"currency_iso\": \"USD\"\n            },\n            \"start_date\": \"2025-08-01T00:00:00.000Z\",\n            \"end_date\": \"2025-08-31T00:00:00.000Z\",\n            \"period\": \"monthly\",\n            \"percentage_used\": 0,\n            \"remaining_amount\": {\n                \"cents\": 50000,\n                \"currency_iso\": \"USD\"\n            },\n            \"over_budget\": false,\n            \"days_remaining\": 1\n        }\n    ],\n    \"pagination\": {\n        \"current_page\": 1,\n        \"total_pages\": 1,\n        \"total_count\": 1,\n        \"per_page\": 20\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Budget",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"budget\": {\n        \"category_id\": 3,\n        \"limit\": 500.00,\n        \"start_date\": \"2025-08-01T00:00:00.000Z\",\n        \"end_date\": \"2025-08-31T00:00:00.000Z\",\n        \"period\": \"monthly\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/budgets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"budgets"
+							]
+						},
+						"description": "Create a new budget with automatic calculation of derived fields"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"budget\": {\n        \"category_id\": 3,\n        \"limit\": 500.00,\n        \"start_date\": \"2025-08-01T00:00:00.000Z\",\n        \"end_date\": \"2025-08-31T00:00:00.000Z\",\n        \"period\": \"monthly\"\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/budgets",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"budgets"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=g5BtiusgkD1FexDr5pQaWN57nPmzMpQlyZUTflR8DuOJcFBJJmSm%2BLsiouL9spoTOks8AEctysj1d1QcwskfmkUOLVXjRVZ68qTH6xCyuF%2Fb34sD89CdMoHK8nm8NIvRx0dUlzjwZDnNzDEi9ucdis9AXhE2MvnDaAx5YPJ8Eoep7BFOcAI%2Fm189lypWUBkzmS4VyDXIlkSXAvK3wlesydG%2BhosfrJnO8fG%2FI0uQi2JVgETkBrar9kvf1DmuNKCi%2BZUYdcZcoyFd1SAEU0EqXIYBbc%2Fzw7FaDE%2F6FctIwzQ%3D--bp8rboVKOkLyzlg9--gJaW95eZzQp2T3mCLa%2Fetg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=g5BtiusgkD1FexDr5pQaWN57nPmzMpQlyZUTflR8DuOJcFBJJmSm%2BLsiouL9spoTOks8AEctysj1d1QcwskfmkUOLVXjRVZ68qTH6xCyuF%2Fb34sD89CdMoHK8nm8NIvRx0dUlzjwZDnNzDEi9ucdis9AXhE2MvnDaAx5YPJ8Eoep7BFOcAI%2Fm189lypWUBkzmS4VyDXIlkSXAvK3wlesydG%2BhosfrJnO8fG%2FI0uQi2JVgETkBrar9kvf1DmuNKCi%2BZUYdcZcoyFd1SAEU0EqXIYBbc%2Fzw7FaDE%2F6FctIwzQ%3D--bp8rboVKOkLyzlg9--gJaW95eZzQp2T3mCLa%2Fetg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=%2BYMbPwoBIl2wEGL6fmp%2Fy2NqVvZdlEliJZAe8dDp2mpNg5%2FTrT8q0IlF2aWwYBhSO8VCnB9YKrln%2B71bX8uqDBHv4p5uFphJozbU55DmxsPHQSUpKhjacIbLpV5DgrogRdd1pvfmVV%2BNlEKhxRX6NohKZT8POLgTjtjDKUetRM5aWvr%2BXiglMkk3y8U99TT6kjyeTUfd8TjYtwU33AmO0pMyUD0PVShb7mEbyVq3376ZIh2lM2uM5tt8euNupxNil6lYLIVk3Tk7BCIVLN2FJfOsBLNrxrUaZpwOBZnsiRxliopO--kM85iQffX00c9g7K--REEI83kXuflWWXVSFhTmNw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"c5d3e86d493bdf50f46a46002d1342b8\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "a2d46926-c1eb-4ee6-8003-ffa620f67f79"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.088797"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=12.98, instantiation.active_record;dur=0.14, transaction.active_record;dur=23.95, render.active_model_serializers;dur=0.23, process_action.action_controller;dur=73.24"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "421"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"id\": 1,\n        \"category\": {\n            \"id\": 3,\n            \"name\": \"Water\",\n            \"icon\": \"fas fa-water\",\n            \"color\": \"#45B7D1\",\n            \"transaction_type\": \"expense\"\n        },\n        \"limit\": {\n            \"cents\": 50000,\n            \"currency_iso\": \"USD\"\n        },\n        \"spent\": {\n            \"cents\": 0,\n            \"currency_iso\": \"USD\"\n        },\n        \"start_date\": \"2025-08-01T00:00:00.000Z\",\n        \"end_date\": \"2025-08-31T00:00:00.000Z\",\n        \"period\": \"monthly\",\n        \"percentage_used\": 0,\n        \"remaining_amount\": {\n            \"cents\": 50000,\n            \"currency_iso\": \"USD\"\n        },\n        \"over_budget\": false,\n        \"days_remaining\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Budget",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/budgets/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"budgets",
+								"1"
+							]
+						},
+						"description": "Get a specific budget with calculated fields and complete category details"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/budgets/{{budget_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"budgets",
+										"{{budget_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=zxgxgBZ03hv3psvNfDsyEmlSaQYof0QxmOIZhBG49Da9l5ee5IwllwGn7IfBZfmrhU2PIiz2tFlx5fqcAW72JKLoheb6KhgQbmOav47VrxPIe7pelrqX0E6L3Rc2T5nrytLmt1StP2wRuRcClIzSYsru%2FO2YAyKzxZGtC4BE8NG4aqM56%2BTK0BJkZ2ScRNvoet59J%2Fb1eaScvKS3h68fgnt6dI%2BwGFp7ZEjnSyQjGZQD3jKoDm77NOoP4ny27Pgp4vk4PV%2FcpaPxYkY2Qrdlnr9a%2FjtREH0nalg3skJKXPM%3D--COkWyn3czbfvXneZ--bE2I%2BCC9nM8NjPdOOVOy2Q%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=zxgxgBZ03hv3psvNfDsyEmlSaQYof0QxmOIZhBG49Da9l5ee5IwllwGn7IfBZfmrhU2PIiz2tFlx5fqcAW72JKLoheb6KhgQbmOav47VrxPIe7pelrqX0E6L3Rc2T5nrytLmt1StP2wRuRcClIzSYsru%2FO2YAyKzxZGtC4BE8NG4aqM56%2BTK0BJkZ2ScRNvoet59J%2Fb1eaScvKS3h68fgnt6dI%2BwGFp7ZEjnSyQjGZQD3jKoDm77NOoP4ny27Pgp4vk4PV%2FcpaPxYkY2Qrdlnr9a%2FjtREH0nalg3skJKXPM%3D--COkWyn3czbfvXneZ--bE2I%2BCC9nM8NjPdOOVOy2Q%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=yuxaiDwmDtZcW%2BRFNDWHgTnIteDEEVUj1qHxpHursCybZHlChROl4F%2Bfb1KWe1FRoYGT%2Fa7g6UqVXJImdh8RlcWTcU5xSlnpefplTg2MT1sDQ5otqgVeRg%2F2oZK%2FA%2BInLyarSI%2FiQmm4EMWmqNx6O1%2FERkcfFW2d%2B0J31OeDOKsDdaMEmklJDzPciEuy8Ja%2FEPX7ikutyjFQAvuUad%2FWKEbrqUJidIip3tBzlFKJlIOk7U6FLjF3NbU6e0gbifMJXeAOdQmGZyW1aygz4JW44DTNtw6KTK4PjWC89wa7h1JSz%2Fb3--svugKjVCIvQv9bam--IbtsniPPg5yItSmbb%2BzbSg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"c5d3e86d493bdf50f46a46002d1342b8\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "d2a94a45-36d3-4532-a495-93ca4ebe8fff"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.094977"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=1.08, instantiation.active_record;dur=0.28, render.active_model_serializers;dur=0.18, process_action.action_controller;dur=13.81"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "421"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"id\": 1,\n        \"category\": {\n            \"id\": 3,\n            \"name\": \"Water\",\n            \"icon\": \"fas fa-water\",\n            \"color\": \"#45B7D1\",\n            \"transaction_type\": \"expense\"\n        },\n        \"limit\": {\n            \"cents\": 50000,\n            \"currency_iso\": \"USD\"\n        },\n        \"spent\": {\n            \"cents\": 0,\n            \"currency_iso\": \"USD\"\n        },\n        \"start_date\": \"2025-08-01T00:00:00.000Z\",\n        \"end_date\": \"2025-08-31T00:00:00.000Z\",\n        \"period\": \"monthly\",\n        \"percentage_used\": 0,\n        \"remaining_amount\": {\n            \"cents\": 50000,\n            \"currency_iso\": \"USD\"\n        },\n        \"over_budget\": false,\n        \"days_remaining\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Budget",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"budget\": {\n        \"category_id\": 3,\n        \"limit\": 600.00,\n        \"start_date\": \"2025-08-01T00:00:00.000Z\",\n        \"end_date\": \"2025-08-31T00:00:00.000Z\",\n        \"period\": \"monthly\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/budgets/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"budgets",
+								"1"
+							]
+						},
+						"description": "Update an existing budget and recalculate derived fields"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"budget\": {\n        \"category_id\": 3,\n        \"limit\": 600.00,\n        \"start_date\": \"2025-08-01T00:00:00.000Z\",\n        \"end_date\": \"2025-08-31T00:00:00.000Z\",\n        \"period\": \"monthly\"\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/budgets/{{budget_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"budgets",
+										"{{budget_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=%2BdXqGe%2Bfelw2SUObrrSRdPFlP0HilwWJj3nnUoIhAg8tkHILfONpGgbSH955Aj6%2Fvm8zZXCO6sUQtkV%2FfW8TLm3FikxTfjWZYlyw5PF5nGAbNgn%2B8fjtT7e%2BjrIPhtygeQTWHUXixQvoacVzHTNUGZv7QGqFUtnD%2Fye%2F%2FJGOpIBHqjHEp5xC115vV4SkIqLy2%2BxJ4rW2sqk857xxyGHoC8U1klYFVWJhmMnbN4a4j0l9HIKhkuW8bPfTR2JDffS93dqzIIBZsGcem%2Fot1wtnvpwapzFuM2vfpQtXLwbaN%2FI%3D--fnhfl3jvuOyzcHiJ--1KXJgiwjDLyYAHdDBexYNw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=%2BdXqGe%2Bfelw2SUObrrSRdPFlP0HilwWJj3nnUoIhAg8tkHILfONpGgbSH955Aj6%2Fvm8zZXCO6sUQtkV%2FfW8TLm3FikxTfjWZYlyw5PF5nGAbNgn%2B8fjtT7e%2BjrIPhtygeQTWHUXixQvoacVzHTNUGZv7QGqFUtnD%2Fye%2F%2FJGOpIBHqjHEp5xC115vV4SkIqLy2%2BxJ4rW2sqk857xxyGHoC8U1klYFVWJhmMnbN4a4j0l9HIKhkuW8bPfTR2JDffS93dqzIIBZsGcem%2Fot1wtnvpwapzFuM2vfpQtXLwbaN%2FI%3D--fnhfl3jvuOyzcHiJ--1KXJgiwjDLyYAHdDBexYNw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=75t0c7kctszGz27pJvCvcmSdVz%2BaqYgRll7rQDUMVHl8Y7tz6rDPR3XsS9cMUUJqnjPk1ia7fXW3Su%2B%2F05rhMv1ra9gy%2Ffl9NDxjBrwiH9U6mGlYbZ%2BlD2WQhCKUJNR2jeZ8ZS%2FaWsFB9zffj2udbDlw0eBFf9oXtcU%2BByYOB51FJi30jbcH0xBbkTwomhqOQ4BPi%2BRI6tFDsD3k4rXGY%2F6mMcco489z8hjDsVKI4JsrzF1biuklhSAwHVE7%2BbwEU1DgxsUxP7tKYQZTgIB6NFSd445QnUCjOUHKcIx4FLOkgSXH--vzeTGRG%2BKkkBu0Hr--Z2v6yyPy9b%2Bsg91Ki0gecA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"e44add70357e641ddd19042ed6687606\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "6354e5fc-a28a-4540-a368-32da2714a124"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.059106"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=14.11, instantiation.active_record;dur=0.35, transaction.active_record;dur=13.31, render.active_model_serializers;dur=0.14, process_action.action_controller;dur=40.66"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "421"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"id\": 1,\n        \"category\": {\n            \"id\": 3,\n            \"name\": \"Water\",\n            \"icon\": \"fas fa-water\",\n            \"color\": \"#45B7D1\",\n            \"transaction_type\": \"expense\"\n        },\n        \"limit\": {\n            \"cents\": 60000,\n            \"currency_iso\": \"USD\"\n        },\n        \"spent\": {\n            \"cents\": 0,\n            \"currency_iso\": \"USD\"\n        },\n        \"start_date\": \"2025-08-01T00:00:00.000Z\",\n        \"end_date\": \"2025-08-31T00:00:00.000Z\",\n        \"period\": \"monthly\",\n        \"percentage_used\": 0,\n        \"remaining_amount\": {\n            \"cents\": 60000,\n            \"currency_iso\": \"USD\"\n        },\n        \"over_budget\": false,\n        \"days_remaining\": 1\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Budget",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/budgets/{{budget_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"budgets",
+								"{{budget_id}}"
+							]
+						},
+						"description": "Permanently delete a budget"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "List Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categories"
+							]
+						},
+						"description": "List all categories"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/categories",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"categories"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=FKrVrtlaOT2%2FK7YhYlzq3j9azZztHixty45FvK1TjVpRmSid5YQJ8L7OQkkFJ014Bx0q7mFoQz2H8VQB3f5r3wxFbpiMiW9zhJpUOOdv6x1oUYEazbvMWf6e0c3VZxC%2FrXv0kXxziuPig8ibqjYhQQuv809T4W9snTxoMgwQuoq2vz3cx3G3Zj6hOvjCC1uaEkTl30d7vXl76R%2B7R3bWKpgBZXeCJax2eiTatxrfPMhs6kI430nX9jzJSS88IzPNNkuvPrQZKK89SAEZRfwnnoBG6YkArIuUpMAhaxbbWkQ%3D--Ocvvifsal%2Fk%2BqAiQ--MBMqXDsjsGmHkIK1%2B6VV6A%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=FKrVrtlaOT2%2FK7YhYlzq3j9azZztHixty45FvK1TjVpRmSid5YQJ8L7OQkkFJ014Bx0q7mFoQz2H8VQB3f5r3wxFbpiMiW9zhJpUOOdv6x1oUYEazbvMWf6e0c3VZxC%2FrXv0kXxziuPig8ibqjYhQQuv809T4W9snTxoMgwQuoq2vz3cx3G3Zj6hOvjCC1uaEkTl30d7vXl76R%2B7R3bWKpgBZXeCJax2eiTatxrfPMhs6kI430nX9jzJSS88IzPNNkuvPrQZKK89SAEZRfwnnoBG6YkArIuUpMAhaxbbWkQ%3D--Ocvvifsal%2Fk%2BqAiQ--MBMqXDsjsGmHkIK1%2B6VV6A%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=03QHZfk%2Ba82hEaoomWWT8P1%2FMDcuoazm%2BIMur%2B3%2F%2FU%2B4hxHdyXKDrohOHcJe%2FC4Z5Uc%2BA064d9C1s%2BvwFBHwnkYWSNI8oOaDsLLABSg6y8vUc2pFgiecyBmJL473r8rgdKoqR4AdrZS7rEGoipqbwtivayyrvOHZgC3Nih3irC3QcpP1soKcHgQZ5r7RshOGgSLGzSM5yfHAmIQvTJjYUl9umFD%2FfNhNbFPkNR3VI4F9id9Yhv9uuqH8v1e6K6oQ9ymY3vP1Whl4brYwcBplmyfJANGajKhvJcNtKzh5q%2FrqhgBH--qdGynwSKdydYhUAC--KREsP41k%2F5jVWtrgfKZBeg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"feaf936680fdccb160656435d5f82c79\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "cedbfb1a-6542-41f5-90f5-6ffe9c7329d3"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.059153"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=5.11, instantiation.active_record;dur=12.59, cache_read.active_support;dur=0.02, cache_generate.active_support;dur=18.74, cache_write.active_support;dur=0.96, render.active_model_serializers;dur=0.89, process_action.action_controller;dur=38.22"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "692"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"name\": \"Food\",\n        \"icon\": \"fas fa-utensils\",\n        \"color\": \"#FF6B6B\",\n        \"transaction_type\": \"expense\"\n    },\n    {\n        \"id\": 2,\n        \"name\": \"Electricity\",\n        \"icon\": \"fas fa-bolt\",\n        \"color\": \"#4ECDC4\",\n        \"transaction_type\": \"expense\"\n    },\n    {\n        \"id\": 3,\n        \"name\": \"Water\",\n        \"icon\": \"fas fa-water\",\n        \"color\": \"#45B7D1\",\n        \"transaction_type\": \"expense\"\n    },\n    {\n        \"id\": 4,\n        \"name\": \"Fees/Tuition\",\n        \"icon\": \"fas fa-graduation-cap\",\n        \"color\": \"#96CEB4\",\n        \"transaction_type\": \"expense\"\n    },\n    {\n        \"id\": 5,\n        \"name\": \"Personal\",\n        \"icon\": \"fas fa-user\",\n        \"color\": \"#FFEAA7\",\n        \"transaction_type\": \"expense\"\n    },\n    {\n        \"id\": 6,\n        \"name\": \"Income\",\n        \"icon\": \"fas fa-money-bill-wave\",\n        \"color\": \"#98D8C8\",\n        \"transaction_type\": \"income\"\n    },\n    {\n        \"id\": 7,\n        \"name\": \"Other\",\n        \"icon\": \"fas fa-ellipsis-h\",\n        \"color\": \"#DDA0DD\",\n        \"transaction_type\": \"expense\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"category\": {\n        \"name\": \"Food & Dining\",\n        \"icon\": \"restaurant\",\n        \"color\": \"#FF6B6B\",\n        \"transaction_type\": \"expense\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categories"
+							]
+						},
+						"description": "Create a new category"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"category\": {\n        \"name\": \"Food & Dining\",\n        \"icon\": \"restaurant\",\n        \"color\": \"#FF6B6B\",\n        \"transaction_type\": \"expense\"\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/categories",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"categories"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=tv8oHMWhoEvbu%2FLhzzZuuI1S4TGxheEUXKXyBg77nWbzkfQO0KRxvIKOhrx2UCM2yW9oupXD3ylMC4PXv6KELH2ev63W6y%2BPzEax3vLE%2FlbBq5SBHZ2fr1XiXwp7U%2BWvQJb4w%2FKRQU3sqFN3eT0QStDVU9u7KvbXo4iGqogxPePWHo5vUSzeul4zECJ%2BF4m5a3lLEbhQQRCMZwwFK4l6o1lnftfAyO8jkkmtyX8i8UeFywKHk2%2BK%2B4EFbx415oz0m9gR%2Boa3bO9jUIBXv0RVCXcwAu%2BeKVgQK1HPOo9HbvY%3D--Cl9cGOv5C8QGTEk4--f8zgVzQX9fcc4Yx2mMEkcA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=tv8oHMWhoEvbu%2FLhzzZuuI1S4TGxheEUXKXyBg77nWbzkfQO0KRxvIKOhrx2UCM2yW9oupXD3ylMC4PXv6KELH2ev63W6y%2BPzEax3vLE%2FlbBq5SBHZ2fr1XiXwp7U%2BWvQJb4w%2FKRQU3sqFN3eT0QStDVU9u7KvbXo4iGqogxPePWHo5vUSzeul4zECJ%2BF4m5a3lLEbhQQRCMZwwFK4l6o1lnftfAyO8jkkmtyX8i8UeFywKHk2%2BK%2B4EFbx415oz0m9gR%2Boa3bO9jUIBXv0RVCXcwAu%2BeKVgQK1HPOo9HbvY%3D--Cl9cGOv5C8QGTEk4--f8zgVzQX9fcc4Yx2mMEkcA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=lNwjTpElOtA7Dm2JJq0q%2FIPYrccbo8%2BYM9pQ%2BZWz6d%2Fog%2BSRV3a7HJdmY5yXjSSYfitzdkxEyYLJUry2zcQAyf5DvfG6jOPQTfIIiJqMe%2BzETqGEz%2FPOUOZQJ0twJefpzm%2FdjKgKsWk6dUkmOoaQSbV1Nsjy3Zz78r18Wr5ENwb24dz8nluHa2NJxfwbIOIWWzFk7i1FfnviYL851QySEZi16S0OOD8mIAEp%2Br1iVcyjvn5qk67%2BJ9md9psfUhwh3iv3nKrgbwjIdH%2B1HzkdoweHSlfsDfPcE9%2F1HSZvy37%2FeXH0--7Ag1tNmJJK6FEaDA--BPlywVBfjIG2V0NsTFoGdw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"233ac2d51e8640f943e57b025d35d9f8\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "abb34726-2883-42d7-b7fd-e7b8a6538c68"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.041953"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=7.31, instantiation.active_record;dur=0.06, transaction.active_record;dur=7.83, cache_delete.active_support;dur=0.65, render.active_model_serializers;dur=0.88, process_action.action_controller;dur=23.87"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "103"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 8,\n    \"name\": \"Food & Dining\",\n    \"icon\": \"restaurant\",\n    \"color\": \"#FF6B6B\",\n    \"transaction_type\": \"expense\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"category\": {\n        \"name\": \"Food & Dining Updated\",\n        \"icon\": \"restaurant\",\n        \"color\": \"#FF6B6B\",\n        \"transaction_type\": \"expense\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories/{{category_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categories",
+								"{{category_id}}"
+							]
+						},
+						"description": "Update an existing category"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories/{{category_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categories",
+								"{{category_id}}"
+							]
+						},
+						"description": "Delete a category"
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Create Categories",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"categories\": [\n        {\n            \"name\": \"Transportation\",\n            \"icon\": \"car\",\n            \"color\": \"#4ECDC4\",\n            \"transaction_type\": \"expense\"\n        },\n        {\n            \"name\": \"Entertainment\",\n            \"icon\": \"movie\",\n            \"color\": \"#45B7D1\",\n            \"transaction_type\": \"expense\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories/bulk_create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categories",
+								"bulk_create"
+							]
+						},
+						"description": "Create multiple categories at once"
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Update Categories",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"categories\": [\n        {\n            \"id\": 1,\n            \"name\": \"Food & Dining Updated\",\n            \"icon\": \"restaurant\",\n            \"color\": \"#FF6B6B\",\n            \"transaction_type\": \"expense\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Transportation Updated\",\n            \"icon\": \"car\",\n            \"color\": \"#4ECDC4\",\n            \"transaction_type\": \"expense\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories/bulk_update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categories",
+								"bulk_update"
+							]
+						},
+						"description": "Update multiple categories at once"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"categories\": [\n        {\n            \"id\": 1,\n            \"name\": \"Food & Dining Updated\",\n            \"icon\": \"restaurant\",\n            \"color\": \"#FF6B6B\",\n            \"transaction_type\": \"expense\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Transportation Updated\",\n            \"icon\": \"car\",\n            \"color\": \"#4ECDC4\",\n            \"transaction_type\": \"expense\"\n        }\n    ]\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/categories/bulk_update",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"categories",
+										"bulk_update"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=SdTSgNo7LdSOQI3iy%2BRqWO%2ByLrFQWmOO4NrsSPkFYQft6Oj%2FBQEzueaF9Emkb%2B1%2BPljxq6JKIzXA8ziGfM9045jsWVsFYqYE5UeWY6SLMh7k%2BOfC33coBGiD3I0gBj3CC77IONLZd%2Bhw8wEwq05X6QAVJG8SIzKilWrF803pckVzzB83vQV5ONWYFwWOnEUh6d6PNqbo0EXZINoGortuZM%2Bwsb3e1hMjHPvsUg%2BUIAb9nV0bPDv%2F%2FzBA38cbR0IWt3rhHLT2M9v39el7hP5VLJq33Twy8QLtTcjCXQXWiAo%3D--4pVxI1AZBztINJg3--o8kQTM%2FTJ7WQtJrmfWRCHg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=SdTSgNo7LdSOQI3iy%2BRqWO%2ByLrFQWmOO4NrsSPkFYQft6Oj%2FBQEzueaF9Emkb%2B1%2BPljxq6JKIzXA8ziGfM9045jsWVsFYqYE5UeWY6SLMh7k%2BOfC33coBGiD3I0gBj3CC77IONLZd%2Bhw8wEwq05X6QAVJG8SIzKilWrF803pckVzzB83vQV5ONWYFwWOnEUh6d6PNqbo0EXZINoGortuZM%2Bwsb3e1hMjHPvsUg%2BUIAb9nV0bPDv%2F%2FzBA38cbR0IWt3rhHLT2M9v39el7hP5VLJq33Twy8QLtTcjCXQXWiAo%3D--4pVxI1AZBztINJg3--o8kQTM%2FTJ7WQtJrmfWRCHg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=g9vlXo5E2fgKFOw0aLy9NR%2Ft3KKiz00VrofEc8UNJc%2F%2BVZf46q3LJmkl2W8%2FzqNAox0QRPXaTRpVFGGgERFang5crxtAV247EIJnMMU1B2p2cVhOQJbE%2Fh1KxluzPiPqolllPjWHCNMHOpoo%2BYqxvBj%2B0yleJZiCAYbjoRN%2FiRSd5QkkHlv9MNiwEEE85uYVe7ZzTP6cHQ2CYIYKiVluj5IHh2Q7uPQ38%2B4oIDlgQCQc0wifDiGgUTd803XBLdCnOXebindd4FBcEkUAxIH%2B1pMCM4QFFFVwDVMQsubvFefE7YEd--1xIa0BBuFu6ehi6m--lZ2Br3%2Bm8%2B2sJToaVDka7g%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"66b07d48bf69f95bdc09b2c0cfc2b05f\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "3b98e130-7999-4a00-9e41-584c8e8a1550"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.473777"
+								},
+								{
+									"key": "server-timing",
+									"value": "sql.active_record;dur=40.51, start_processing.action_controller;dur=0.01, instantiation.active_record;dur=22.38, transaction.active_record;dur=23.15, cache_delete.active_support;dur=0.08, render.active_model_serializers;dur=0.11, process_action.action_controller;dur=99.68"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "19"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"updated_count\": 2\n}"
+						}
+					]
+				},
+				{
+					"name": "Bulk Delete Categories",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"category_ids\": [1, 2, 3]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories/bulk_destroy",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categories",
+								"bulk_destroy"
+							]
+						},
+						"description": "Delete multiple categories at once"
+					},
+					"response": []
+				},
+				{
+					"name": "Move Transactions Between Categories",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"move_transactions\": {\n        \"from_category_id\": 1,\n        \"to_category_id\": 2\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/categories/move_transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categories",
+								"move_transactions"
+							]
+						},
+						"description": "Move all transactions from one category to another"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Accounts",
+			"item": [
+				{
+					"name": "List Accounts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts"
+							]
+						},
+						"description": "List all accounts"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/accounts",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"accounts"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=y7mas6lVqb1cvabGFLEqOEaVhp0X7rn3AkGiBBZywB4ByPwjJVvANtG6PkditGDWSLDkHabJYKu%2BzcCNSSPl9dH6PuqmWsrSk5Molo9Xgl71BLxgWo6O4D6WnpGfcgcfyv2VufJ%2FH4ONgnvtZ%2B5L4W8kJ46UjO0v0ITPBC56d77gg3WsaVvLBVCzcz7EoqO%2F4KS5MRylxNHCghlNH3tp1aPhQLvGMyLnrVBcQ%2FN3EcvOK6CweXwDSZ9e7T4XzaT7%2BGztEqNHnwnKY%2FLhKZRVpydVEWsWROW9y3cgwztyFa4%3D--kdtncbXbNtJQwHv1--XevzuV5fGLovokIHZRp%2F%2FA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=y7mas6lVqb1cvabGFLEqOEaVhp0X7rn3AkGiBBZywB4ByPwjJVvANtG6PkditGDWSLDkHabJYKu%2BzcCNSSPl9dH6PuqmWsrSk5Molo9Xgl71BLxgWo6O4D6WnpGfcgcfyv2VufJ%2FH4ONgnvtZ%2B5L4W8kJ46UjO0v0ITPBC56d77gg3WsaVvLBVCzcz7EoqO%2F4KS5MRylxNHCghlNH3tp1aPhQLvGMyLnrVBcQ%2FN3EcvOK6CweXwDSZ9e7T4XzaT7%2BGztEqNHnwnKY%2FLhKZRVpydVEWsWROW9y3cgwztyFa4%3D--kdtncbXbNtJQwHv1--XevzuV5fGLovokIHZRp%2F%2FA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=x%2B%2F7VKGhKhIiq6qQkatfohCGy8X1KrCheOYsDn0EBNe2vA2GA76Ttz4cBn3oPXZYRviyxKfZy4LpoiFprNeWNt39pV%2FVx8wJFnPOP1vIP3%2Be4yNV%2Bie6fh%2BBmrQmOtN4gCUbb0l7bteC4jvFVLQ23gldU8rg4NHTFHIa1pkwEh0vsaG2KwsOegGfS93z5L25NJJfn0R8dzjKKTiR%2FbcCDibhhXsx4Dnvj463b6dOq4SkcJUe%2BT4oF%2Fqpor7x2wJDE1kAF0x5A7toBMJ9RwlanoiOGY8cBXp9PGl5bPr5ybxugU2h--zIi1Ccc4ve5n5N9m--1p%2Fq4xZPRaGiLd915MHbKA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"afd5041358088fe6c2c6bc50d8a00f1f\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "8e8484eb-9be2-4b18-aca1-6eeab79ac19c"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.127938"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.06, sql.active_record;dur=1.49, instantiation.active_record;dur=1.55, render.active_model_serializers;dur=3.42, process_action.action_controller;dur=71.11"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "362"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"name\": \"Main Checking\",\n        \"account_type\": \"regular\",\n        \"bank_name\": \"First National Bank\",\n        \"balance\": {\n            \"cents\": 250000,\n            \"currency_iso\": \"USD\"\n        },\n        \"currency\": \"USD\",\n        \"description\": \"Primary checking account\",\n        \"is_active\": true,\n        \"created_at\": \"2025-08-30T10:21:51.368Z\",\n        \"updated_at\": \"2025-08-30T10:21:51.368Z\",\n        \"formatted_balance\": \"$2,500.00\",\n        \"account_number_masked\": \"****7890\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Create Account",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account\": {\n        \"name\": \"Main Checking\",\n        \"account_type\": \"bank\",\n        \"account_number\": \"1234567890\",\n        \"bank_name\": \"First National Bank\",\n        \"balance\": 2500.00,\n        \"currency\": \"USD\",\n        \"description\": \"Primary checking account\",\n        \"is_active\": true\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts"
+							]
+						},
+						"description": "Create a new account"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"account\": {\n        \"name\": \"Main Checking\",\n        \"account_type\": \"bank\",\n        \"account_number\": \"1234567890\",\n        \"bank_name\": \"First National Bank\",\n        \"balance\": 2500.00,\n        \"currency\": \"USD\",\n        \"description\": \"Primary checking account\",\n        \"is_active\": true\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/accounts",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"accounts"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=O0ou56TtDp84E%2FZKefTr13ANMooyhRK2TWOZl9t%2Biq7RU9FE2HZetuEM1vHwVeYg5IEAEseLN2k%2B2NTh1X1MqxqfbHaMqFu1TvKLB9q37Me5QxIDUohwlY6U5WBsMgwN8gHy2akeNH7mxPMc3xMpu2degD9xbOsv4g3Cmp2M4cNre5NIJ7pm0A4b7cCjQQssIV7WFQ3wfOB8k4uJ6eO2UWNeJ66GKgmt7wzXglWdLd5oeXFalSKwa7fryg2QBZw7tmVXhPklNkjdclI8RidzhHKOMjI%2F15vwmiJWnz94rto%3D--LCTtmd4LS%2BkOy88l--g1xt38kpcE3DiPcanO2XZg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=O0ou56TtDp84E%2FZKefTr13ANMooyhRK2TWOZl9t%2Biq7RU9FE2HZetuEM1vHwVeYg5IEAEseLN2k%2B2NTh1X1MqxqfbHaMqFu1TvKLB9q37Me5QxIDUohwlY6U5WBsMgwN8gHy2akeNH7mxPMc3xMpu2degD9xbOsv4g3Cmp2M4cNre5NIJ7pm0A4b7cCjQQssIV7WFQ3wfOB8k4uJ6eO2UWNeJ66GKgmt7wzXglWdLd5oeXFalSKwa7fryg2QBZw7tmVXhPklNkjdclI8RidzhHKOMjI%2F15vwmiJWnz94rto%3D--LCTtmd4LS%2BkOy88l--g1xt38kpcE3DiPcanO2XZg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=Xrp%2FU2xpeSjmOJMdekj1Nf0r6x8gnEdE8V6ozPjyK3aQg06Ln11ItSIZeHUYhhiSVfzlz45IyeqmZCvqCSRj2fwhRlCJDOWpIf51Anl2ODU9mywe%2Bc1GkZeGSk5M5eRkem%2BRH3wJZEb80x%2BXXLw9Bad%2FaK8cdVkoW40DHO8ApWW9Qy3EM1BKdfXXwasY2Ho1lMpG1pNCODBcna9Gvsb0X41yD7ZbiTP4Oaey%2F9fznoAbUWZO14kLYe3TySJqd56FDy6n1GkxYxV84QP0i4iFodoKvQ8fmYvPEDe6oaNe1XKgt5Hb--%2BB2c84m1c6dD0MqJ--y7vQPnqCDn5LsKwSccuvEw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"a3f7c3fb59c94fc9d32a0dd9670932c4\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "1fefeea0-2dae-4c30-bd7e-653f30f87ce5"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.197833"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=18.71, instantiation.active_record;dur=4.85, transaction.active_record;dur=11.42, render.active_model_serializers;dur=0.82, process_action.action_controller;dur=65.73"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "360"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Main Checking\",\n    \"account_type\": \"regular\",\n    \"bank_name\": \"First National Bank\",\n    \"balance\": {\n        \"cents\": 250000,\n        \"currency_iso\": \"USD\"\n    },\n    \"currency\": \"USD\",\n    \"description\": \"Primary checking account\",\n    \"is_active\": true,\n    \"created_at\": \"2025-08-30T10:21:51.368Z\",\n    \"updated_at\": \"2025-08-30T10:21:51.368Z\",\n    \"formatted_balance\": \"$2,500.00\",\n    \"account_number_masked\": \"****7890\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Account",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"1"
+							]
+						},
+						"description": "Get account details by ID"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/accounts/{{account_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"accounts",
+										"{{account_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=UysiCy9VHgPH3caHiVjxAYBMZVXvZUAgbTq2rRbW4VTg3xV32JyxmDm%2FrKMe2BAI2UUL5zEFyCWzngx7g369tx%2FOpyRLzvoXHFOwzMW6Cn%2Fj23PfNtlLTjewyaVg9vxa9jaeP0OV4%2FihIythq6FdNknxIVagmlOhNeIjBl7BPDAsqfsYJscbKORaIS8SmGf7JSv1NQZ7IiKYriQbxfQGWO1KQ6FMrsIgtDzv%2Blis62WyLlL4kN5d7kPdB3E8kRlXgFdi7BFU4f59XnYtyxNg3f0MTxoyLVI1FMXerrKkyTQ%3D--1fX57ZxRUPdG52JI--wsnVVhCXTRFGtzAaxSDmTQ%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=UysiCy9VHgPH3caHiVjxAYBMZVXvZUAgbTq2rRbW4VTg3xV32JyxmDm%2FrKMe2BAI2UUL5zEFyCWzngx7g369tx%2FOpyRLzvoXHFOwzMW6Cn%2Fj23PfNtlLTjewyaVg9vxa9jaeP0OV4%2FihIythq6FdNknxIVagmlOhNeIjBl7BPDAsqfsYJscbKORaIS8SmGf7JSv1NQZ7IiKYriQbxfQGWO1KQ6FMrsIgtDzv%2Blis62WyLlL4kN5d7kPdB3E8kRlXgFdi7BFU4f59XnYtyxNg3f0MTxoyLVI1FMXerrKkyTQ%3D--1fX57ZxRUPdG52JI--wsnVVhCXTRFGtzAaxSDmTQ%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=ubEnq2j8bqE4i6J7tEv9ifCWIZRrZOg99BTUfvc%2BUwQLPxBZRBfxiKhWm4CY6zfWu4%2BCvFaBerHzRDynn2fL6plQKA42PNiRVLutbmMN%2F5dT55vnWKU9GVPsgsc8630kTdkl5Cs77t5lM8kLMslxic3V59%2FM1P%2FPYRUH7HPW2onCnEYZK9bHVI%2BLIIww4ipnh6d18hwMDdBR2Y4VIgBoIUSsrqAQYe7hrInjViCgYWDUBLpkJvQ40bAm2YHTAmcr%2B762QdWNHhZwR337064dVR%2F4QkFAYl8AwWADTH8Nh5C1jC0S--2ZVCOlYYP%2BVCzrog--fTuLObi9ikmbdkWNQ1Rf9A%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"a3f7c3fb59c94fc9d32a0dd9670932c4\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "f3573c5d-f414-49b1-8d54-db0a4aaa2fa1"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.586454"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.04, sql.active_record;dur=16.66, instantiation.active_record;dur=74.44, render.active_model_serializers;dur=1.69, process_action.action_controller;dur=174.98"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "360"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Main Checking\",\n    \"account_type\": \"regular\",\n    \"bank_name\": \"First National Bank\",\n    \"balance\": {\n        \"cents\": 250000,\n        \"currency_iso\": \"USD\"\n    },\n    \"currency\": \"USD\",\n    \"description\": \"Primary checking account\",\n    \"is_active\": true,\n    \"created_at\": \"2025-08-30T10:21:51.368Z\",\n    \"updated_at\": \"2025-08-30T10:21:51.368Z\",\n    \"formatted_balance\": \"$2,500.00\",\n    \"account_number_masked\": \"****7890\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Account",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"account\": {\n        \"name\": \"Main Checking Updated\",\n        \"account_type\": \"savings\",\n        \"account_number\": \"1234567890\",\n        \"bank_name\": \"First National Bank\",\n        \"balance\": 2740.00,\n        \"currency\": \"USD\",\n        \"description\": \"Primary checking account - updated\",\n        \"is_active\": true\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/{{account_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"{{account_id}}"
+							]
+						},
+						"description": "Update an existing account"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"account\": {\n        \"name\": \"Main Checking Updated\",\n        \"account_type\": \"savings\",\n        \"account_number\": \"1234567890\",\n        \"bank_name\": \"First National Bank\",\n        \"balance\": 2740.00,\n        \"currency\": \"USD\",\n        \"description\": \"Primary checking account - updated\",\n        \"is_active\": true\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/accounts/{{account_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"accounts",
+										"{{account_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=kQZguB1kYjIwpJykJAnbmJrD6WtRDPy5RiXvCRYVvD9f1BAMsRKKzi8ej0d%2B%2BlowmveHwo6%2FU%2BZzji7y%2BA3zOk%2BB0zu5O0erh3piSdvDBuzZ9RcZfYnDGXjE6znRvWbPg7qnhdB8lmnX4nwhy2%2F48dCHL%2FNaPGhJQoN4FK1yGGQvkCYyDamIXIWBz4Cl29GEgFq9Ha6y2Z3kZzGRQdBUgv004V6Yjq2YdGC0aw2wCUTAP%2BUABAt8c1K%2F1dP0x0LnMv8vMI%2FIYCCqvNGyQuMoo5XoAYvWIdxPMz%2F689z7jFY%3D--NUYWDsxWfCQX3TBj--cfKMuguOlmoJpw36jTiV1g%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=kQZguB1kYjIwpJykJAnbmJrD6WtRDPy5RiXvCRYVvD9f1BAMsRKKzi8ej0d%2B%2BlowmveHwo6%2FU%2BZzji7y%2BA3zOk%2BB0zu5O0erh3piSdvDBuzZ9RcZfYnDGXjE6znRvWbPg7qnhdB8lmnX4nwhy2%2F48dCHL%2FNaPGhJQoN4FK1yGGQvkCYyDamIXIWBz4Cl29GEgFq9Ha6y2Z3kZzGRQdBUgv004V6Yjq2YdGC0aw2wCUTAP%2BUABAt8c1K%2F1dP0x0LnMv8vMI%2FIYCCqvNGyQuMoo5XoAYvWIdxPMz%2F689z7jFY%3D--NUYWDsxWfCQX3TBj--cfKMuguOlmoJpw36jTiV1g%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=Bt9aqtX24tLWwaO1PMRoqN9vQ9fYM8CAk5GXLd%2FjnoMrx7wzZZzslM5V2Gwi2eX2f3J5t4lG15v6GWokKZ%2BifdsLhKPVoTEVg4yonLkjsqROcoQBLx8PUClZtTEKULRuK%2Fqt3kRzSkNj5yijdKzCPCUFwc%2FkLoWpnPJUe%2B9xwE7Al8woJl8Am60fUAdjWdKXnhLn5q9qk99xUOeq7Ldd2U53U4QumVB1YSoy%2FxrXjf20AvEn7DyssiwCeMukHgxXh1wdRZKzvRTe09%2BuRBOVeSv7dCfjDD9GCiVHJZMk5ckl13V3--lnhYTXLRvoP2HDP%2B--hEEXLjc6fU1VzJ6yauatxA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"95dc961f09136679ab362fe0bf7c4a27\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "056e0f39-d06e-466d-9c3d-785d4aa74e5f"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.039296"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=4.51, instantiation.active_record;dur=0.42, transaction.active_record;dur=4.26, render.active_model_serializers;dur=1.32, process_action.action_controller;dur=20.85"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "378"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Main Checking Updated\",\n    \"account_type\": \"savings\",\n    \"bank_name\": \"First National Bank\",\n    \"balance\": {\n        \"cents\": 274000,\n        \"currency_iso\": \"USD\"\n    },\n    \"currency\": \"USD\",\n    \"description\": \"Primary checking account - updated\",\n    \"is_active\": true,\n    \"created_at\": \"2025-08-30T10:21:51.368Z\",\n    \"updated_at\": \"2025-08-30T10:28:23.512Z\",\n    \"formatted_balance\": \"$2,740.00\",\n    \"account_number_masked\": \"****7890\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Account",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"1"
+							]
+						},
+						"description": "Deactivate an account"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Account Balance",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"balance\": 2000.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/{{account_id}}/update_balance",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"{{account_id}}",
+								"update_balance"
+							]
+						},
+						"description": "Update account balance directly"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"balance\": 2000.00\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/accounts/1/update_balance",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"accounts",
+										"1",
+										"update_balance"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=GJJh3CTX6HRNfZAtcnqPsPKp6Al2ouOhQThZ0CJCoqV%2BWuFgcchml5Or5pL%2FQ6Ip1Cj2XAicLweOeMieEXCnS7DmdstxYRO6OZEAQxjf3flk7Q9vlIdA4z9PR0z0d6rtKUCUWat9RfhXYbWEHMUY%2BAe3gqEcOPMZIS44%2FOL3zPJmX5XimLUsTYwr3PILYOpmHSFssE0wu9nX7VjOqYvi%2F9VDqaeu5jAOdEidiC6EseDkbLexuS5eue2gGUhZ58YB%2BxfMEL8F8MZROKK6d93EOiiv4KCiLB7CcgyO6QtkKGA%3D--dJJKfZ6hI19juYAC--CYt4bAt7mcXKs8lMidNvAw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=GJJh3CTX6HRNfZAtcnqPsPKp6Al2ouOhQThZ0CJCoqV%2BWuFgcchml5Or5pL%2FQ6Ip1Cj2XAicLweOeMieEXCnS7DmdstxYRO6OZEAQxjf3flk7Q9vlIdA4z9PR0z0d6rtKUCUWat9RfhXYbWEHMUY%2BAe3gqEcOPMZIS44%2FOL3zPJmX5XimLUsTYwr3PILYOpmHSFssE0wu9nX7VjOqYvi%2F9VDqaeu5jAOdEidiC6EseDkbLexuS5eue2gGUhZ58YB%2BxfMEL8F8MZROKK6d93EOiiv4KCiLB7CcgyO6QtkKGA%3D--dJJKfZ6hI19juYAC--CYt4bAt7mcXKs8lMidNvAw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=7T5RRoTETCfI2XdjFgzJk4ObSDd8nijo1jKQLeLXNKSAWr7BHQtdHFGHPZLkKGZA02apzCn%2F%2Baf6sxLxgPXKd5dDol5tQiS2RT8EP7cH%2BMosbbLbELhrUAx1%2BGhc9Yy0UfSM6fOY9a3vqjNW%2BPrfEao1maN5mMNy2PliF%2BOdSZctLbIRZKcmLfTWuzbJerrsQ4kpOFNKx%2BRKTyhIpy5S1YigC4TG6avChVY%2FLIIQKLZyer%2F4tJFe4cEIA7P1sepbBTs2x3snixsYTR8RudkSyfrwdOwAGJ2k6YkqmgZ%2F3ssxJssc--VYg1SlE4TtnBzwEJ--R74CkWw%2FhDtyqm9SLqZtgQ%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"d6d1098f4d0a24057353048ac64a158f\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "56dce34e-9ba8-419d-9fc4-87466b32017a"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.176571"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=76.18, instantiation.active_record;dur=1.11, transaction.active_record;dur=42.70, render.active_model_serializers;dur=1.89, process_action.action_controller;dur=132.72"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "378"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Main Checking Updated\",\n    \"account_type\": \"savings\",\n    \"bank_name\": \"First National Bank\",\n    \"balance\": {\n        \"cents\": 200000,\n        \"currency_iso\": \"USD\"\n    },\n    \"currency\": \"USD\",\n    \"description\": \"Primary checking account - updated\",\n    \"is_active\": true,\n    \"created_at\": \"2025-08-30T10:21:51.368Z\",\n    \"updated_at\": \"2025-08-30T10:31:25.482Z\",\n    \"formatted_balance\": \"$2,000.00\",\n    \"account_number_masked\": \"****7890\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Saving Goals",
+			"item": [
+				{
+					"name": "List Saving Goals",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/saving_goals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"saving_goals"
+							]
+						},
+						"description": "List all saving goals"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Saving Goal",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"saving_goal\": {\n        \"title\": \"Down Payment Fund\",\n        \"target_amount\": 10000.00,\n        \"current_amount\": 2500.00,\n        \"target_date\": \"2026-12-31T00:00:00.000Z\",\n        \"notes\": \"Saving for a house down payment\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/saving_goals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"saving_goals"
+							]
+						},
+						"description": "Create a new saving goal"
+					},
+					"response": [
+						{
+							"name": "201 ok",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"saving_goal\": {\n        \"title\": \"Down Payment Fund\",\n        \"target_amount\": 10000.00,\n        \"current_amount\": 2500.00,\n        \"target_date\": \"2026-12-31T00:00:00.000Z\",\n        \"notes\": \"Saving for a house down payment\"\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/saving_goals",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"saving_goals"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=CTExb8r1EXTzkXaplMQSGVVe5aorf8cNYJJ8pDyiPX7jUcEpdSfnm0MytV00czk8pNAr9Wq%2BfQY%2FMl%2FfHjOHWMdrBOctX0uYXVsva7QXDEJAU2miyusw%2F8ymC%2FEnfYplsaQb0AjqkiM9G4sJf%2FVhbXXYkMQJQKR1tioGqCW5mA8vy%2BNPA7363rdUz4ZjmT1hYbkjhZ92YNiTyi22byQEtuiwXsqa16XJ%2B%2F58XleDAp6zYGWdzjEvdIDXBBaTvd%2B7b06HufGbIqSNeR%2F%2BlltttvMhmmgARRL%2Fdbam1hrtozI%3D--k%2BMw8QKS%2BHtkU4xu--i1h8FmzNZ1hmjRzAkC8h8w%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=CTExb8r1EXTzkXaplMQSGVVe5aorf8cNYJJ8pDyiPX7jUcEpdSfnm0MytV00czk8pNAr9Wq%2BfQY%2FMl%2FfHjOHWMdrBOctX0uYXVsva7QXDEJAU2miyusw%2F8ymC%2FEnfYplsaQb0AjqkiM9G4sJf%2FVhbXXYkMQJQKR1tioGqCW5mA8vy%2BNPA7363rdUz4ZjmT1hYbkjhZ92YNiTyi22byQEtuiwXsqa16XJ%2B%2F58XleDAp6zYGWdzjEvdIDXBBaTvd%2B7b06HufGbIqSNeR%2F%2BlltttvMhmmgARRL%2Fdbam1hrtozI%3D--k%2BMw8QKS%2BHtkU4xu--i1h8FmzNZ1hmjRzAkC8h8w%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=5xyP%2BKcnU9NFQ6eT53Kg9UfoinkKlIdavXIINDwvQ3%2BijFbCFn6Mvf3JHj%2FD%2Fm%2BeQrqEXaNuX62LFlsXClJ7%2FmmNw0ZuKIV71dxpqliq%2BheMSOP%2BzW%2FfiePEBYzp7U2HQCgqEbtYKu6sDPjqTj%2FvwOxOnNKvXm6rwteO0Qf2yQ57fyVVfhfEGANNy34mvjXMrdig7P0r%2Fom68qRCG%2BDlAMTp3ZAzsH0o3VrDgFBL22i6L1dtj1OZrbr%2FFyWHpTPkkskqGjnIqBcjnMABChiwdOeiQEPcdyaaR4l7xK4TIlbeOb0p--A8kMesEZcFv1TYEW--9HyXXQnzZgUSmTLdjoBaOQ%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"d5c58e019addd429ff6432df7d672d87\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "3e46a485-7368-40ea-85f2-88690949608b"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.479136"
+								},
+								{
+									"key": "server-timing",
+									"value": "sql.active_record;dur=32.81, start_processing.action_controller;dur=0.01, instantiation.active_record;dur=12.81, transaction.active_record;dur=4.33, render.active_model_serializers;dur=1.31, process_action.action_controller;dur=147.37"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "430"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 3,\n    \"title\": \"Down Payment Fund\",\n    \"target_amount\": \"10000.0\",\n    \"current_amount\": \"2500.0\",\n    \"target_date\": \"2026-12-31T00:00:00.000Z\",\n    \"notes\": \"Saving for a house down payment\",\n    \"created_at\": \"2025-08-30T11:02:05.392Z\",\n    \"updated_at\": \"2025-08-30T11:02:05.392Z\",\n    \"progress_percentage\": \"25.0\",\n    \"remaining_amount\": \"7500.0\",\n    \"achieved\": false,\n    \"days_remaining\": 488,\n    \"overdue\": false,\n    \"monthly_savings_needed\": \"441.176470588235294117647058823529411765\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Saving Goal",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/saving_goals/{{saving_goal_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"saving_goals",
+								"{{saving_goal_id}}"
+							]
+						},
+						"description": "Retrieve a specific saving goal"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/saving_goals/{{saving_goal_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"saving_goals",
+										"{{saving_goal_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=TTZcJzs%2FeXUcWjQiAF4R1NcGuMElEQcd94KHtgT5naQXkE8YLzUGZjcKqPb4fB4m%2BiUpzOL%2FdpvRQO1yB8Su8iY98mTTPYnGh%2FZh7xLx%2F0Tpfa%2FExlyDlzw3eJ3tlZkPCHczMQO7L4oSLOJcq2jlnKkxADXIpEK36tahVjdy6Y4QESIk826%2FiiVjAjdORco4z%2Fllep2MdUB6KFhbkLhrBpbp6cHInu4nyCoBjekp%2F9BIKAn3TErpD8eNTMS7OtOL3EiTuDY1UCmE6S1Vj87xX97Vg%2BBa0UROXiEClqfFBfw%3D--3a8VETQf%2B0faelbg--TUmDNlef%2FlZXgHkjw8jKhw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=TTZcJzs%2FeXUcWjQiAF4R1NcGuMElEQcd94KHtgT5naQXkE8YLzUGZjcKqPb4fB4m%2BiUpzOL%2FdpvRQO1yB8Su8iY98mTTPYnGh%2FZh7xLx%2F0Tpfa%2FExlyDlzw3eJ3tlZkPCHczMQO7L4oSLOJcq2jlnKkxADXIpEK36tahVjdy6Y4QESIk826%2FiiVjAjdORco4z%2Fllep2MdUB6KFhbkLhrBpbp6cHInu4nyCoBjekp%2F9BIKAn3TErpD8eNTMS7OtOL3EiTuDY1UCmE6S1Vj87xX97Vg%2BBa0UROXiEClqfFBfw%3D--3a8VETQf%2B0faelbg--TUmDNlef%2FlZXgHkjw8jKhw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=LUUZEDfTqKLR2SEI9JSfPvPspNvLfTd2H3jIs06kysU28lWX3xekCPAfnpm6fuKzgysw%2Bec8xhuR12okaCacWMMj9sijwIQzHtiBIs4PbY49fkVacNCbxP4zjLS9GEqzSOvkXToAx%2BEi0k9Ab14miba9t67XhI8PRyYr1L7yM6HU2ozJexYT4QNvf43dbfaJ9qA%2B%2B7QsbHhHh%2FsWPX8syRZgwt8g6MhF4fkmli61VrlBbhLCP%2FqyTuaEI0qPjVSuySrDSewMHZefKCIW4KvPNNx%2FOC3pC%2BRtNl7Zf3uraXpgYY%2BW--jHHiEM%2FfYAdPnXz%2B--LS1iovth%2BXx0chYfaj9MzA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"d5c58e019addd429ff6432df7d672d87\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "4db36fda-9001-4397-b132-0f6da0c14b74"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.320810"
+								},
+								{
+									"key": "server-timing",
+									"value": "sql.active_record;dur=34.48, start_processing.action_controller;dur=0.01, instantiation.active_record;dur=23.47, render.active_model_serializers;dur=1.62, process_action.action_controller;dur=139.66"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "430"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 3,\n    \"title\": \"Down Payment Fund\",\n    \"target_amount\": \"10000.0\",\n    \"current_amount\": \"2500.0\",\n    \"target_date\": \"2026-12-31T00:00:00.000Z\",\n    \"notes\": \"Saving for a house down payment\",\n    \"created_at\": \"2025-08-30T11:02:05.392Z\",\n    \"updated_at\": \"2025-08-30T11:02:05.392Z\",\n    \"progress_percentage\": \"25.0\",\n    \"remaining_amount\": \"7500.0\",\n    \"achieved\": false,\n    \"days_remaining\": 488,\n    \"overdue\": false,\n    \"monthly_savings_needed\": \"441.176470588235294117647058823529411765\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Saving Goal",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"saving_goal\": {\n        \"title\": \"Down Payment Fund Updated\",\n        \"target_amount\": 12000.00,\n        \"current_amount\": 3000.00,\n        \"target_date\": \"2027-12-31T00:00:00.000Z\",\n        \"notes\": \"Updated saving for a house down payment\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/saving_goals/{{saving_goal_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"saving_goals",
+								"{{saving_goal_id}}"
+							]
+						},
+						"description": "Update an existing saving goal"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"saving_goal\": {\n        \"title\": \"Down Payment Fund Updated\",\n        \"target_amount\": 12000.00,\n        \"current_amount\": 3000.00,\n        \"target_date\": \"2027-12-31T00:00:00.000Z\",\n        \"notes\": \"Updated saving for a house down payment\"\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/saving_goals/{{saving_goal_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"saving_goals",
+										"{{saving_goal_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=1YIkylThq1NEIYcdvXzmhXwLfoiMZRBJ0wXlL8%2BY3o1VIaTKG3U2GMFOLoB2hxksgG4u%2Bzbbse%2FjxwJQEJSg4blkVq8VW3Ks04EN%2B2zXoRO9WOzWm8DJ1q1rqHb7peTCfWB4j7ZioxbO1cL3WXrprg0IB%2FG%2FSHdItE1Lbf4QihiiDaG4jGO6CAN5CJuJHsU4LiRTZcA8utT9b5nec%2Fz5ceGo%2Bp%2Bomn7Mwhzz7c2idm7l8FoPrbozDtYFSSEEj%2BBGAi9YIZUo%2FOEUnGeN6P0t7gfeHuOkyYUEGTrnKjOiyrs%3D--GRWuDjlgVt7AFGFw--vXP8C88LioW1cIp9BRJekg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=1YIkylThq1NEIYcdvXzmhXwLfoiMZRBJ0wXlL8%2BY3o1VIaTKG3U2GMFOLoB2hxksgG4u%2Bzbbse%2FjxwJQEJSg4blkVq8VW3Ks04EN%2B2zXoRO9WOzWm8DJ1q1rqHb7peTCfWB4j7ZioxbO1cL3WXrprg0IB%2FG%2FSHdItE1Lbf4QihiiDaG4jGO6CAN5CJuJHsU4LiRTZcA8utT9b5nec%2Fz5ceGo%2Bp%2Bomn7Mwhzz7c2idm7l8FoPrbozDtYFSSEEj%2BBGAi9YIZUo%2FOEUnGeN6P0t7gfeHuOkyYUEGTrnKjOiyrs%3D--GRWuDjlgVt7AFGFw--vXP8C88LioW1cIp9BRJekg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=Lv%2FzyVnHamR5LcPvnd1uMEuShiaFUhqngxSYxNbi5chdcCicggEg1m01MSYxLURhnquRmDWZppYYomYCmd8JsBnsrUpeAI9j0xc3NPpJEc14NuuCc9dzG0FJ9iWSASuh2dDg%2Bjx6Rg%2BketTzcxvHnVG79ZQTTWQ7uDRxOwYMFaa7aDGMqZFxoq7nG%2BdNQeq86dxq%2FmAV4pxJHEwdeBBYM3OYY%2FyJzbQnI8N1Hb%2BdbCtJU5h%2BXunlR12NPgFRHQlXg%2BayQxlbfFEk%2F%2BsAaVEhYIjk3taena3ZL8DZvj2JX3odUQzV--h9U9CIEXMY3Sil2R--1Ao2QvtyMS5GQ0btZGyH9A%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"d916857a1dfa47307d7a0366ea3ce6a0\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "c110de55-d5d5-4119-b544-76b57970186b"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.085964"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.02, sql.active_record;dur=14.92, instantiation.active_record;dur=0.78, transaction.active_record;dur=3.82, render.active_model_serializers;dur=2.10, process_action.action_controller;dur=42.66"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "446"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 3,\n    \"title\": \"Down Payment Fund Updated\",\n    \"target_amount\": \"12000.0\",\n    \"current_amount\": \"3000.0\",\n    \"target_date\": \"2027-12-31T00:00:00.000Z\",\n    \"notes\": \"Updated saving for a house down payment\",\n    \"created_at\": \"2025-08-30T11:02:05.392Z\",\n    \"updated_at\": \"2025-08-30T11:08:10.549Z\",\n    \"progress_percentage\": \"25.0\",\n    \"remaining_amount\": \"9000.0\",\n    \"achieved\": false,\n    \"days_remaining\": 853,\n    \"overdue\": false,\n    \"monthly_savings_needed\": \"310.344827586206896551724137931034482759\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Saving Goal",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/saving_goals/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"saving_goals",
+								"1"
+							]
+						},
+						"description": "Delete a saving goal"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Saving Goal Progress",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"progress_amount\": 500.00\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/saving_goals/{{saving_goal_id}}/update_progress",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"saving_goals",
+								"{{saving_goal_id}}",
+								"update_progress"
+							]
+						},
+						"description": "Update progress of a saving goal"
+					},
+					"response": [
+						{
+							"name": "Update Saving Goal Progress",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"progress_amount\": 500.00\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/saving_goals/{{saving_goal_id}}/update_progress",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"saving_goals",
+										"{{saving_goal_id}}",
+										"update_progress"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=sJYO0BQGS8RSJHNfFERjwyua0M71zsbPOKjDDv4h4jDbnPOIP2ROiFBUsIudkvlc69VPq0FNxUMpsVYt6I2Hh%2FIyPHi2YXwpIr24O9GGGe7NgOyQSyhKXJFyA0fvTXzf6wSQlAizHOV29HGHzhQ%2Bj4llxJC57aGlam7V7xRtRJyvvwTAD%2B6DJrBY4e2BSrME6V3N%2FnlxPTrQpjJeu0wJC0KsuWoELwBMVsv3HXHqxBl5ji3KdA8H2vixd0u70h12xXTFSgBV%2FzFL699DMWOlrjEGSx8dPmE8b%2FxftFh6LUU%3D--qjaOwTxBoyydUaIR--AAcIohj%2BHzTJj54ZjdrVvA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=sJYO0BQGS8RSJHNfFERjwyua0M71zsbPOKjDDv4h4jDbnPOIP2ROiFBUsIudkvlc69VPq0FNxUMpsVYt6I2Hh%2FIyPHi2YXwpIr24O9GGGe7NgOyQSyhKXJFyA0fvTXzf6wSQlAizHOV29HGHzhQ%2Bj4llxJC57aGlam7V7xRtRJyvvwTAD%2B6DJrBY4e2BSrME6V3N%2FnlxPTrQpjJeu0wJC0KsuWoELwBMVsv3HXHqxBl5ji3KdA8H2vixd0u70h12xXTFSgBV%2FzFL699DMWOlrjEGSx8dPmE8b%2FxftFh6LUU%3D--qjaOwTxBoyydUaIR--AAcIohj%2BHzTJj54ZjdrVvA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=b8rUVBR%2BrGNPUtFN782HovLVrjKuAl%2BzJ1Eza2yZzaTICOSji9zvBzhawq6AfsUNASYLOjioGAlnhqslz0QfHZwlws%2FlFxE9lGHMw%2Bu00c2KRyXRWIurjFfxRmGFz8if5EhEf750tzYbNo9Gc0OuDtHGwOhA%2BAG60s3WXqEO0mrwlc%2Fu2cRLqJUcgI7XQf4I24pXiVn3qAGOZ5j5AMLvESByRhafiaiZZX%2B6iEogRzaBhM9A%2B5DkLnWsszkmoRwE2PerfKzeBHqRbk1g2dPwOhcRiiSuENfdEuvLt3BM6dhWeayW--7IA%2Fx6Y2HG50Yvhy--aRd%2FinMbKSClLVvVKDt1Vg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"7b950c2d67b0f76073df830be11a3eaf\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "c32ae6cb-cfc3-47a4-b896-ebc05e675261"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.209365"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.06, sql.active_record;dur=18.37, instantiation.active_record;dur=10.79, transaction.active_record;dur=17.73, render.active_model_serializers;dur=3.39, process_action.action_controller;dur=116.69"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "430"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 4,\n    \"title\": \"Down Payment Fund\",\n    \"target_amount\": \"10000.0\",\n    \"current_amount\": \"3000.0\",\n    \"target_date\": \"2026-12-31T00:00:00.000Z\",\n    \"notes\": \"Saving for a house down payment\",\n    \"created_at\": \"2025-08-30T11:10:14.583Z\",\n    \"updated_at\": \"2025-08-30T11:10:58.913Z\",\n    \"progress_percentage\": \"30.0\",\n    \"remaining_amount\": \"7000.0\",\n    \"achieved\": false,\n    \"days_remaining\": 488,\n    \"overdue\": false,\n    \"monthly_savings_needed\": \"411.764705882352941176470588235294117647\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Debts",
+			"item": [
+				{
+					"name": "List Debts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"debts"
+							]
+						},
+						"description": "List all debts"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/debts",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"debts"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=JGYINgcG8oM9mPKkJjD48QFsq6iYUoySsIGHwW%2BwjgKPS%2BTcy4pUr2PldrJGwWETYUqiwE%2BHaKo4bMfVnBL%2B3wscBNrjGKUdfRXoOTJl9LG6%2BDU3blyqS%2FJLZNkebHX8Sc9uld7NaDQVYd8eXTieCjtask4Li%2BeHyokTcYaPvicKDMR3XwP2ibCUbPFCFCR0WTPe1rOsvNI7uiOHOdWlh3kL%2BY%2FtSXbZd3GjIIPmYwzwQooad%2FmvVVPbgodq3AYg63syc9%2BsIQ4CGcANsHZeZN0Df6BPaIUnMQ9ZKaGk4bE%3D--8OD4VO6jLn%2Fqkkc0--IFgq2t6e85GvQ9FqmE16HA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=JGYINgcG8oM9mPKkJjD48QFsq6iYUoySsIGHwW%2BwjgKPS%2BTcy4pUr2PldrJGwWETYUqiwE%2BHaKo4bMfVnBL%2B3wscBNrjGKUdfRXoOTJl9LG6%2BDU3blyqS%2FJLZNkebHX8Sc9uld7NaDQVYd8eXTieCjtask4Li%2BeHyokTcYaPvicKDMR3XwP2ibCUbPFCFCR0WTPe1rOsvNI7uiOHOdWlh3kL%2BY%2FtSXbZd3GjIIPmYwzwQooad%2FmvVVPbgodq3AYg63syc9%2BsIQ4CGcANsHZeZN0Df6BPaIUnMQ9ZKaGk4bE%3D--8OD4VO6jLn%2Fqkkc0--IFgq2t6e85GvQ9FqmE16HA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=wT19CtASqf%2FodiYwTY%2BXC1sJjUqphxtIPrNEyGc5RUjTr3Q0OZp7VusWg6d%2BIhOsc9IxSlQDohZYlih5%2F1G1S6TjMB4GP1k6J5B04zzA9IEYfAg%2F8fnCdARFyGRKYn7ysNst53oaLtEsAxI9u7cWhcDs5aGjUQ0AalbKhXABxGLX%2BCjsn39JnMANj%2BbeCNfVomDQeJIajuuaeF8Js0hsSkNdLgFItuDOY8tieB%2Bhch6EPw6aj2T%2B7%2Fh9RAyqNKpRMHBaX8NFc5IjJl%2BC99mOEuB3zYRkTUrhZ3NMPDOPtkTZAwHb--L0KyMTIjKCsWXj%2FI--f2te4UYAllW7c%2BJccK8fXw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"6fe219a45e0261d9343a3c18375baa3e\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "1a75027e-3ba6-4115-8b81-22e3ea53e3bb"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.150188"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=1.13, instantiation.active_record;dur=2.10, render.active_model_serializers;dur=3.83, process_action.action_controller;dur=106.66"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "412"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": 1,\n        \"title\": \"Credit Card Balance\",\n        \"amount\": {\n            \"cents\": 250000,\n            \"currency_iso\": \"USD\"\n        },\n        \"creditor\": \"Chase Bank\",\n        \"description\": \"Credit card debt to be paid off\",\n        \"due_date\": \"2025-09-15\",\n        \"status\": \"pending\",\n        \"debt_type\": \"credit_card\",\n        \"interest_rate\": \"18.5\",\n        \"is_recurring\": false,\n        \"recurring_period\": null,\n        \"created_at\": \"2025-08-30T12:05:05.941Z\",\n        \"updated_at\": \"2025-08-30T12:05:05.941Z\",\n        \"overdue\": false,\n        \"days_until_due\": 16\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Create Debt",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"debt\": {\n        \"title\": \"Credit Card Balance\",\n        \"amount\": 2500.00,\n        \"creditor\": \"Chase Bank\",\n        \"description\": \"Credit card debt to be paid off\",\n        \"due_date\": \"2025-09-15\",\n        \"status\": \"pending\",\n        \"debt_type\": \"credit_card\",\n        \"interest_rate\": 18.5,\n        \"is_recurring\": false\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"debts"
+							]
+						},
+						"description": "Create a new debt"
+					},
+					"response": [
+						{
+							"name": "201 ok",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"debt\": {\n        \"title\": \"Credit Card Balance\",\n        \"amount\": 2500.00,\n        \"creditor\": \"Chase Bank\",\n        \"description\": \"Credit card debt to be paid off\",\n        \"due_date\": \"2025-09-15\",\n        \"status\": \"pending\",\n        \"debt_type\": \"credit_card\",\n        \"interest_rate\": 18.5,\n        \"is_recurring\": false\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/debts",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"debts"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=Hl6iIpD4%2Bb960cKcAbQcPylk5%2FCbjzT8irCL%2BL0zMH1r1bwWDH2WZYxyJMxb1pvBtMYbLLtM0ouevFolwhmuAHQeUhC8Ep3RxJOSk5j%2FkTq9ocfOTI5%2B1vV3p4TIFszEzv7Z2r9BqJZn%2BSBKN0fGJGCqhGnpoPiUdkjxnTdhpHWVNmwy0EUrCIhoWwASQiCKCtOTAoE6spGM1oLMUDbuM12Q%2FIF5%2BuI9CEndyyrjebg9ClIe1Y7%2FFHXDu4h%2FAvIYqxBK1SMVDr7KpFrZ2G2vi7vALd5FGLt%2BNVuNs%2BtVdu0%3D--DC%2BWKmwjD3jstuKg--mOAW%2B2S6rW02nvNBdi3%2FRQ%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=Hl6iIpD4%2Bb960cKcAbQcPylk5%2FCbjzT8irCL%2BL0zMH1r1bwWDH2WZYxyJMxb1pvBtMYbLLtM0ouevFolwhmuAHQeUhC8Ep3RxJOSk5j%2FkTq9ocfOTI5%2B1vV3p4TIFszEzv7Z2r9BqJZn%2BSBKN0fGJGCqhGnpoPiUdkjxnTdhpHWVNmwy0EUrCIhoWwASQiCKCtOTAoE6spGM1oLMUDbuM12Q%2FIF5%2BuI9CEndyyrjebg9ClIe1Y7%2FFHXDu4h%2FAvIYqxBK1SMVDr7KpFrZ2G2vi7vALd5FGLt%2BNVuNs%2BtVdu0%3D--DC%2BWKmwjD3jstuKg--mOAW%2B2S6rW02nvNBdi3%2FRQ%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=EYgGwvqVJ2k4uyJwUIve71hiMnIp3UOkoqdYkAYFtXwI1ZcDWttST9XkZMmDoIYTpfH85%2F8otZ74HU%2B8ZFbTYkYmDBdYVIjLSrx1feuLWzfJjIPjZ4n61rzxFVzuq5FPx34I9d1mDAxzpqJ0j0RHE6PXqSS5RweksqgP91gH2amxnfa8Jukwt8PHldpwFX2np%2BUSm40mQX2YhZ9JsYEqf0JBuucrIjXT4qcr2XTduR1PgjQ9jpFyKE5h2c4wsBgZAk2dY7DmhV%2B5HY0c2Lr%2Fz4b5M8TQUat8ngjiLwOyWJhM2NpO--HQEOLvcUXtFuO8Tf--ulRQJZ0UgR2vLvoaZs64%2BQ%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"c4fe6a18d62add97716a337de72949aa\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "b14c2f9a-4f1c-4579-9b3e-0d52336ac54f"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.316243"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.03, sql.active_record;dur=29.07, instantiation.active_record;dur=1.64, transaction.active_record;dur=15.84, render.active_model_serializers;dur=3.58, process_action.action_controller;dur=147.15"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "410"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"title\": \"Credit Card Balance\",\n    \"amount\": {\n        \"cents\": 250000,\n        \"currency_iso\": \"USD\"\n    },\n    \"creditor\": \"Chase Bank\",\n    \"description\": \"Credit card debt to be paid off\",\n    \"due_date\": \"2025-09-15\",\n    \"status\": \"pending\",\n    \"debt_type\": \"credit_card\",\n    \"interest_rate\": \"18.5\",\n    \"is_recurring\": false,\n    \"recurring_period\": null,\n    \"created_at\": \"2025-08-30T12:05:05.941Z\",\n    \"updated_at\": \"2025-08-30T12:05:05.941Z\",\n    \"overdue\": false,\n    \"days_until_due\": 16\n}"
+						}
+					]
+				},
+				{
+					"name": "retrieve specific Debt",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts/{{debt_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"debts",
+								"{{debt_id}}"
+							]
+						},
+						"description": "Retrieve a specific debt"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/debts/{{debt_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"debts",
+										"{{debt_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=oHFewnyivkozeV4JgoDBtp%2FzQfwl4XRLhi0JDXRQAdWcFaEJQZ7f0LSnXzjI69rJuP0xWGzm3Kvzj993ybOy5EgJgmd2rKQC%2Fyu6xnt15vxZ8bTXBY1SoLfUy8xzSZRNGpAwdOA8JC7In7baXQIQFRC6eTujY%2BGZfLagHQoQxPPnzsi2cbr2Ws%2Feg%2BiO3IKfxvNrtmztfSbZAP1lcoqJalgO8e5HTOe1KVF8sU0haWAEx8nrW6%2FxB1hnnbz9gFsKK6NdpVhkLzy6D1uVzyI6FHTSq6PLFfX0JTfI9fHL1xE%3D--TM1aokLVHjoTqBfI--fpcs4ylvG1vth%2Byq%2Bm7ypg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=oHFewnyivkozeV4JgoDBtp%2FzQfwl4XRLhi0JDXRQAdWcFaEJQZ7f0LSnXzjI69rJuP0xWGzm3Kvzj993ybOy5EgJgmd2rKQC%2Fyu6xnt15vxZ8bTXBY1SoLfUy8xzSZRNGpAwdOA8JC7In7baXQIQFRC6eTujY%2BGZfLagHQoQxPPnzsi2cbr2Ws%2Feg%2BiO3IKfxvNrtmztfSbZAP1lcoqJalgO8e5HTOe1KVF8sU0haWAEx8nrW6%2FxB1hnnbz9gFsKK6NdpVhkLzy6D1uVzyI6FHTSq6PLFfX0JTfI9fHL1xE%3D--TM1aokLVHjoTqBfI--fpcs4ylvG1vth%2Byq%2Bm7ypg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=xt4eS69i2rjSnwG%2B2pxhVQOXP0x8bPC5x%2FSIjcsscpVByZ1XBkJzjHGCUQheIbK4g%2BlnwDyfQi0j%2F3oGnPuyjOWKaH9JZusl2zbya6s84Ai2Y%2FCNHuSU%2BM2PbCV9xTfiZvkJ0zfvOpUVIaKtlsfRACtwqtOCNQVBBehDw4baeJWctq9eFsg4CbnI620pFnJSuVeWnsGCzcqjx%2BRLb75QdE4HPJC%2BsUTU16Klqeaz%2Fzrpq2vV29MXUmGPlgA6I%2FTBzDwuhnS7%2Bn2nLfji9gH5Czf5KblW760zfC2QDb19AhwkNcu%2B--Jo0Vk1vIPZvS31KW--uQq4KoTfoWreD2yyGojzcg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"c4fe6a18d62add97716a337de72949aa\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "997e4366-6483-4138-952f-749ddc99390a"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.075767"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=7.71, instantiation.active_record;dur=0.30, render.active_model_serializers;dur=2.52, process_action.action_controller;dur=34.56"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "410"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"title\": \"Credit Card Balance\",\n    \"amount\": {\n        \"cents\": 250000,\n        \"currency_iso\": \"USD\"\n    },\n    \"creditor\": \"Chase Bank\",\n    \"description\": \"Credit card debt to be paid off\",\n    \"due_date\": \"2025-09-15\",\n    \"status\": \"pending\",\n    \"debt_type\": \"credit_card\",\n    \"interest_rate\": \"18.5\",\n    \"is_recurring\": false,\n    \"recurring_period\": null,\n    \"created_at\": \"2025-08-30T12:05:05.941Z\",\n    \"updated_at\": \"2025-08-30T12:05:05.941Z\",\n    \"overdue\": false,\n    \"days_until_due\": 16\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Debt",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"debt\": {\n        \"title\": \"Credit Card Balance Updated\",\n        \"amount\": 2200.00,\n        \"creditor\": \"Chase Bank\",\n        \"description\": \"Updated credit card debt\",\n        \"due_date\": \"2025-09-15\",\n        \"status\": \"pending\",\n        \"debt_type\": \"credit_card\",\n        \"interest_rate\": 18.5,\n        \"is_recurring\": false\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts/{{debt_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"debts",
+								"{{debt_id}}"
+							]
+						},
+						"description": "Update an existing debt"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"debt\": {\n        \"title\": \"Credit Card Balance Updated\",\n        \"amount\": 2200.00,\n        \"creditor\": \"Chase Bank\",\n        \"description\": \"Updated credit card debt\",\n        \"due_date\": \"2025-09-15\",\n        \"status\": \"pending\",\n        \"debt_type\": \"credit_card\",\n        \"interest_rate\": 18.5,\n        \"is_recurring\": false\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/debts/{{debt_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"debts",
+										"{{debt_id}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=tvMsRQp%2BoCgm2e6Jdw7QL%2FaPhktTwB45q%2FQLEXNwP1uFrRUtvdQfsuA7PYDwcv6zYBpuSkESR%2BurFPnVErlNdbZKTC8pC4DYQ3WRfrF%2Fj%2FhEmPODW3hAjAdBNsRFE%2BasN1PmCZMVYyoXMz15TyU61j%2FHwEl%2FIfJzGYnpT102reb%2Bf%2BtO0OgjExVtaYlWKqRWUizCzjmh9HhzLam15br1f2bObEbWginF12o4Gto6SJ5XzmjaPwx3EebiDiyFSlzd9K4N6c10tMv52DFVN2vQ6iuk0o2TxvgW8rASAISZ1RM%3D--1V6%2FZPfFxIB%2FHu6M--fhODhSVEScrjODXxTTFsQg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=tvMsRQp%2BoCgm2e6Jdw7QL%2FaPhktTwB45q%2FQLEXNwP1uFrRUtvdQfsuA7PYDwcv6zYBpuSkESR%2BurFPnVErlNdbZKTC8pC4DYQ3WRfrF%2Fj%2FhEmPODW3hAjAdBNsRFE%2BasN1PmCZMVYyoXMz15TyU61j%2FHwEl%2FIfJzGYnpT102reb%2Bf%2BtO0OgjExVtaYlWKqRWUizCzjmh9HhzLam15br1f2bObEbWginF12o4Gto6SJ5XzmjaPwx3EebiDiyFSlzd9K4N6c10tMv52DFVN2vQ6iuk0o2TxvgW8rASAISZ1RM%3D--1V6%2FZPfFxIB%2FHu6M--fhODhSVEScrjODXxTTFsQg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=8q%2BgYCPm7W5w%2FTScX%2Fp77U59feWANKsxWRH%2ByW%2BQ%2F46TMd3ROXsnB5hH3t%2FSikyvQlZoAG7TNMGGDKSHKJDnVlhx5hX9Swb8ztlaU49Qp5KJZWo99ndUwuU%2BLu%2Fk8jr4PFbWObSJZs19ig6yu1Bypg94TiL8W3YWers%2B%2Bi7jHQ0iVoLxu2qZO0bgP3%2FyWkq0KYTPMotlhSDvdl%2BPQA2o2lBphAxyoz2CTwqYT5gHr%2F0aav0P0%2B4d1HyZRcRSg8Wvg3024x5XQfamVGnj3F2fo7TnE2hLfWYSeyLggBBLCRxeVPRu--riOd6gIv3Olr%2BTKH--B3WHvY%2BoK7R%2BVQVNorkbNg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"b634130413058aef57c6a86bf87338d2\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "b2b8e5e3-4f4a-40d6-a260-c9ff6386fb9b"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.288274"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.04, sql.active_record;dur=19.40, instantiation.active_record;dur=54.98, transaction.active_record;dur=4.88, render.active_model_serializers;dur=2.97, process_action.action_controller;dur=207.87"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "411"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"title\": \"Credit Card Balance Updated\",\n    \"amount\": {\n        \"cents\": 220000,\n        \"currency_iso\": \"USD\"\n    },\n    \"creditor\": \"Chase Bank\",\n    \"description\": \"Updated credit card debt\",\n    \"due_date\": \"2025-09-15\",\n    \"status\": \"pending\",\n    \"debt_type\": \"credit_card\",\n    \"interest_rate\": \"18.5\",\n    \"is_recurring\": false,\n    \"recurring_period\": null,\n    \"created_at\": \"2025-08-30T12:05:05.941Z\",\n    \"updated_at\": \"2025-08-30T12:13:41.931Z\",\n    \"overdue\": false,\n    \"days_until_due\": 16\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Debt",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"debts",
+								"1"
+							]
+						},
+						"description": "Delete a debt"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Debt as Paid",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/debts/{{debt_id}}/mark_as_paid",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"debts",
+								"{{debt_id}}",
+								"mark_as_paid"
+							]
+						},
+						"description": "Mark a debt as paid"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/debts/{{debt_id}}/mark_as_paid",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"debts",
+										"{{debt_id}}",
+										"mark_as_paid"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=w9NHLDNh%2FpwuNFNb8LeC5hc4YhM6xAlbzu6R2JBOYCINoLRdMnmVeK%2F3%2FZ1P0b0Cm%2Bk%2FReCkF6wElB57ctHExJNSZe5YhxHUhofeVRxzZtXD9JfWwLaMIElV4Ro30N818IZRe8TnW2%2Fpv9OoK4NQu7poJnGw0WTsq24fs4v520cXdQqDqX%2B%2FUVChkDXC%2B5PDMFdF%2FmRQvMxOkxJVOSUlmMeqkZv3rxye57VBlOdPm5l0HjcCPGJqw7wL8rRTsvrcYA0JnYWPyNDeZaZURQ4rqwnjLDQ%2FwTA2CaP5%2BF0zVB4%3D--7VE8hwkwu5RrYOu2--3K0I83ftn9T43eqZmmMbVA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=w9NHLDNh%2FpwuNFNb8LeC5hc4YhM6xAlbzu6R2JBOYCINoLRdMnmVeK%2F3%2FZ1P0b0Cm%2Bk%2FReCkF6wElB57ctHExJNSZe5YhxHUhofeVRxzZtXD9JfWwLaMIElV4Ro30N818IZRe8TnW2%2Fpv9OoK4NQu7poJnGw0WTsq24fs4v520cXdQqDqX%2B%2FUVChkDXC%2B5PDMFdF%2FmRQvMxOkxJVOSUlmMeqkZv3rxye57VBlOdPm5l0HjcCPGJqw7wL8rRTsvrcYA0JnYWPyNDeZaZURQ4rqwnjLDQ%2FwTA2CaP5%2BF0zVB4%3D--7VE8hwkwu5RrYOu2--3K0I83ftn9T43eqZmmMbVA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=7LbCjYNneg0y06qpBNFBLKQ4xlhEbCvS9gEwFWfBfSLdoA%2BPIc06aFNZxfB8jQWbr6v3sPjZup1ceuzg0k4E3YiXtjYhcSWf9Aj%2BDxG8rdTNIWVkQsRkIZmb6Avi7zY28EikPaRx1nkszNdxJLdoSI91o1t5y0hO4BTFtFir4fy17TTeThGv5qUGKtC1P8ffduXHtVfuoHCILn%2BCG3tD7wOsysh%2FSe%2BT5jm8O7MsTk21M0WqjDMgUqC2SD6dKiXPabtW7dm8yfR0R2FnW7fMMWWG1VnimW%2BbsrEwerlN1WcuqcuI--CX8nVsmCjdaYbOuT--FAAQc8YPJUF3X0pD2gYIXw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"04bce979a8c51108a4b418c9c9b97ad5\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "06370ad8-5b4c-4abc-a07d-f889dc62158c"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.081518"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=12.04, instantiation.active_record;dur=0.32, transaction.active_record;dur=11.90, render.active_model_serializers;dur=0.91, process_action.action_controller;dur=42.64"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "408"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"title\": \"Credit Card Balance Updated\",\n    \"amount\": {\n        \"cents\": 220000,\n        \"currency_iso\": \"USD\"\n    },\n    \"creditor\": \"Chase Bank\",\n    \"description\": \"Updated credit card debt\",\n    \"due_date\": \"2025-09-15\",\n    \"status\": \"paid\",\n    \"debt_type\": \"credit_card\",\n    \"interest_rate\": \"18.5\",\n    \"is_recurring\": false,\n    \"recurring_period\": null,\n    \"created_at\": \"2025-08-30T12:05:05.941Z\",\n    \"updated_at\": \"2025-08-30T12:16:50.030Z\",\n    \"overdue\": false,\n    \"days_until_due\": 16\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Transactions",
+			"item": [
+				{
+					"name": "List Transactions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"transactions"
+							]
+						},
+						"description": "List all transactions"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Expense Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transaction\": {\n        \"amount\": 50.00,\n        \"description\": \"Grocery shopping\",\n        \"transaction_type\": \"expense\",\n        \"date\": \"2025-08-29T10:30:00Z\",\n        \"notes\": \"Weekly groceries\",\n        \"payment_method\": \"credit_card\",\n        \"category_id\": 1,\n        \"from_account_id\": 1\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"transactions"
+							]
+						},
+						"description": "Create a new expense transaction"
+					},
+					"response": [
+						{
+							"name": "Create Expense Transaction",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"transaction\": {\n        \"amount\": 50.00,\n        \"description\": \"Grocery shopping\",\n        \"transaction_type\": \"expense\",\n        \"date\": \"2025-08-29T10:30:00Z\",\n        \"notes\": \"Weekly groceries\",\n        \"payment_method\": \"credit_card\",\n        \"category_id\": 1,\n        \"from_account_id\": 1\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/transactions",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"transactions"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=Rf1qh5nIRkQe5CHrjcrPTRPjmagDtLVmljYbFpAoCkk%2FLxCsTziFvl1vyH737K5vy3hNKQVqKrWca5otIfSuTiW41yntov%2FbmEkzuMNfmFNvJZK0Ft91JJfzzgDoknXIIbWCj6WXabfhf9YVzcwu2kHwDwdjFerF3dnMJeQVo0rkIBMLPaQhVabBfxX5GXbxfS79BMLdS7ULBGQLZq6IlxEwqkjiDVqvnTAnfQq00htRjNh639Ck%2F1XhfZICeaNBIB80OB1Lmz5V62C%2BCn3U%2BlZYgzyGIxMHKw67w%2FgThds%3D--HSd1yzEnvg7wJLeP--GjmJH32cfV%2Bg5GEASZF90Q%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=Rf1qh5nIRkQe5CHrjcrPTRPjmagDtLVmljYbFpAoCkk%2FLxCsTziFvl1vyH737K5vy3hNKQVqKrWca5otIfSuTiW41yntov%2FbmEkzuMNfmFNvJZK0Ft91JJfzzgDoknXIIbWCj6WXabfhf9YVzcwu2kHwDwdjFerF3dnMJeQVo0rkIBMLPaQhVabBfxX5GXbxfS79BMLdS7ULBGQLZq6IlxEwqkjiDVqvnTAnfQq00htRjNh639Ck%2F1XhfZICeaNBIB80OB1Lmz5V62C%2BCn3U%2BlZYgzyGIxMHKw67w%2FgThds%3D--HSd1yzEnvg7wJLeP--GjmJH32cfV%2Bg5GEASZF90Q%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=egrK0HuGB3jQPaK0ky%2F6HymzXNQ2n%2BE%2F8AmWGCqeRM1kdFtzaYuB3I0J5NnsdZBqoi2ko3MBtziIMV9cXF1C9kWUBmxiDVFbAUDKBmaRe%2FOrCiyLX1pU32YOrH%2Fku%2F5Hl3ic4uSvSoxC2C3cmDxbkidjaGGj%2BFMHPOIVFXf0Y9kapw2EujaTJ9agLhrjKsqBrN5TtQqjtNn02C22Cq70%2F1PCPDCIFouctf7Q%2B1NpVnOOTYSR%2BTU1U8lCS7boKSCo%2BdDWa5ZtVW1APbWbDZ%2FSuDmturWF0nCeJQpHC5JDdgb37ubd--4TIVqxprFLgYd7N%2B--H6A4mbTpSX%2B80UCcV6dvAQ%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"d4f2820c80b89ecc0a91112edd9d0486\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "53716860-f3d5-43e8-9ad7-ffd535a68427"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.712737"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.02, sql.active_record;dur=47.54, instantiation.active_record;dur=27.23, cache_read.active_support;dur=0.49, cache_fetch_hit.active_support;dur=0.02, transaction.active_record;dur=50.81, render.active_model_serializers;dur=34.10, process_action.action_controller;dur=255.20"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "409"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 2,\n    \"transaction_type\": \"expense\",\n    \"date\": \"2025-08-29T10:30:00.000Z\",\n    \"notes\": \"Weekly groceries\",\n    \"recurring_id\": null,\n    \"payment_method\": \"credit_card\",\n    \"formatted_original_amount\": {\n        \"amount\": 50,\n        \"formatted\": \"$50.00\",\n        \"currency_code\": \"USD\",\n        \"currency_symbol\": \"$\",\n        \"currency_name\": \"US Dollar\"\n    },\n    \"category\": {\n        \"id\": 1,\n        \"name\": \"Food & Dining Updated\",\n        \"icon\": \"restaurant\",\n        \"color\": \"#FF6B6B\",\n        \"transaction_type\": \"expense\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Income Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"transaction\": {\n        \"amount\": 3000.00,\n        \"description\": \"Monthly salary\",\n        \"transaction_type\": \"income\",\n        \"date\": \"2025-08-29T09:00:00Z\",\n        \"notes\": \"Salary deposit\",\n        \"payment_method\": \"bank_transfer\",\n        \"category_id\": 2,\n        \"to_account_id\": 1\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"transactions"
+							]
+						},
+						"description": "Create an income transaction"
+					},
+					"response": [
+						{
+							"name": "201 ok",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"transaction\": {\n        \"amount\": 3000.00,\n        \"description\": \"Monthly salary\",\n        \"transaction_type\": \"income\",\n        \"date\": \"2025-08-29T09:00:00Z\",\n        \"notes\": \"Salary deposit\",\n        \"payment_method\": \"bank_transfer\",\n        \"category_id\": 2,\n        \"to_account_id\": 1\n    }\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/transactions",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"transactions"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=Bs6fbTnr1AO2%2B%2FxKQLM%2BvVKGVhxIP7JAggCHkbIj%2BDB42Xq6rZJbB5fqXNDfABEFQ9v4ZbeFWi%2FSPOKbAVtH4MrlZyGY28lnZq%2Faruz2S2nvwxfNMwpw52s1Qtt4BCZdVJCjRuojo3viLuPZGCNwIS2QTGc3%2BYhjsWAtIVPZwDq%2BMswafmO3f9W3rO45PVW%2Fq57NnrLQqfp4g4uIvTLCACPoX7ss6huFk%2F8rHd%2BsUNyZk3YamlUHTXymvRpZN9uB0pN1Wtolo%2FrJ2dayHoh75brHBkWxPreQG3yPaLFMwf0%3D--t%2BXTCvjhMwW%2Bynaz--cpvyd907FkqyP8JdmAaNCA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=Bs6fbTnr1AO2%2B%2FxKQLM%2BvVKGVhxIP7JAggCHkbIj%2BDB42Xq6rZJbB5fqXNDfABEFQ9v4ZbeFWi%2FSPOKbAVtH4MrlZyGY28lnZq%2Faruz2S2nvwxfNMwpw52s1Qtt4BCZdVJCjRuojo3viLuPZGCNwIS2QTGc3%2BYhjsWAtIVPZwDq%2BMswafmO3f9W3rO45PVW%2Fq57NnrLQqfp4g4uIvTLCACPoX7ss6huFk%2F8rHd%2BsUNyZk3YamlUHTXymvRpZN9uB0pN1Wtolo%2FrJ2dayHoh75brHBkWxPreQG3yPaLFMwf0%3D--t%2BXTCvjhMwW%2Bynaz--cpvyd907FkqyP8JdmAaNCA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=FWfy%2BnqXY73Hz6RuF7X9%2Bc6jUldsZUWbXxpjHQch3gOxznxz0Eo0A4M6%2B9pEIzblYnNWW9zbnTGZSQenynRbsIRkkr28O957OyB0%2FjfygE8uEIU0wpKjf3tH5XDHfbf9BbIoh3ey%2FXbbIFin3UZtTDYeYhDxehgEEfDt18L74fVYFOsmiuZQsrA6qaC%2B5wPvRC%2FbQ%2F55HgF6xvPNM07FBd15%2BZ5xjxJgLN5oVGKAmjWBeeoAiwVHW99Rc3wsPjlYfNs7nliM0bUUdwBan2k7ttE%2FHJWpayEZMjcO1EUkI9LtuBcC--Nu5M7rDUoxd%2F71eH--jZBmKpv%2Bhub0Q5wfEvFL9w%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"613f18d4b66b837ea3463d67fdc3d481\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "acb295e9-94ae-43f4-aca8-6e840eb1492a"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.910215"
+								},
+								{
+									"key": "server-timing",
+									"value": "sql.active_record;dur=68.97, start_processing.action_controller;dur=0.01, instantiation.active_record;dur=46.23, cache_read.active_support;dur=0.21, cache_generate.active_support;dur=0.03, cache_write.active_support;dur=0.14, transaction.active_record;dur=17.88, cache_fetch_hit.active_support;dur=0.00, render.active_model_serializers;dur=32.04, process_action.action_controller;dur=237.15"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "402"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 3,\n    \"transaction_type\": \"income\",\n    \"date\": \"2025-08-29T09:00:00.000Z\",\n    \"notes\": \"Salary deposit\",\n    \"recurring_id\": null,\n    \"payment_method\": \"bank_transfer\",\n    \"formatted_original_amount\": {\n        \"amount\": 3000,\n        \"formatted\": \"$3,000.00\",\n        \"currency_code\": \"USD\",\n        \"currency_symbol\": \"$\",\n        \"currency_name\": \"US Dollar\"\n    },\n    \"category\": {\n        \"id\": 2,\n        \"name\": \"Transportation Updated\",\n        \"icon\": \"car\",\n        \"color\": \"#4ECDC4\",\n        \"transaction_type\": \"expense\"\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Insights",
+			"item": [
+				{
+					"name": "Get Monthly Overview",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/insights/overview",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"insights",
+								"overview"
+							]
+						},
+						"description": "Get monthly financial overview with income, expenses, and trends"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/insights/overview",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"insights",
+										"overview"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=BnWlV0dQ9%2BB7UxgZ%2BmAf1gziAMIbAFSi6G6t%2BVpP3KCXL9JGyFEp5sH%2BlCjLeWOz4UzDfR3%2FMOhbmQKQBRZ5xv1EMryFRPXf1%2FMVBW2kXedeWrdj3junvT%2BcVEUSHaWzf8Ov1RHO1828pE3nUBuU7F%2F4jehlpAZoZ1SZiCV0ryysMBI2UuLzrEj8NR8atGc9eTE8pB93IPsLv7a8VXGmAF9HtqUSDhS1hQtQzoLksoVFS%2B9RpQ2tnsaj6GAipNtPb%2FTKsVa7HFcW5zRRWoLfcoi3uG5%2BnkVcrRwojLOARro%3D--D5tyLGm3bdj3FXic--lovc6LDLQ4rQwPjakOnDOA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=BnWlV0dQ9%2BB7UxgZ%2BmAf1gziAMIbAFSi6G6t%2BVpP3KCXL9JGyFEp5sH%2BlCjLeWOz4UzDfR3%2FMOhbmQKQBRZ5xv1EMryFRPXf1%2FMVBW2kXedeWrdj3junvT%2BcVEUSHaWzf8Ov1RHO1828pE3nUBuU7F%2F4jehlpAZoZ1SZiCV0ryysMBI2UuLzrEj8NR8atGc9eTE8pB93IPsLv7a8VXGmAF9HtqUSDhS1hQtQzoLksoVFS%2B9RpQ2tnsaj6GAipNtPb%2FTKsVa7HFcW5zRRWoLfcoi3uG5%2BnkVcrRwojLOARro%3D--D5tyLGm3bdj3FXic--lovc6LDLQ4rQwPjakOnDOA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=O5u0ojbHD53OtGO19sKFWbke9sfZOmj3MgI1ioCNaqNysyoo5BnW2hYPPH7sxK48Kjr3R2SIah3VRq6lbMLf%2B75tqJoc6Yy9F7RSH38NU4pS%2B9Ayw3SgVcwRdwaSixwmtqs6wZyRObf9SGYdu7Upx73oY6V%2FRQCgKEZ2b8QV2CwjEj4EUIfEl7sxbFAZUcB8%2F0mxW97UrylIGTvo5Rq4%2B5SJkChL61CiAX89w63PdWuFTO0772YKwP%2FHNDA%2FtCqJ90F5thZUewZRIjsBbBCCPMLmpaxeb6TA5vzxbc%2B4qnU9MerG--LmlaSgyYByc%2BtVt%2B--IvitNd7ScvfMdL06xysCVg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"f8adb2da7573ecbc4a9579d7ec8a6ed5\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "ce673cbd-0f39-4369-85bc-ad196e442de0"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.183787"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=16.48, instantiation.active_record;dur=15.30, render.active_model_serializers;dur=0.08, process_action.action_controller;dur=70.46"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "374"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"total_income\": 300000,\n        \"total_expenses\": 10000,\n        \"top_categories\": [\n            {\n                \"category\": \"Food & Dining Updated\",\n                \"amount\": 10000\n            }\n        ],\n        \"monthly_trend\": {\n            \"May 2025\": {\n                \"income\": 0,\n                \"expense\": 0\n            },\n            \"Mar 2025\": {\n                \"income\": 0,\n                \"expense\": 0\n            },\n            \"Jun 2025\": {\n                \"income\": 0,\n                \"expense\": 0\n            },\n            \"Jul 2025\": {\n                \"income\": 0,\n                \"expense\": 0\n            },\n            \"Aug 2025\": {\n                \"income\": 300000,\n                \"expense\": 10000\n            },\n            \"Apr 2025\": {\n                \"income\": 0,\n                \"expense\": 0\n            }\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Spending by Category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/insights/spending_by_category",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"insights",
+								"spending_by_category"
+							]
+						},
+						"description": "Get spending breakdown by category"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/insights/spending_by_category",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"insights",
+										"spending_by_category"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=5%2F%2Bja%2FU3hQDeBkfxcLgvcqi7USdrTKExYpsrcYG4db%2FY9klTuOaO2%2Bkf6o6HsVA651LdsZifGQWYI3%2BHToNs0ZtJepI%2FaOAQ%2FTWkfjEWMTj9bPNRykmyTqLQYyG7vjP5nXGCjrOj1RsZLyLph7dMMe%2B4VRHtZTGj1mKPbjxjq5N1Cp9EWeZCNli53gZwLAboux5UkyI3Xu3DiUrOXFwhb52E0GE8DjOwXA6TwvlLio0fUI3%2B9W1kNAuJ6xYJv1ir6BGlWmmadMjMhUkOwobpoMWVMZAQnngDi1WXxdW1wZo%3D--x6GNH%2FAErlXqsd19--Dwz0HCHRHkJMVs52MdXz%2Bw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=5%2F%2Bja%2FU3hQDeBkfxcLgvcqi7USdrTKExYpsrcYG4db%2FY9klTuOaO2%2Bkf6o6HsVA651LdsZifGQWYI3%2BHToNs0ZtJepI%2FaOAQ%2FTWkfjEWMTj9bPNRykmyTqLQYyG7vjP5nXGCjrOj1RsZLyLph7dMMe%2B4VRHtZTGj1mKPbjxjq5N1Cp9EWeZCNli53gZwLAboux5UkyI3Xu3DiUrOXFwhb52E0GE8DjOwXA6TwvlLio0fUI3%2B9W1kNAuJ6xYJv1ir6BGlWmmadMjMhUkOwobpoMWVMZAQnngDi1WXxdW1wZo%3D--x6GNH%2FAErlXqsd19--Dwz0HCHRHkJMVs52MdXz%2Bw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=vFEyFXhtIBKWWgxJMjGRH75EPK%2FtIYXjf8vkuxPASINBXZSf%2FG6vqAMHM6jAWfSQWfyppuF75a376rQgnDF2sBui6cTGVv%2FTxNF8iw%2BLgF1zoacty9dtqMCa8y6seNiazwkhFev9ffviYcNOOkp1%2BC2X36sp%2BixdRZUztBve0GAizAUz8LfwD1LCdMNvqc5EWCPEYRNFjBId84z25WPlsED00JpVzUdX%2BLoncdsFbYHw0Lt83sE3vj%2Bg9U28Qg7WlPUK5KUn9m93ES%2Fv%2FMGkmnNDPbVmKfQoTrvl4w%2FlOhnEpMbY--CIGPidWplauCNbyw--ojNeACY6OzflGFETmQ1OTA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"4d9b376b329a28bee6553f0f6fba599d\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "ca1351a7-9b5e-4104-8456-2476790fb0b6"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.331182"
+								},
+								{
+									"key": "server-timing",
+									"value": "sql.active_record;dur=27.29, start_processing.action_controller;dur=0.01, instantiation.active_record;dur=11.02, render.active_model_serializers;dur=0.10, process_action.action_controller;dur=72.05"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "20"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"1\": 10000\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Weekly Trends",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/insights/weekly_trends",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"insights",
+								"weekly_trends"
+							]
+						},
+						"description": "Get weekly spending trends"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/insights/weekly_trends",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"insights",
+										"weekly_trends"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=u481KfEuwuPPJZB%2FnqYkmNotZwW5U%2BA7Sxip7H9eRfuZn4tTR92CDfYWMTNRuVnHwA38RmMjTQIbO42glaxkTGjvDaSn4q%2FVSXt0oZ7EkORUa6pldKZdr0Dg9Y96GIcweDj5IeJwNXZDLJKc%2FHdHRNQdtFuR3RX%2BJkl9pUQyoXFYtzwhyeGVZOW1BSVtoHyTRuUFpxwBG6paI6zpGOWPjBbQabcXPwBzkmQUcmXo8POQCzhj9vM9QkE0zNzftLyZe5uIFlB1yDtWrLodUxTiEcX6l42unuEMN9%2FnN0xBriA%3D--qCwFnlTjwztWtERA--QuIC%2Bb78IuJLHUzDqDcnRA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=u481KfEuwuPPJZB%2FnqYkmNotZwW5U%2BA7Sxip7H9eRfuZn4tTR92CDfYWMTNRuVnHwA38RmMjTQIbO42glaxkTGjvDaSn4q%2FVSXt0oZ7EkORUa6pldKZdr0Dg9Y96GIcweDj5IeJwNXZDLJKc%2FHdHRNQdtFuR3RX%2BJkl9pUQyoXFYtzwhyeGVZOW1BSVtoHyTRuUFpxwBG6paI6zpGOWPjBbQabcXPwBzkmQUcmXo8POQCzhj9vM9QkE0zNzftLyZe5uIFlB1yDtWrLodUxTiEcX6l42unuEMN9%2FnN0xBriA%3D--qCwFnlTjwztWtERA--QuIC%2Bb78IuJLHUzDqDcnRA%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=dgi1Hg5ewiMS%2B5j03KQIechbPMNd1jyI4gljFxWSbkZXqdivV45vBHH9%2B%2FTPHg2958f4uwmlOxmDF4%2FnwcHp%2FTqzSx%2Bqqv499fZhEWtgETFkGolfVOBewVdpRSCkCrE8g5Nl%2BFHKr6VXtyjuyGbH6OdeX%2BR8VdEc3AvpBJLBsKo1y3G7S3g%2FtWNW1tlKjOXTDX7S1P1Ex8BKHKwh5KJTB8sQjfeZeaRdrL32kgskEDUdeWfjT54cZGocpsz1K9T8qYlgcZfBDdJ%2FNPE0jHiFhhsPtVn0f%2BoDejVWW5g0p%2BUvESLz--3j6Kh5rU%2FkgdNjg%2F--jrbwUROS7FgqTHNEd0cNcg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"79a29cb79361232891651a84b8d388e8\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "d595ccf0-6243-454a-a561-469903bbbc4a"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.160241"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=7.98, instantiation.active_record;dur=4.14, render.active_model_serializers;dur=0.05, process_action.action_controller;dur=26.83"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "29"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"2025-08-29\": 10000\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Spending Comparison",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/insights/spending_comparison",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"insights",
+								"spending_comparison"
+							]
+						},
+						"description": "Get spending comparison between current and last month"
+					},
+					"response": [
+						{
+							"name": "200 ok",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/insights/spending_comparison",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"insights",
+										"spending_comparison"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "x-frame-options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "x-xss-protection",
+									"value": "0"
+								},
+								{
+									"key": "x-content-type-options",
+									"value": "nosniff"
+								},
+								{
+									"key": "x-permitted-cross-domain-policies",
+									"value": "none"
+								},
+								{
+									"key": "referrer-policy",
+									"value": "strict-origin-when-cross-origin"
+								},
+								{
+									"key": "content-type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=ASXTU4NtHLmZF9Np01m9ieAQ2jv7Qitf4I%2FqDhnHFzHXCFJaGf80KHESlRIjmIlcQ%2FeeEgp1V%2BgX%2FFEP4pfL%2B5JDVQoHO1MKyXf7Aeo4Xmmdr%2FF9p18P8PKd0dWfT1AsiDcYrqbV13f6gL8IsB3SpW1DUqei%2FyEFpMtroRrY8KR6w9NsLevjmlWWi7RroFFD%2B2zkh5ARGX9c9HYna2Ii%2FxAs1Q7Rkuc9Y%2FgWEKjSJYVs7iK71OIDd%2FpsJ%2BS0S2MZI5U64TMc4ulFMX%2BtviILnvXUQluZgTofGiFtI%2BxsnoE%3D--7CTcwA7aT%2BZtJQ0b--7dghg8Oj5y27aty6cpysNw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_session=ASXTU4NtHLmZF9Np01m9ieAQ2jv7Qitf4I%2FqDhnHFzHXCFJaGf80KHESlRIjmIlcQ%2FeeEgp1V%2BgX%2FFEP4pfL%2B5JDVQoHO1MKyXf7Aeo4Xmmdr%2FF9p18P8PKd0dWfT1AsiDcYrqbV13f6gL8IsB3SpW1DUqei%2FyEFpMtroRrY8KR6w9NsLevjmlWWi7RroFFD%2B2zkh5ARGX9c9HYna2Ii%2FxAs1Q7Rkuc9Y%2FgWEKjSJYVs7iK71OIDd%2FpsJ%2BS0S2MZI5U64TMc4ulFMX%2BtviILnvXUQluZgTofGiFtI%2BxsnoE%3D--7CTcwA7aT%2BZtJQ0b--7dghg8Oj5y27aty6cpysNw%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "set-cookie",
+									"value": "_finance_tracker_api_session=prGx14cuAGk%2B%2FsAdQBEW4eEGvkJ%2FhTBLKvltoXQSwJXmaB%2FfBecZRKutr0kndDactPQYe8KwW9SN5E%2BYL4wpv2Q0yOPSrxUXPuoDsl5XKJXBNQaJJrEBstpZ3nezg1ye6sBn0WzGcAGedZ0wLls2RsiPwQWJyAu0XHexzoT30kl2phRUmvjONNkmB14Fah0PefGFx%2B4gL6hqBgf9iXG5Y0%2FsngVDSeaCyPiRhcihIl2gbt9iNZc6mU0UqEGkVMsIfJwwgJ800ZUaAux%2BKLtKvoTM2ZLdknWi%2FEZnEuZSsu1nPsds--JghfIthtFt%2FauJy1--5bh8pKqI6ygJo1BSHlSgBg%3D%3D; path=/; httponly; samesite=lax"
+								},
+								{
+									"key": "etag",
+									"value": "W/\"de05048949168cde9d7e3996ecfd37e2\""
+								},
+								{
+									"key": "cache-control",
+									"value": "max-age=0, private, must-revalidate"
+								},
+								{
+									"key": "x-request-id",
+									"value": "5f921275-ff3b-403f-817f-c64979c48af9"
+								},
+								{
+									"key": "x-runtime",
+									"value": "0.184064"
+								},
+								{
+									"key": "server-timing",
+									"value": "start_processing.action_controller;dur=0.01, sql.active_record;dur=11.23, instantiation.active_record;dur=6.14, render.active_model_serializers;dur=0.04, process_action.action_controller;dur=58.49"
+								},
+								{
+									"key": "vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Length",
+									"value": "71"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"current_month\": 10000,\n        \"last_month\": 0,\n        \"percentage_change\": 100\n    }\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3001",
+			"type": "string"
+		},
+		{
+			"key": "production_url",
+			"value": "https://finance-tracker-backend-5djo.onrender.com",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

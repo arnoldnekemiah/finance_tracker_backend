@@ -12,8 +12,8 @@ class Api::V1::InsightsController < ApplicationController
   
   def overview
     monthly_data = {
-      total_income: current_user.transactions.income.this_month.sum(:amount) || 0,
-      total_expenses: current_user.transactions.expense.this_month.sum(:amount) || 0,
+      total_income: current_user.transactions.income.this_month.sum(:original_amount_cents) || 0,
+      total_expenses: current_user.transactions.expense.this_month.sum(:original_amount_cents) || 0,
       top_categories: top_spending_categories,
       monthly_trend: calculate_monthly_trend
     }
@@ -29,7 +29,7 @@ class Api::V1::InsightsController < ApplicationController
                            .expense
                            .where('date >= ?', 30.days.ago)
                            .group(:category_id)
-                           .sum(:amount)
+                           .sum(:original_amount_cents)
     
     render json: { data: categories }, status: :ok
   rescue StandardError => error
@@ -38,8 +38,8 @@ class Api::V1::InsightsController < ApplicationController
   end
 
   def spending_comparison
-    current_month = current_user.transactions.expense.this_month.sum(:amount) || 0
-    last_month = current_user.transactions.expense.last_month.sum(:amount) || 0
+    current_month = current_user.transactions.expense.this_month.sum(:original_amount_cents) || 0
+    last_month = current_user.transactions.expense.last_month.sum(:original_amount_cents) || 0
     
     comparison = {
       current_month: current_month,
@@ -58,13 +58,13 @@ class Api::V1::InsightsController < ApplicationController
                             .expense
                             .where('date >= ?', 1.week.ago)
                             .group("DATE(date)")
-                            .sum(:amount)
+                            .sum(:original_amount_cents)
     
     render json: { data: weekly_data }, status: :ok
   rescue StandardError => error
     Rails.logger.error "Weekly trends error: #{error.message}"
     render json: { error: 'Failed to fetch weekly trends' }, status: :unprocessable_entity
-  end
+  end 
   
   private
   
@@ -81,7 +81,7 @@ class Api::V1::InsightsController < ApplicationController
                .where('date >= ?', 30.days.ago)
                .joins(:category)
                .group('categories.name')
-               .select('categories.name as category_name, SUM(amount) as total_amount')
+               .select('categories.name as category_name, SUM(original_amount_cents) as total_amount')
                .order('total_amount DESC')
                .limit(limit)
                .map { |t| { category: t.category_name, amount: t.total_amount } }
@@ -94,8 +94,8 @@ class Api::V1::InsightsController < ApplicationController
     transactions = current_user.transactions
                              .where(date: start_date..end_date)
                              .group("DATE_TRUNC('month', date)")
-                             .group(:type)
-                             .sum(:amount)
+                             .group(:transaction_type)
+                             .sum(:original_amount_cents)
     
     # Initialize result hash with all months
     result = {}
