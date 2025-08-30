@@ -1,9 +1,17 @@
 class Api::V1::DashboardController < ApplicationController
+  include ActionController::Caching
+  
   skip_before_action :verify_authenticity_token
   skip_authorization_check
-
-  caches_action :index, :financial_overview, :monthly_summary_by_month,
-                cache_path: -> { dashboard_cache_path }, expires_in: 1.hour
+  
+  # Enable page and action caching
+  caches_page :index, :financial_overview, :monthly_summary_by_month, if: -> { Rails.env.production? }
+  
+  before_action :set_cache_headers
+  
+  def set_cache_headers
+    expires_in 1.hour, public: true
+  end
 
   def index
     account_id = params[:account_id]

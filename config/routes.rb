@@ -15,9 +15,9 @@ Rails.application.routes.draw do
     registrations: 'users/registrations'
   }
 
-  # API routes
+  # API routes with version in the path
   namespace :api, defaults: { format: :json } do
-    scope module: :v1, constraints: ApiVersion.new('v1', true) do
+    namespace :v1 do
       # Transaction routes
       resources :transactions, only: [:index, :create, :show, :update, :destroy] do
         collection do
@@ -64,9 +64,9 @@ Rails.application.routes.draw do
       end
       
       # Dashboard routes
-      get 'dashboard', to: 'dashboard#index'
-      get 'dashboard/financial_overview', to: 'dashboard#financial_overview'
-      get 'dashboard/monthly_summary', to: 'dashboard#monthly_summary_by_month'
+      get 'dashboard', to: 'dashboard#index', as: :dashboard
+      get 'dashboard/financial_overview', to: 'dashboard#financial_overview', as: :dashboard_financial_overview
+      get 'dashboard/monthly_summary', to: 'dashboard#monthly_summary_by_month', as: :dashboard_monthly_summary
       
       # Currency routes
       get 'currencies', to: 'currencies#index'

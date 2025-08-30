@@ -6,14 +6,21 @@ class Users::RegistrationsController < Devise::RegistrationsController
   respond_to :json
 
   before_action :configure_sign_up_params, only: [:create]
+  before_action :map_currency_to_preferred_currency, only: [:create]
 
   protected
 
   def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :currency])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :currency, :preferred_currency])
   end
 
   private
+
+  def map_currency_to_preferred_currency
+    if params[:user] && params[:user][:currency].present?
+      params[:user][:preferred_currency] = params[:user].delete(:currency)
+    end
+  end
 
   def respond_with(current_user, _opts = {})
     if resource.persisted?
