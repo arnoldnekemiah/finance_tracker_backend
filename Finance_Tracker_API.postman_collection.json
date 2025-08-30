@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Finance Tracker API",
-    "description": "Postman collection for Finance Tracker API",
+    "description": "Comprehensive API for Finance Tracker application",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -26,11 +26,12 @@
               "raw": "{{base_url}}/signup",
               "host": ["{{base_url}}"],
               "path": ["signup"]
-            }
+            },
+            "description": "Register a new user"
           }
         },
         {
-          "name": "Login User",
+          "name": "Login",
           "request": {
             "method": "POST",
             "header": [
@@ -41,34 +42,18 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"user\": {\n        \"email\": \"user@example.com\",\n        \"password\": \"password123\"\n    }\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n    \"user\": {\n        \"email\": \"user@example.com\",\n        \"password\": \"password123\"\n    }\n}"
             },
             "url": {
               "raw": "{{base_url}}/login",
               "host": ["{{base_url}}"],
               "path": ["login"]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var jsonData = pm.response.json();",
-                  "pm.environment.set(\"auth_token\", jsonData.token);"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
+            },
+            "description": "Authenticate and get JWT token"
+          }
         },
         {
-          "name": "Logout User",
+          "name": "Logout",
           "request": {
             "method": "DELETE",
             "header": [
@@ -81,7 +66,202 @@
               "raw": "{{base_url}}/logout",
               "host": ["{{base_url}}"],
               "path": ["logout"]
-            }
+            },
+            "description": "Logout user and invalidate token"
+          }
+        },
+        {
+          "name": "Request Password Reset",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/password_reset",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "password_reset"]
+            },
+            "description": "Request password reset instructions"
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reset_token\": \"abc123def456\",\n    \"user\": {\n        \"password\": \"newpassword123\",\n        \"password_confirmation\": \"newpassword123\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/password_reset",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "password_reset"]
+            },
+            "description": "Reset password with token"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "dashboard"]
+            },
+            "description": "Get comprehensive financial dashboard data including balance overview, monthly summary, spending trends, and quick stats"
+          }
+        },
+        {
+          "name": "Get Financial Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/dashboard/financial_overview",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "dashboard", "financial_overview"]
+            },
+            "description": "Get net worth calculation with total assets and total debts"
+          }
+        },
+        {
+          "name": "Get Monthly Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/dashboard/monthly_summary?month=8&year=2025",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "dashboard", "monthly_summary"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "8",
+                  "description": "Month (1-12)"
+                },
+                {
+                  "key": "year",
+                  "value": "2025",
+                  "description": "Year"
+                }
+              ]
+            },
+            "description": "Get monthly financial summary including starting balance, ending balance, income, and expenses"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Currencies",
+      "item": [
+        {
+          "name": "Get Currencies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/currencies",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "currencies"]
+            },
+            "description": "Get supported currencies and exchange rates"
+          }
+        },
+        {
+          "name": "Update Currency Preference",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user\": {\n        \"preferred_currency\": \"EUR\",\n        \"timezone\": \"UTC\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/currencies/preference",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "currencies", "preference"]
+            },
+            "description": "Update user's preferred currency for displaying financial data"
+          }
+        },
+        {
+          "name": "Get Exchange Rates",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/currencies/exchange_rates?from=USD&to=EUR,GBP,JPY",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "currencies", "exchange_rates"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "USD",
+                  "description": "Base currency code"
+                },
+                {
+                  "key": "to",
+                  "value": "EUR,GBP,JPY",
+                  "description": "Comma-separated list of target currency codes"
+                }
+              ]
+            },
+            "description": "Get current exchange rates from base currency to target currencies"
           }
         }
       ]
@@ -100,10 +280,23 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/budgets",
+              "raw": "{{base_url}}/api/v1/budgets?page=1&per_page=20",
               "host": ["{{base_url}}"],
-              "path": ["api", "v1", "budgets"]
-            }
+              "path": ["api", "v1", "budgets"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "per_page",
+                  "value": "20",
+                  "description": "Number of items per page (max 100)"
+                }
+              ]
+            },
+            "description": "List all budgets with pagination and calculated fields"
           }
         },
         {
@@ -112,32 +305,28 @@
             "method": "POST",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
                 "key": "Authorization",
                 "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"budget\": {\n        \"category_id\": 1,\n        \"limit\": 1000,\n        \"start_date\": \"2025-08-01\",\n        \"end_date\": \"2025-08-31\",\n        \"period\": \"monthly\"\n    }\n}"
+              "raw": "{\n    \"budget\": {\n        \"category_id\": 3,\n        \"limit\": 500.00,\n        \"start_date\": \"2025-08-01T00:00:00.000Z\",\n        \"end_date\": \"2025-08-31T00:00:00.000Z\",\n        \"period\": \"monthly\"\n    }\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/v1/budgets",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "budgets"]
-            }
+            },
+            "description": "Create a new budget with automatic calculation of derived fields"
           }
-        }
-      ]
-    },
-    {
-      "name": "Accounts",
-      "item": [
+        },
         {
-          "name": "List Accounts",
+          "name": "Get Budget",
           "request": {
             "method": "GET",
             "header": [
@@ -147,194 +336,55 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/accounts",
+              "raw": "{{base_url}}/api/v1/budgets/1",
               "host": ["{{base_url}}"],
-              "path": ["api", "v1", "accounts"]
-            }
+              "path": ["api", "v1", "budgets", "1"]
+            },
+            "description": "Get a specific budget with calculated fields and complete category details"
           }
         },
         {
-          "name": "Create Account",
+          "name": "Update Budget",
           "request": {
-            "method": "POST",
+            "method": "PUT",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
               {
                 "key": "Authorization",
                 "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"account\": {\n        \"name\": \"Savings Account\",\n        \"account_type\": \"savings\",\n        \"bank_name\": \"Example Bank\",\n        \"balance\": 5000,\n        \"currency\": \"USD\",\n        \"description\": \"Personal savings account\"\n    }\n}"
+              "raw": "{\n    \"budget\": {\n        \"category_id\": 3,\n        \"limit\": 600.00,\n        \"start_date\": \"2025-08-01T00:00:00.000Z\",\n        \"end_date\": \"2025-08-31T00:00:00.000Z\",\n        \"period\": \"monthly\"\n    }\n}"
             },
             "url": {
-              "raw": "{{base_url}}/api/v1/accounts",
+              "raw": "{{base_url}}/api/v1/budgets/1",
               "host": ["{{base_url}}"],
-              "path": ["api", "v1", "accounts"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Transactions",
-      "item": [
-        {
-          "name": "List Transactions",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/v1/transactions",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "transactions"],
-              "query": [
-                {
-                  "key": "start_date",
-                  "value": "2025-08-01"
-                },
-                {
-                  "key": "end_date",
-                  "value": "2025-08-31"
-                },
-                {
-                  "key": "category_id",
-                  "value": "1"
-                },
-                {
-                  "key": "account_id",
-                  "value": "1"
-                }
-              ]
-            }
+              "path": ["api", "v1", "budgets", "1"]
+            },
+            "description": "Update an existing budget and recalculate derived fields"
           }
         },
         {
-          "name": "Create Transaction",
+          "name": "Delete Budget",
           "request": {
-            "method": "POST",
+            "method": "DELETE",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
               {
                 "key": "Authorization",
                 "value": "Bearer {{auth_token}}"
               }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"transaction\": {\n        \"amount\": 100.50,\n        \"description\": \"Grocery shopping\",\n        \"transaction_type\": \"expense\",\n        \"date\": \"2025-08-02\",\n        \"category_id\": 1,\n        \"account_id\": 1\n    }\n}"
+            "url": {
+              "raw": "{{base_url}}/api/v1/budgets/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "budgets", "1"]
             },
-            "url": {
-              "raw": "{{base_url}}/api/v1/transactions",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "transactions"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Saving Goals",
-      "item": [
-        {
-          "name": "List Saving Goals",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/v1/saving_goals",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "saving_goals"]
-            }
-          }
-        },
-        {
-          "name": "Create Saving Goal",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"saving_goal\": {\n        \"title\": \"New Laptop\",\n        \"target_amount\": 1500,\n        \"current_amount\": 500,\n        \"target_date\": \"2025-12-31\",\n        \"notes\": \"Saving for a new MacBook Pro\"\n    }\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/v1/saving_goals",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "saving_goals"]
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Debts",
-      "item": [
-        {
-          "name": "List Debts",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/v1/debts",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "debts"]
-            }
-          }
-        },
-        {
-          "name": "Create Debt",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"debt\": {\n        \"title\": \"Credit Card Debt\",\n        \"amount\": 2500,\n        \"creditor\": \"Bank of America\",\n        \"description\": \"Credit card balance transfer\",\n        \"due_date\": \"2025-12-31\",\n        \"status\": \"pending\",\n        \"debt_type\": \"credit_card\",\n        \"interest_rate\": 18.99,\n        \"is_recurring\": true,\n        \"recurring_period\": \"monthly\"\n    }\n}"
-            },
-            "url": {
-              "raw": "{{base_url}}/api/v1/debts",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "debts"]
-            }
+            "description": "Permanently delete a budget"
           }
         }
       ]
@@ -356,7 +406,8 @@
               "raw": "{{base_url}}/api/v1/categories",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "categories"]
-            }
+            },
+            "description": "List all categories"
           }
         },
         {
@@ -365,32 +416,181 @@
             "method": "POST",
             "header": [
               {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
                 "key": "Authorization",
                 "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"category\": {\n        \"name\": \"Groceries\",\n        \"icon\": \"🛒\",\n        \"color\": \"#4CAF50\",\n        \"transaction_type\": \"expense\"\n    }\n}"
+              "raw": "{\n    \"category\": {\n        \"name\": \"Food & Dining\",\n        \"icon\": \"restaurant\",\n        \"color\": \"#FF6B6B\",\n        \"transaction_type\": \"expense\"\n    }\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/v1/categories",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "categories"]
-            }
+            },
+            "description": "Create a new category"
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"category\": {\n        \"name\": \"Food & Dining Updated\",\n        \"icon\": \"restaurant\",\n        \"color\": \"#FF6B6B\",\n        \"transaction_type\": \"expense\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories", "1"]
+            },
+            "description": "Update an existing category"
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories", "1"]
+            },
+            "description": "Delete a category"
+          }
+        },
+        {
+          "name": "Bulk Create Categories",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"categories\": [\n        {\n            \"name\": \"Transportation\",\n            \"icon\": \"car\",\n            \"color\": \"#4ECDC4\",\n            \"transaction_type\": \"expense\"\n        },\n        {\n            \"name\": \"Entertainment\",\n            \"icon\": \"movie\",\n            \"color\": \"#45B7D1\",\n            \"transaction_type\": \"expense\"\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories/bulk_create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories", "bulk_create"]
+            },
+            "description": "Create multiple categories at once"
+          }
+        },
+        {
+          "name": "Bulk Update Categories",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"categories\": [\n        {\n            \"id\": 1,\n            \"name\": \"Food & Dining Updated\",\n            \"icon\": \"restaurant\",\n            \"color\": \"#FF6B6B\",\n            \"transaction_type\": \"expense\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Transportation Updated\",\n            \"icon\": \"car\",\n            \"color\": \"#4ECDC4\",\n            \"transaction_type\": \"expense\"\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories/bulk_update",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories", "bulk_update"]
+            },
+            "description": "Update multiple categories at once"
+          }
+        },
+        {
+          "name": "Bulk Delete Categories",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"category_ids\": [1, 2, 3]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories/bulk_destroy",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories", "bulk_destroy"]
+            },
+            "description": "Delete multiple categories at once"
+          }
+        },
+        {
+          "name": "Move Transactions Between Categories",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"move_transactions\": {\n        \"from_category_id\": 1,\n        \"to_category_id\": 2\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories/move_transactions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories", "move_transactions"]
+            },
+            "description": "Move all transactions from one category to another"
           }
         }
       ]
     },
     {
-      "name": "Profile",
+      "name": "Accounts",
       "item": [
         {
-          "name": "Get Profile",
+          "name": "List Accounts",
           "request": {
             "method": "GET",
             "header": [
@@ -400,14 +600,41 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/profile",
+              "raw": "{{base_url}}/api/v1/accounts",
               "host": ["{{base_url}}"],
-              "path": ["api", "v1", "profile"]
-            }
+              "path": ["api", "v1", "accounts"]
+            },
+            "description": "List all accounts"
           }
         },
         {
-          "name": "Dashboard Summary",
+          "name": "Create Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"account\": {\n        \"name\": \"Main Checking\",\n        \"account_type\": \"checking\",\n        \"account_number\": \"1234567890\",\n        \"bank_name\": \"First National Bank\",\n        \"balance\": 2500.00,\n        \"currency\": \"USD\",\n        \"description\": \"Primary checking account\",\n        \"is_active\": true\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts"]
+            },
+            "description": "Create a new account"
+          }
+        },
+        {
+          "name": "Get Account",
           "request": {
             "method": "GET",
             "header": [
@@ -417,10 +644,448 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/api/v1/profile/dashboard_summary",
+              "raw": "{{base_url}}/api/v1/accounts/1",
               "host": ["{{base_url}}"],
-              "path": ["api", "v1", "profile", "dashboard_summary"]
-            }
+              "path": ["api", "v1", "accounts", "1"]
+            },
+            "description": "Get account details by ID"
+          }
+        },
+        {
+          "name": "Update Account",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"account\": {\n        \"name\": \"Main Checking Updated\",\n        \"account_type\": \"checking\",\n        \"account_number\": \"1234567890\",\n        \"bank_name\": \"First National Bank\",\n        \"balance\": 2750.00,\n        \"currency\": \"USD\",\n        \"description\": \"Primary checking account - updated\",\n        \"is_active\": true\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts", "1"]
+            },
+            "description": "Update an existing account"
+          }
+        },
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts", "1"]
+            },
+            "description": "Deactivate an account"
+          }
+        },
+        {
+          "name": "Update Account Balance",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"balance\": 3000.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/accounts/1/update_balance",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "accounts", "1", "update_balance"]
+            },
+            "description": "Update account balance directly"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Saving Goals",
+      "item": [
+        {
+          "name": "List Saving Goals",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/saving_goals",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "saving_goals"]
+            },
+            "description": "List all saving goals"
+          }
+        },
+        {
+          "name": "Create Saving Goal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"saving_goal\": {\n        \"title\": \"Down Payment Fund\",\n        \"target_amount\": 10000.00,\n        \"current_amount\": 2500.00,\n        \"target_date\": \"2026-12-31T00:00:00.000Z\",\n        \"notes\": \"Saving for a house down payment\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/saving_goals",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "saving_goals"]
+            },
+            "description": "Create a new saving goal"
+          }
+        },
+        {
+          "name": "Get Saving Goal",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/saving_goals/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "saving_goals", "1"]
+            },
+            "description": "Retrieve a specific saving goal"
+          }
+        },
+        {
+          "name": "Update Saving Goal",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"saving_goal\": {\n        \"title\": \"Down Payment Fund Updated\",\n        \"target_amount\": 12000.00,\n        \"current_amount\": 3000.00,\n        \"target_date\": \"2027-12-31T00:00:00.000Z\",\n        \"notes\": \"Updated saving for a house down payment\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/saving_goals/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "saving_goals", "1"]
+            },
+            "description": "Update an existing saving goal"
+          }
+        },
+        {
+          "name": "Delete Saving Goal",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/saving_goals/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "saving_goals", "1"]
+            },
+            "description": "Delete a saving goal"
+          }
+        },
+        {
+          "name": "Update Saving Goal Progress",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"progress_amount\": 500.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/saving_goals/1/update_progress",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "saving_goals", "1", "update_progress"]
+            },
+            "description": "Update progress of a saving goal"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Debts",
+      "item": [
+        {
+          "name": "List Debts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/debts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "debts"]
+            },
+            "description": "List all debts"
+          }
+        },
+        {
+          "name": "Create Debt",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"debt\": {\n        \"title\": \"Credit Card Balance\",\n        \"amount\": 2500.00,\n        \"creditor\": \"Chase Bank\",\n        \"description\": \"Credit card debt to be paid off\",\n        \"due_date\": \"2025-09-15\",\n        \"status\": \"pending\",\n        \"debt_type\": \"credit_card\",\n        \"interest_rate\": 18.5,\n        \"is_recurring\": false\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/debts",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "debts"]
+            },
+            "description": "Create a new debt"
+          }
+        },
+        {
+          "name": "Get Debt",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/debts/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "debts", "1"]
+            },
+            "description": "Retrieve a specific debt"
+          }
+        },
+        {
+          "name": "Update Debt",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"debt\": {\n        \"title\": \"Credit Card Balance Updated\",\n        \"amount\": 2200.00,\n        \"creditor\": \"Chase Bank\",\n        \"description\": \"Updated credit card debt\",\n        \"due_date\": \"2025-09-15\",\n        \"status\": \"pending\",\n        \"debt_type\": \"credit_card\",\n        \"interest_rate\": 18.5,\n        \"is_recurring\": false\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/debts/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "debts", "1"]
+            },
+            "description": "Update an existing debt"
+          }
+        },
+        {
+          "name": "Delete Debt",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/debts/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "debts", "1"]
+            },
+            "description": "Delete a debt"
+          }
+        },
+        {
+          "name": "Mark Debt as Paid",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/debts/1/mark_as_paid",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "debts", "1", "mark_as_paid"]
+            },
+            "description": "Mark a debt as paid"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/transactions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "transactions"]
+            },
+            "description": "List all transactions"
+          }
+        },
+        {
+          "name": "Create Expense Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"transaction\": {\n        \"amount\": 50.00,\n        \"description\": \"Grocery shopping\",\n        \"transaction_type\": \"expense\",\n        \"date\": \"2025-08-29T10:30:00Z\",\n        \"notes\": \"Weekly groceries\",\n        \"payment_method\": \"credit_card\",\n        \"category_id\": 1,\n        \"from_account_id\": 1\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/transactions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "transactions"]
+            },
+            "description": "Create a new expense transaction"
+          }
+        },
+        {
+          "name": "Create Income Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"transaction\": {\n        \"amount\": 3000.00,\n        \"description\": \"Monthly salary\",\n        \"transaction_type\": \"income\",\n        \"date\": \"2025-08-29T09:00:00Z\",\n        \"notes\": \"Salary deposit\",\n        \"payment_method\": \"bank_transfer\",\n        \"category_id\": 2,\n        \"to_account_id\": 1\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/transactions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "transactions"]
+            },
+            "description": "Create an income transaction"
+          }
+        },
+        {
+          "name": "Create Transfer Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"transaction\": {\n        \"amount\": 500.00,\n        \"description\": \"Transfer to savings\",\n        \"transaction_type\": \"transfer\",\n        \"date\": \"2025-08-29T14:00:00Z\",\n        \"notes\": \"Monthly savings transfer\",\n        \"payment_method\": \"bank_transfer\",\n        \"category_id\": 3,\n        \"from_account_id\": 1,\n        \"to_account_id\": 2\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/transactions",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "transactions"]
+            },
+            "description": "Create a transfer transaction between accounts"
           }
         }
       ]
@@ -429,7 +1094,7 @@
       "name": "Insights",
       "item": [
         {
-          "name": "Overview",
+          "name": "Get Monthly Overview",
           "request": {
             "method": "GET",
             "header": [
@@ -442,11 +1107,12 @@
               "raw": "{{base_url}}/api/v1/insights/overview",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "insights", "overview"]
-            }
+            },
+            "description": "Get monthly financial overview with income, expenses, and trends"
           }
         },
         {
-          "name": "Spending by Category",
+          "name": "Get Spending by Category",
           "request": {
             "method": "GET",
             "header": [
@@ -459,11 +1125,12 @@
               "raw": "{{base_url}}/api/v1/insights/spending_by_category",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "insights", "spending_by_category"]
-            }
+            },
+            "description": "Get spending breakdown by category"
           }
         },
         {
-          "name": "Weekly Trends",
+          "name": "Get Weekly Trends",
           "request": {
             "method": "GET",
             "header": [
@@ -476,11 +1143,12 @@
               "raw": "{{base_url}}/api/v1/insights/weekly_trends",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "insights", "weekly_trends"]
-            }
+            },
+            "description": "Get weekly spending trends"
           }
         },
         {
-          "name": "Spending Comparison",
+          "name": "Get Spending Comparison",
           "request": {
             "method": "GET",
             "header": [
@@ -493,95 +1161,22 @@
               "raw": "{{base_url}}/api/v1/insights/spending_comparison",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "insights", "spending_comparison"]
-            }
+            },
+            "description": "Get spending comparison between current and last month"
           }
         }
       ]
-    },
-    {
-      "name": "Reports",
-      "item": [
-        {
-          "name": "Spending by Category",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/v1/reports/spending_by_category",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "reports", "spending_by_category"],
-              "query": [
-                {
-                  "key": "start_date",
-                  "value": "2025-08-01"
-                },
-                {
-                  "key": "end_date",
-                  "value": "2025-08-31"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Monthly Comparison",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{auth_token}}"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/v1/reports/monthly_comparison",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "reports", "monthly_comparison"]
-            }
-          }
-        }
-      ]
-    }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{auth_token}}",
-        "type": "string"
-      }
-    ]
-  },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "// Set environment variables here if needed"
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "// Add tests here"
-        ]
-      }
     }
   ],
   "variable": [
     {
       "key": "base_url",
       "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "production_url",
+      "value": "https://finance-tracker-backend-5djo.onrender.com",
       "type": "string"
     },
     {
