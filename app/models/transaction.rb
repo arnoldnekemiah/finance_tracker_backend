@@ -38,7 +38,7 @@ class Transaction < ApplicationRecord
   end
 
   def formatted_amount
-    CurrencyService.format_money(amount, user_currency)
+    CurrencyService.format_money(original_amount, user_currency)
   end
 
   def formatted_original_amount

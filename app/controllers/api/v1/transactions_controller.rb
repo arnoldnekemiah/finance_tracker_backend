@@ -1,6 +1,6 @@
 class Api::V1::TransactionsController < ApplicationController
   skip_before_action :verify_authenticity_token
-  load_and_authorize_resource
+  load_and_authorize_resource except: :create
   before_action :set_transaction, only: %i[show update destroy]
   
   def index
@@ -44,7 +44,9 @@ class Api::V1::TransactionsController < ApplicationController
     # Pass the raw parameters to the service
     result = Transactions::CreatorService.new(current_user, params).call
     if result[:success]
-      render json: result[:transaction], serializer: TransactionSerializer, status: :created
+      @transaction = result[:transaction]
+      authorize! :create, @transaction
+      render json: @transaction, serializer: TransactionSerializer, status: :created
     else
       render json: { errors: result[:errors] }, status: :unprocessable_entity
     end
@@ -123,9 +125,6 @@ class Api::V1::TransactionsController < ApplicationController
       :date, 
       :notes, 
       :payment_method
-    ).tap do |whitelisted|
-      # Allow amount parameter but don't whitelist it for mass assignment
-      whitelisted[:amount] = params[:transaction][:amount] if params.dig(:transaction, :amount).present?
-    end
+    )
   end
 end
