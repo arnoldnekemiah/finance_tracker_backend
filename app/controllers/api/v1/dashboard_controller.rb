@@ -5,7 +5,7 @@ class Api::V1::DashboardController < ApplicationController
   skip_authorization_check
   
   # Enable page and action caching
-  caches_page :index, :financial_overview, :monthly_summary_by_month, if: -> { Rails.env.production? }
+  caches_action :index, :financial_overview, :monthly_summary_by_month, cache_path: -> { dashboard_cache_path }, if: -> { Rails.env.production? }
   
   before_action :set_cache_headers
   
