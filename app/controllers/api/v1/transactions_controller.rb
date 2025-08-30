@@ -41,7 +41,8 @@ class Api::V1::TransactionsController < ApplicationController
   end
 
   def create
-    result = Transactions::CreatorService.new(current_user, transaction_params).call
+    # Pass the raw parameters to the service
+    result = Transactions::CreatorService.new(current_user, params).call
     if result[:success]
       render json: result[:transaction], serializer: TransactionSerializer, status: :created
     else
@@ -122,6 +123,9 @@ class Api::V1::TransactionsController < ApplicationController
       :date, 
       :notes, 
       :payment_method
-    )
+    ).tap do |whitelisted|
+      # Allow amount parameter but don't whitelist it for mass assignment
+      whitelisted[:amount] = params[:transaction][:amount] if params.dig(:transaction, :amount).present?
+    end
   end
 end

@@ -14,6 +14,11 @@ class Api::V1::AccountsController < ApplicationController
 
   def create
     account = current_user.accounts.build(account_params)
+    # Map common account types to the allowed values
+    if %w[bank checking].include?(account.account_type)
+      account.account_type = 'regular'
+    end
+    
     if account.save
       render json: account, serializer: AccountSerializer, status: :created
     else
@@ -51,6 +56,7 @@ class Api::V1::AccountsController < ApplicationController
     params.require(:account).permit(
       :name,
       :account_type,
+      :account_number,
       :bank_name,
       :balance,
       :currency,

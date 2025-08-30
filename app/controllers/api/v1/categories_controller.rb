@@ -36,30 +36,12 @@ class Api::V1::CategoriesController < ApplicationController
     head :no_content
   end
 
-  private
-
-  def set_category
-    @category = current_user.categories.find(params[:id])
-  end
-
-  def category_params
-    params.require(:category).permit(:name, :icon, :color, :transaction_type)
-  end
-
   def bulk_create
     result = Categories::BulkCreatorService.new(current_user, categories_params).call
     if result[:success]
-      render json: result[:categories], status: :created
+      render json: result[:categories], each_serializer: CategorySerializer, status: :created
     else
       render json: { errors: result[:errors] }, status: :unprocessable_entity
-    end
-  end
-
-  private
-
-  def categories_params
-    params.require(:categories).map do |p|
-      p.permit(:name, :icon, :color, :transaction_type, :parent_category_id)
     end
   end
 
@@ -72,7 +54,30 @@ class Api::V1::CategoriesController < ApplicationController
     end
   end
 
+  def move_transactions
+    result = Categories::TransactionMoverService.new(current_user, move_transactions_params[:from_category_id], move_transactions_params[:to_category_id]).call
+    if result[:success]
+      render json: { moved_count: result[:moved_count] }, status: :ok
+    else
+      render json: { errors: result[:errors] }, status: :unprocessable_entity
+    end
+  end
+
   private
+
+  def set_category
+    @category = current_user.categories.find(params[:id])
+  end
+
+  def category_params
+    params.require(:category).permit(:name, :icon, :color, :transaction_type)
+  end
+
+  def categories_params
+    params.require(:categories).map do |p|
+      p.permit(:name, :icon, :color, :transaction_type, :parent_category_id)
+    end
+  end
 
   def bulk_update_categories_params
     params.require(:categories).map do |p|
@@ -94,17 +99,6 @@ class Api::V1::CategoriesController < ApplicationController
   def bulk_destroy_category_ids
     params.require(:category_ids)
   end
-
-  def move_transactions
-    result = Categories::TransactionMoverService.new(current_user, move_transactions_params[:from_category_id], move_transactions_params[:to_category_id]).call
-    if result[:success]
-      render json: { moved_count: result[:moved_count] }, status: :ok
-    else
-      render json: { errors: result[:errors] }, status: :unprocessable_entity
-    end
-  end
-
-  private
 
   def move_transactions_params
     params.require(:move_transactions).permit(:from_category_id, :to_category_id)

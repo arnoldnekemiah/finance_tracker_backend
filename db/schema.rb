@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_28_115413) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_30_122256) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -116,6 +116,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_28_115413) do
     t.integer "original_amount_cents"
     t.integer "from_account_id"
     t.integer "to_account_id"
+    t.text "notes"
     t.index ["account_id"], name: "index_transactions_on_account_id"
     t.index ["category_id"], name: "index_transactions_on_category_id"
     t.index ["date"], name: "index_transactions_on_date"

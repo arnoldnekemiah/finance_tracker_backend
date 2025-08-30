@@ -14,6 +14,9 @@ class Api::V1::CurrenciesController < ApplicationController
   end
 
   def update_preference
+    # Rails.logger.info "Updating user currency with params: #{params.inspect}"
+    # Rails.logger.info "Permitted params: #{currency_params.inspect}"
+    
     if current_user.update(currency_params)
       render json: {
         status: { success: true, message: 'Currency preference updated successfully' },
@@ -23,8 +26,10 @@ class Api::V1::CurrenciesController < ApplicationController
         }
       }
     else
+      # Rails.logger.error "Failed to update user: #{current_user.errors.full_messages.join(', ')}"
       render json: {
-        status: { success: false, message: current_user.errors.full_messages.join(', ') }
+        status: { success: false, message: current_user.errors.full_messages.join(', ') },
+        errors: current_user.errors.full_messages
       }, status: :unprocessable_entity
     end
   end
@@ -54,7 +59,11 @@ class Api::V1::CurrenciesController < ApplicationController
   private
 
   def currency_params
-    params.require(:user).permit(:preferred_currency, :timezone)
+    if params[:currency] && params[:currency][:user]
+      params.require(:currency).require(:user).permit(:preferred_currency)
+    else
+      params.require(:user).permit(:preferred_currency)
+    end
   end
 
   def get_current_rates

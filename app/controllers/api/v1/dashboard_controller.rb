@@ -51,6 +51,11 @@ class Api::V1::DashboardController < ApplicationController
     # Calculate net worth
     net_worth = total_assets - total_debts
     
+    # Convert Money objects to numeric values if needed
+    total_assets_value = total_assets.is_a?(Money) ? total_assets.amount : total_assets.to_f
+    total_debts_value = total_debts.is_a?(Money) ? total_debts.amount : total_debts.to_f
+    net_worth_value = net_worth.is_a?(Money) ? net_worth.amount : net_worth.to_f
+    
     render json: {
       status: { success: true, message: "Financial overview retrieved successfully" },
       data: {
@@ -59,9 +64,9 @@ class Api::V1::DashboardController < ApplicationController
           symbol: currency_info[:symbol],
           name: currency_info[:name]
         },
-        total_assets: format_money(total_assets.amount),
-        total_debts: format_money(total_debts.amount),
-        net_worth: format_money(net_worth.amount)
+        total_assets: format_money(total_assets_value),
+        total_debts: format_money(total_debts_value),
+        net_worth: format_money(net_worth_value)
       }
     }
   end
@@ -90,6 +95,13 @@ class Api::V1::DashboardController < ApplicationController
     # Calculate ending balance
     ending_balance = starting_balance + monthly_income - monthly_expenses
     
+    # Convert values to numeric if they're Money objects
+    starting_balance_value = starting_balance.is_a?(Money) ? starting_balance.amount : starting_balance.to_f
+    ending_balance_value = ending_balance.is_a?(Money) ? ending_balance.amount : ending_balance.to_f
+    monthly_income_value = monthly_income.is_a?(Money) ? monthly_income.amount : monthly_income.to_f
+    monthly_expenses_value = monthly_expenses.is_a?(Money) ? monthly_expenses.amount : monthly_expenses.to_f
+    net_change_value = monthly_income_value - monthly_expenses_value
+    
     currency_info = current_user.currency_info
     
     render json: {
@@ -102,11 +114,11 @@ class Api::V1::DashboardController < ApplicationController
         },
         month: month,
         year: year,
-        starting_balance: format_money(starting_balance.amount),
-        ending_balance: format_money(ending_balance.amount),
-        total_income: format_money(monthly_income.amount),
-        total_expenses: format_money(monthly_expenses.amount),
-        net_change: format_money((monthly_income - monthly_expenses).amount)
+        starting_balance: format_money(starting_balance_value),
+        ending_balance: format_money(ending_balance_value),
+        total_income: format_money(monthly_income_value),
+        total_expenses: format_money(monthly_expenses_value),
+        net_change: format_money(net_change_value)
       }
     }
   end
@@ -132,10 +144,10 @@ class Api::V1::DashboardController < ApplicationController
     monthly_expenses = current_month_expenses(account_id)
     
     {
-      current_balance: format_money(current_balance.amount),
-      monthly_income: format_money(monthly_income.amount),
-      monthly_expenses: format_money(monthly_expenses.amount),
-      net_income: format_money((monthly_income - monthly_expenses).amount)
+      current_balance: format_money(current_balance.is_a?(Money) ? current_balance.amount : current_balance),
+      monthly_income: format_money(monthly_income.is_a?(Money) ? monthly_income.amount : monthly_income),
+      monthly_expenses: format_money(monthly_expenses.is_a?(Money) ? monthly_expenses.amount : monthly_expenses),
+      net_income: format_money((monthly_income - monthly_expenses).is_a?(Money) ? (monthly_income - monthly_expenses).amount : (monthly_income - monthly_expenses))
     }
   end
 
@@ -148,14 +160,14 @@ class Api::V1::DashboardController < ApplicationController
       Date.current, Date.current
     ).map { |b| b.limit.exchange_to(user_currency) }.sum
     
-    budget_utilization = total_budget_limit.amount > 0 ? (monthly_expenses.amount / total_budget_limit.amount) : 0
-    savings_rate = monthly_income.amount > 0 ? ((monthly_income.amount - monthly_expenses.amount) / monthly_income.amount) : 0
-    
     {
-      budget_utilization: budget_utilization.round(2),
-      income: monthly_income.amount,
-      expenses: monthly_expenses.amount,
-      savings_rate: savings_rate.round(2)
+      income: format_money(monthly_income.is_a?(Money) ? monthly_income.amount : monthly_income),
+      expenses: format_money(monthly_expenses.is_a?(Money) ? monthly_expenses.amount : monthly_expenses),
+      savings: format_money((monthly_income - monthly_expenses).is_a?(Money) ? 
+                          (monthly_income - monthly_expenses).amount : 
+                          (monthly_income - monthly_expenses)),
+      budget_utilization: total_budget_limit.positive? ? 
+                         ((monthly_expenses.to_f / total_budget_limit.to_f) * 100).round(2) : 0
     }
   end
 
@@ -171,7 +183,7 @@ class Api::V1::DashboardController < ApplicationController
       transactions = transactions.where(from_account_id: account_id) if account_id
       daily_amount = transactions.map { |t| t.original_amount.exchange_to(user_currency) }.sum
       
-      daily_spending << daily_amount.amount
+      daily_spending << (daily_amount.is_a?(Money) ? daily_amount.amount : daily_amount)
       labels << date.strftime('%a')
     end
     
@@ -200,14 +212,18 @@ class Api::V1::DashboardController < ApplicationController
       }
     end
 
+    total_amount = total_expenses.is_a?(Money) ? total_expenses.amount : total_expenses.to_f
+    
     category_spending.map do |data|
       category = data[:category]
       amount = data[:amount]
+      amount_value = amount.is_a?(Money) ? amount.amount : amount.to_f
+      
       {
         category_id: category&.id,
         category_name: category&.name || 'Uncategorized',
-        amount: amount.amount,
-        percentage: total_expenses.amount > 0 ? ((amount.amount / total_expenses.amount) * 100).round(1) : 0,
+        amount: amount_value,
+        percentage: total_amount > 0 ? ((amount_value / total_amount) * 100).round(1) : 0,
         icon: category&.icon || 'default',
         color: category&.color || '#6B7280'
       }

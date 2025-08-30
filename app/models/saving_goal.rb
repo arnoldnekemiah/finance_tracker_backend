@@ -27,12 +27,15 @@ class SavingGoal < ApplicationRecord
   end
 
   def days_remaining
-    return 0 if target_date < Date.current
-(target_date - Date.today).to_i
+    return 0 unless target_date.is_a?(Date) || target_date.is_a?(Time)
+    today = Date.current
+    return 0 if target_date.to_date < today
+    (target_date.to_date - today).to_i
   end
 
   def overdue?
-    target_date < Date.current && !achieved?
+    return false unless target_date.is_a?(Date) || target_date.is_a?(Time)
+    target_date.to_date < Date.current && !achieved?
   end
 
   def monthly_savings_needed
