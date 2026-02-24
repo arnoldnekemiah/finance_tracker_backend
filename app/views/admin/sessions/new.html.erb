@@ -3,143 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login - Finance Tracker</title>
-  
+  <title>Admin Login — Accountanta</title>
+
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
-  
-  <!-- Tailwind CSS -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
   <style>
-    body {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #dee2e6 100%);
+    body { font-family: 'Inter', sans-serif; }
+    .login-bg {
+      background: linear-gradient(135deg, #0a0a14 0%, #1e1e2e 50%, #11111b 100%);
+      position: relative;
+      overflow: hidden;
     }
-    .gold-accent {
-      background: linear-gradient(45deg, #FFD700, #FFA500);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+    .login-bg::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(251,191,36,0.08) 0%, transparent 70%);
+      top: -200px; right: -200px;
+      border-radius: 50%;
     }
-    .gold-bg {
-      background: linear-gradient(45deg, #FFD700, #FFA500);
+    .login-bg::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(251,191,36,0.05) 0%, transparent 70%);
+      bottom: -100px; left: -100px;
+      border-radius: 50%;
     }
-    .gold-border {
-      border-color: #FFD700;
+    .login-card {
+      background: rgba(30, 30, 46, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.06);
     }
-    .admin-card {
-      backdrop-filter: blur(10px);
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid rgba(255, 215, 0, 0.3);
+    .input-field {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: all 0.2s;
+    }
+    .input-field:focus {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(251,191,36,0.5);
+      box-shadow: 0 0 0 3px rgba(251,191,36,0.1);
+    }
+    .btn-login {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      transition: all 0.3s;
+    }
+    .btn-login:hover {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(251,191,36,0.25);
     }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center">
-  <div class="w-full max-w-md">
-    <div class="admin-card rounded-2xl shadow-2xl p-8">
+<body class="login-bg min-h-screen flex items-center justify-center px-4">
+  <div class="w-full max-w-md relative z-10">
+    <div class="login-card rounded-2xl p-8">
+      <!-- Logo -->
       <div class="text-center mb-8">
-        <div class="mx-auto h-16 w-16 flex items-center justify-center rounded-full gold-bg mb-4">
-          <i class="fas fa-crown text-2xl text-white"></i>
+        <div class="mx-auto w-14 h-14 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center mb-4 shadow-lg shadow-amber-500/20">
+          <i data-lucide="bar-chart-3" class="w-7 h-7 text-white"></i>
         </div>
-        <h1 class="text-3xl font-bold gold-accent mb-2">
-          Admin Portal
-        </h1>
-        <p class="text-gray-600">
-          Finance Tracker Administration
-        </p>
+        <h1 class="text-2xl font-bold text-white">Accountanta</h1>
+        <p class="text-gray-500 text-sm mt-1">Admin Portal</p>
       </div>
-      <%= form_with url: admin_login_path, method: :post, local: true, class: "space-y-6" do |form| %>
+
+      <%= form_with url: admin_login_path, method: :post, local: true, class: "space-y-5" do |form| %>
         <% if flash[:alert] %>
-          <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg" role="alert">
-            <div class="flex items-center">
-              <i class="fas fa-exclamation-triangle mr-2"></i>
-              <%= flash[:alert] %>
-            </div>
+          <div class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i>
+            <%= flash[:alert] %>
           </div>
         <% end %>
-        
+
         <div>
-          <%= form.label :email, "Email Address", class: "block text-sm font-semibold text-gray-800 mb-2" %>
-          <div class="relative">
-            <%= form.email_field :email, 
-                required: true,
-                class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors",
-                placeholder: "Enter your email address" %>
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <i class="fas fa-envelope text-gray-400"></i>
-            </div>
-          </div>
+          <label class="block text-sm font-medium text-gray-400 mb-1.5">Email</label>
+          <%= form.email_field :email, required: true,
+              class: "input-field w-full px-4 py-3 rounded-lg text-white placeholder-gray-600 text-sm outline-none",
+              placeholder: "admin@accountanta.com" %>
         </div>
-        
+
         <div>
-          <%= form.label :password, "Password", class: "block text-sm font-semibold text-gray-800 mb-2" %>
-          <div class="relative">
-            <%= form.password_field :password, 
-                required: true,
-                class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition-colors",
-                placeholder: "Enter your password" %>
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-              <i class="fas fa-lock text-gray-400"></i>
-            </div>
-          </div>
+          <label class="block text-sm font-medium text-gray-400 mb-1.5">Password</label>
+          <%= form.password_field :password, required: true,
+              class: "input-field w-full px-4 py-3 rounded-lg text-white placeholder-gray-600 text-sm outline-none",
+              placeholder: "••••••••" %>
         </div>
-        
+
         <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <%= form.check_box :remember_me, class: "h-4 w-4 text-yellow-600 focus:ring-yellow-500 border-gray-300 rounded" %>
-            <%= form.label :remember_me, "Remember me", class: "ml-2 block text-sm text-gray-700" %>
-          </div>
-          
-          <div class="text-sm">
-            <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500 transition-colors">
-              Forgot password?
-            </a>
-          </div>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <%= form.check_box :remember_me, class: "w-4 h-4 rounded bg-white/5 border-white/10 text-amber-500 focus:ring-amber-500/30" %>
+            <span class="text-sm text-gray-500">Remember me</span>
+          </label>
         </div>
-        
-        <div>
-          <%= form.submit "Sign In", 
-              class: "w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-black gold-bg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-200 shadow-lg" %>
-        </div>
+
+        <%= form.submit "Sign In", class: "btn-login w-full py-3 rounded-lg text-sm font-semibold text-gray-900 cursor-pointer" %>
       <% end %>
     </div>
-    
-    <div class="text-center mt-6">
-      <p class="text-xs text-gray-400">
-        © <%= Date.current.year %> Finance Tracker Admin Panel
-      </p>
-      <p class="text-xs text-gray-500 mt-1">
-        Secure • Professional • Reliable
-      </p>
-    </div>
+
+    <p class="text-center text-gray-600 text-xs mt-6">
+      © <%= Date.current.year %> Accountanta · Finance Tracker Admin
+    </p>
   </div>
-  
+
+  <script>lucide.createIcons();</script>
   <script>
-    // Add subtle animation to the login form
-    document.addEventListener('DOMContentLoaded', function() {
-      const card = document.querySelector('.admin-card');
+    document.addEventListener('DOMContentLoaded', () => {
+      const card = document.querySelector('.login-card');
       card.style.opacity = '0';
-      card.style.transform = 'translateY(20px)';
-      
-      setTimeout(() => {
-        card.style.transition = 'all 0.6s ease-out';
+      card.style.transform = 'translateY(16px)';
+      requestAnimationFrame(() => {
+        card.style.transition = 'all 0.5s cubic-bezier(0.16,1,0.3,1)';
         card.style.opacity = '1';
         card.style.transform = 'translateY(0)';
-      }, 100);
-      
-      // Add focus effects to inputs
-      const inputs = document.querySelectorAll('input[type="email"], input[type="password"]');
-      inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-          this.parentElement.style.transform = 'scale(1.02)';
-          this.parentElement.style.transition = 'transform 0.2s ease';
-        });
-        
-        input.addEventListener('blur', function() {
-          this.parentElement.style.transform = 'scale(1)';
-        });
       });
     });
   </script>

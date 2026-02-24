@@ -3,7 +3,7 @@ class Budget < ApplicationRecord
   belongs_to :category
 
   validates :limit, presence: true, numericality: { greater_than: 0 }
-  
+
   before_validation :set_default_spent, on: :create
   validates :spent, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :period, presence: true, inclusion: { in: %w[weekly monthly quarterly yearly] }
@@ -50,7 +50,6 @@ class Budget < ApplicationRecord
 
   def end_date_after_start_date
     return unless start_date && end_date
-    
     errors.add(:end_date, 'must be after start date') if end_date <= start_date
   end
 end

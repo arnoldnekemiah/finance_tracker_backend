@@ -1,31 +1,30 @@
 class Api::V1::CategoriesController < ApplicationController
-  skip_before_action :verify_authenticity_token
-  load_and_authorize_resource
+  include Authenticatable
   before_action :set_category, only: %i[show update destroy]
 
   def index
     categories = current_user.categories
-    render json: categories, each_serializer: CategorySerializer
+    render json: { status: 'success', data: categories.map { |c| CategorySerializer.new(c).as_json } }
   end
 
   def show
-    render json: @category, serializer: CategorySerializer
+    render json: { status: 'success', data: CategorySerializer.new(@category).as_json }
   end
 
   def create
     category = current_user.categories.build(category_params)
     if category.save
-      render json: category, serializer: CategorySerializer, status: :created
+      render json: { status: 'success', data: CategorySerializer.new(category).as_json }, status: :created
     else
-      render json: { errors: category.errors }, status: :unprocessable_entity
+      render json: { status: 'error', error: category.errors.full_messages.join(', ') }, status: :unprocessable_entity
     end
   end
 
   def update
     if @category.update(category_params)
-      render json: @category, serializer: CategorySerializer
+      render json: { status: 'success', data: CategorySerializer.new(@category).as_json }
     else
-      render json: { errors: @category.errors }, status: :unprocessable_entity
+      render json: { status: 'error', error: @category.errors.full_messages.join(', ') }, status: :unprocessable_entity
     end
   end
 
@@ -41,6 +40,6 @@ class Api::V1::CategoriesController < ApplicationController
   end
 
   def category_params
-    params.require(:category).permit(:name, :icon, :color, :transaction_type)
+    params.permit(:name, :icon, :color, :transaction_type, :parent_category_id)
   end
 end

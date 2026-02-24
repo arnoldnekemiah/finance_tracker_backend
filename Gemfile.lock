@@ -83,8 +83,8 @@ GEM
       mutex_m
       securerandom (>= 0.3)
       tzinfo (~> 2.0)
-    addressable (2.8.7)
-      public_suffix (>= 2.0.2, < 7.0)
+    addressable (2.8.8)
+      public_suffix (>= 2.0.2, < 8.0)
     base64 (0.2.0)
     bcrypt (3.1.20)
     benchmark (0.4.0)
@@ -92,13 +92,13 @@ GEM
     bootsnap (1.18.4)
       msgpack (~> 1.2)
     builder (3.3.0)
-    cancancan (3.6.1)
     case_transform (0.2)
       activesupport
+    childprocess (5.1.0)
+      logger (~> 1.5)
     concurrent-ruby (1.3.4)
     connection_pool (2.4.1)
     crass (1.0.6)
-    csv (3.3.5)
     date (3.4.0)
     debug (1.9.2)
       irb (~> 1.10)
@@ -125,23 +125,40 @@ GEM
       logger
       zeitwerk (~> 2.6)
     erubi (1.13.0)
+    factory_bot (6.5.6)
+      activesupport (>= 6.1.0)
+    factory_bot_rails (6.5.1)
+      factory_bot (~> 6.5)
+      railties (>= 6.1.0)
+    faker (3.6.0)
+      i18n (>= 1.8.11, < 2)
+    faraday (2.14.1)
+      faraday-net_http (>= 2.0, < 3.5)
+      json
+      logger
+    faraday-net_http (3.4.2)
+      net-http (~> 0.5)
+    ffi (1.17.3-aarch64-linux-gnu)
+    ffi (1.17.3-arm-linux-gnu)
+    ffi (1.17.3-arm64-darwin)
+    ffi (1.17.3-x86-linux-gnu)
+    ffi (1.17.3-x86_64-darwin)
+    ffi (1.17.3-x86_64-linux-gnu)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    httparty (0.23.1)
-      csv
-      mini_mime (>= 1.0.0)
-      multi_xml (>= 0.5.2)
+    hashie (5.1.0)
+      logger
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
+    image_processing (1.14.0)
+      mini_magick (>= 4.9.5, < 6)
+      ruby-vips (>= 2.0.17, < 3)
     io-console (0.7.2)
     irb (1.14.1)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    json-schema (5.1.0)
-      addressable (~> 2.8)
+    json (2.18.1)
     jsonapi-renderer (0.2.2)
-    jsonapi-serializer (2.2.0)
-      activesupport (>= 4.2)
     jwt (2.9.3)
       base64
     kaminari (1.2.2)
@@ -156,6 +173,12 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
+    launchy (3.1.1)
+      addressable (~> 2.8)
+      childprocess (~> 5.0)
+      logger (~> 1.6)
+    letter_opener (1.10.0)
+      launchy (>= 2.2, < 4)
     logger (1.6.1)
     loofah (2.23.1)
       crass (~> 1.0.2)
@@ -166,21 +189,17 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.4)
+    mini_magick (5.3.1)
+      logger
     mini_mime (1.1.5)
+    mini_portile2 (2.8.9)
     minitest (5.25.2)
-    monetize (1.13.0)
-      money (~> 6.12)
-    money (6.19.0)
-      i18n (>= 0.6.4, <= 2)
-    money-rails (1.15.0)
-      activesupport (>= 3.0)
-      monetize (~> 1.9)
-      money (~> 6.13)
-      railties (>= 3.0)
     msgpack (1.7.5)
-    multi_xml (0.7.2)
-      bigdecimal (~> 3.1)
+    multi_xml (0.8.1)
+      bigdecimal (>= 3.1, < 5)
     mutex_m (0.3.0)
+    net-http (0.9.1)
+      uri (>= 0.11.1)
     net-imap (0.5.1)
       date
       net-protocol
@@ -191,29 +210,48 @@ GEM
     net-smtp (0.5.0)
       net-protocol
     nio4r (2.7.4)
-    nokogiri (1.16.7-aarch64-linux)
+    nokogiri (1.16.7)
+      mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.16.7-arm-linux)
-      racc (~> 1.4)
-    nokogiri (1.16.7-arm64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.16.7-x86-linux)
-      racc (~> 1.4)
-    nokogiri (1.16.7-x86_64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.16.7-x86_64-linux)
-      racc (~> 1.4)
+    oauth2 (2.0.18)
+      faraday (>= 0.17.3, < 4.0)
+      jwt (>= 1.0, < 4.0)
+      logger (~> 1.2)
+      multi_xml (~> 0.5)
+      rack (>= 1.2, < 4)
+      snaky_hash (~> 2.0, >= 2.0.3)
+      version_gem (~> 1.1, >= 1.1.9)
+    omniauth (2.1.4)
+      hashie (>= 3.4.6)
+      logger
+      rack (>= 2.2.3)
+      rack-protection
+    omniauth-google-oauth2 (1.2.2)
+      jwt (>= 2.9.2)
+      oauth2 (~> 2.0)
+      omniauth (~> 2.0)
+      omniauth-oauth2 (~> 1.8)
+    omniauth-oauth2 (1.9.0)
+      oauth2 (>= 2.0.2, < 3)
+      omniauth (~> 2.0)
+    omniauth-rails_csrf_protection (2.0.1)
+      actionpack (>= 4.2)
+      omniauth (~> 2.0)
     orm_adapter (0.5.0)
     pg (1.5.9)
     psych (5.2.0)
       stringio
-    public_suffix (6.0.1)
+    public_suffix (7.0.2)
     puma (6.5.0)
       nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.1.8)
     rack-cors (2.0.2)
       rack (>= 2.0.0)
+    rack-protection (4.2.1)
+      base64 (>= 0.1.0)
+      logger (>= 1.6.0)
+      rack (>= 3.0.0, < 4)
     rack-session (2.0.0)
       rack (>= 3.0.0)
     rack-test (2.1.0)
@@ -274,23 +312,20 @@ GEM
       rspec-mocks (~> 3.13)
       rspec-support (~> 3.13)
     rspec-support (3.13.1)
-    rswag-api (2.16.0)
-      activesupport (>= 5.2, < 8.1)
-      railties (>= 5.2, < 8.1)
-    rswag-specs (2.16.0)
-      activesupport (>= 5.2, < 8.1)
-      json-schema (>= 2.2, < 6.0)
-      railties (>= 5.2, < 8.1)
-      rspec-core (>= 2.14)
-    rswag-ui (2.16.0)
-      actionpack (>= 5.2, < 8.1)
-      railties (>= 5.2, < 8.1)
+    ruby-vips (2.3.0)
+      ffi (~> 1.12)
+      logger
     securerandom (0.3.2)
+    snaky_hash (2.0.3)
+      hashie (>= 0.1.0, < 6)
+      version_gem (>= 1.1.8, < 3)
     stringio (3.1.2)
     thor (1.3.2)
     timeout (0.4.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    uri (1.1.1)
+    version_gem (1.1.9)
     warden (1.2.9)
       rack (>= 2.0.9)
     warden-jwt_auth (0.10.0)
@@ -313,27 +348,28 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers
+  bcrypt (~> 3.1.7)
   bootsnap
-  cancancan
   debug
   devise
   devise-jwt
-  httparty
-  jsonapi-serializer
+  factory_bot_rails
+  faker
+  image_processing (~> 1.2)
+  jwt
   kaminari
-  money-rails
+  letter_opener
+  omniauth-google-oauth2
+  omniauth-rails_csrf_protection
   pg (~> 1.1)
   puma (>= 5.0)
   rack-cors
   rails (~> 7.1.5)
   rspec-rails (~> 7.0.0)
-  rswag-api
-  rswag-specs
-  rswag-ui
   tzinfo-data
 
 RUBY VERSION
-   ruby 3.3.1p55
+   ruby 3.4.5p51
 
 BUNDLED WITH
    2.5.22

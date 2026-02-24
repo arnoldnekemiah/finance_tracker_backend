@@ -1,78 +1,89 @@
 class Api::V1::InsightsController < ApplicationController
-  # Skip CanCanCan authorization since we're already authenticating the user
-  # and all data is scoped to current_user
-  # 
-  skip_before_action :verify_authenticity_token
-  skip_authorization_check
-  
-  rescue_from StandardError do |e|
-    Rails.logger.error "Insights Error: #{e.message}\n#{e.backtrace.join("\n")}"
-    render json: { error: 'An error occurred while processing insights' }, status: :internal_server_error
-  end
-  
-  def overview
-    monthly_data = {
-      total_income: current_user.transactions.income.this_month.sum(:amount) || 0,
-      total_expenses: current_user.transactions.expense.this_month.sum(:amount) || 0,
-      top_categories: top_spending_categories,
-      monthly_trend: calculate_monthly_trend
+  include Authenticatable
+
+  # GET /api/v1/insights/monthly_overview
+  def monthly_overview
+    render json: {
+      status: 'success',
+      data: {
+        total_income: current_user.transactions.income.this_month.sum(:amount) || 0,
+        total_expenses: current_user.transactions.expense.this_month.sum(:amount) || 0,
+        top_categories: top_spending_categories
+      }
     }
-    
-    render json: { data: monthly_data }, status: :ok
-  rescue StandardError => error
-    Rails.logger.error "Overview Error: #{error.message}\n#{error.backtrace.join("\n")}"
-    render json: { error: 'Failed to fetch overview data', details: error.message }, status: :unprocessable_entity
   end
 
+  # GET /api/v1/insights/spending_by_category
   def spending_by_category
     categories = current_user.transactions
-                           .expense
-                           .where('date >= ?', 30.days.ago)
-                           .group(:category_id)
-                           .sum(:amount)
-    
-    render json: { data: categories }, status: :ok
-  rescue StandardError => error
-    Rails.logger.error "Spending by category error: #{error.message}"
-    render json: { error: 'Failed to fetch category data' }, status: :unprocessable_entity
+                            .expense
+                            .where('date >= ?', 30.days.ago)
+                            .joins(:category)
+                            .group('categories.id, categories.name, categories.icon, categories.color')
+                            .sum(:amount)
+
+    total = categories.values.sum
+
+    data = categories.map do |(cat_id, name, icon, color), amount|
+      {
+        category_id: cat_id,
+        category_name: name,
+        icon: icon,
+        color: color,
+        amount: amount,
+        percentage: total > 0 ? ((amount / total) * 100).round(1) : 0
+      }
+    end.sort_by { |c| -c[:amount] }
+
+    render json: { status: 'success', data: data }
   end
 
+  # GET /api/v1/insights/weekly_trends
+  def weekly_trends
+    weeks = []
+    4.times do |i|
+      week_start = (i.weeks.ago).beginning_of_week
+      week_end = week_start.end_of_week
+
+      spending = current_user.transactions
+                            .expense
+                            .where(date: week_start..week_end)
+                            .sum(:amount)
+
+      weeks << {
+        week: "Week #{4 - i}",
+        start_date: week_start.to_date,
+        end_date: week_end.to_date,
+        spending: spending
+      }
+    end
+
+    render json: { status: 'success', data: weeks.reverse }
+  end
+
+  # GET /api/v1/insights/spending_comparison
   def spending_comparison
     current_month = current_user.transactions.expense.this_month.sum(:amount) || 0
     last_month = current_user.transactions.expense.last_month.sum(:amount) || 0
-    
-    comparison = {
-      current_month: current_month,
-      last_month: last_month,
-      percentage_change: calculate_percentage_change(current_month, last_month)
+    percentage_change = calculate_percentage_change(current_month, last_month)
+
+    render json: {
+      status: 'success',
+      data: {
+        current_month: current_month,
+        last_month: last_month,
+        percentage_change: percentage_change
+      }
     }
-    
-    render json: { data: comparison }, status: :ok
-  rescue StandardError => error
-    Rails.logger.error "Spending comparison error: #{error.message}"
-    render json: { error: 'Failed to fetch comparison data' }, status: :unprocessable_entity
   end
 
-  def weekly_trends
-    weekly_data = current_user.transactions
-                            .expense
-                            .where('date >= ?', 1.week.ago)
-                            .group("DATE(date)")
-                            .sum(:amount)
-    
-    render json: { data: weekly_data }, status: :ok
-  rescue StandardError => error
-    Rails.logger.error "Weekly trends error: #{error.message}"
-    render json: { error: 'Failed to fetch weekly trends' }, status: :unprocessable_entity
-  end
-  
   private
-  
-  def calculate_percentage_change(current_month, last_month)
-    return 100 if last_month.zero? && current_month.positive?
-    return -100 if last_month.zero? && current_month.negative?
-    return 0 if last_month.zero?
-    ((current_month - last_month) / last_month.to_f * 100).round(2)
+
+  def calculate_percentage_change(current_val, previous_val)
+    return 100 if previous_val.zero? && current_val.positive?
+    return -100 if previous_val.zero? && current_val.negative?
+    return 0 if previous_val.zero?
+    ((current_val - previous_val) / previous_val.to_f * 100).round(2)
   end
 
   def top_spending_categories(limit = 5)
@@ -85,34 +96,5 @@ class Api::V1::InsightsController < ApplicationController
                .order('total_amount DESC')
                .limit(limit)
                .map { |t| { category: t.category_name, amount: t.total_amount } }
-  end
-
-  def calculate_monthly_trend(months = 6)
-    end_date = Date.current.end_of_month
-    start_date = (end_date - (months - 1).months).beginning_of_month
-    
-    transactions = current_user.transactions
-                             .where(date: start_date..end_date)
-                             .group("DATE_TRUNC('month', date)")
-                             .group(:type)
-                             .sum(:amount)
-    
-    # Initialize result hash with all months
-    result = {}
-    months.times do |i|
-      date = (end_date - i.months).beginning_of_month
-      result[date.strftime('%b %Y')] = { income: 0, expense: 0 }
-    end
-    
-    # Fill in the actual data
-    transactions.each do |(date, type), amount|
-      month_key = date.strftime('%b %Y')
-      if result[month_key]
-        result[month_key][:income] = amount if type == 'income'
-        result[month_key][:expense] = amount.abs if type == 'expense'
-      end
-    end
-    
-    result.sort.reverse.to_h
   end
 end

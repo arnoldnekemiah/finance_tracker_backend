@@ -23,17 +23,7 @@ Devise.setup do |config|
   # Disable password complexity for development
   config.password_length = 6..128
   
-  # JWT configuration
-  config.jwt do |jwt|
-    jwt.secret = Rails.application.credentials.secret_key_base
-    jwt.dispatch_requests = [
-      ['POST', %r{^/login$}]
-    ]
-    jwt.revocation_requests = [
-      ['DELETE', %r{^/logout$}]
-    ]
-    jwt.expiration_time = 1.day.to_i
-  end
+  # JWT configuration is at the bottom of this file
 
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
@@ -327,13 +317,13 @@ Devise.setup do |config|
   # config.sign_in_after_change_password = true
 
   config.jwt do |jwt|
-    jwt.secret = Rails.application.credentials.devise_jwt_secret_key!
+    jwt.secret = Rails.application.credentials.devise_jwt_secret_key || Rails.application.credentials.secret_key_base || ENV['JWT_SECRET_KEY'] || 'dev-fallback-secret'
     jwt.dispatch_requests = [
-      ['POST', %r{^/login$}]
+      ['POST', %r{^/api/v1/auth/login$}]
     ]
     jwt.revocation_requests = [
-      ['DELETE', %r{^/logout$}]
+      ['DELETE', %r{^/api/v1/auth/logout$}]
     ]
-    jwt.expiration_time = 30.minutes.to_i
+    jwt.expiration_time = 1.day.to_i
   end
 end

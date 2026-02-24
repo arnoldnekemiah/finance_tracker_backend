@@ -1,31 +1,32 @@
 services:
   - type: web
-    name: finance-tracker-backend
-    runtime: ruby
-    plan: free
-    buildCommand: './bin/render-build.sh'
-    # preDeployCommand: "bundle exec rails db:migrate"  # preDeployCommand only available on paid instance types
-    startCommand: './bin/rails server'
+    name: accountanta-api
+    env: ruby
+    buildCommand: bundle install && bundle exec rails assets:precompile
+    startCommand: bundle exec puma -C config/puma.rb
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: financetrackerdb
+          name: accountanta-db
           property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: GMAIL_USERNAME
+        sync: false
+      - key: GMAIL_APP_PASSWORD
+        sync: false
       - key: RAILS_MASTER_KEY
-        sync: false 
+        sync: false
       - key: SECRET_KEY_BASE
-        sync: false 
-      - key: DEVISE_JWT_SECRET_KEY
-        sync: false 
-      - key: WEB_CONCURRENCY
-        value: 2 
+        sync: false
       - key: RAILS_ENV
         value: production
       - key: RACK_ENV
         value: production
-      - key: RAILS_SERVE_STATIC_FILES
-        value: false
+      - key: WEB_CONCURRENCY
+        value: 2
 
 databases:
-  - name: financetrackerdb
+  - name: accountanta-db
     plan: free
+    databaseName: accountanta_production

@@ -1,64 +1,45 @@
 class Api::V1::DebtsController < ApplicationController
-  skip_before_action :verify_authenticity_token
-  load_and_authorize_resource
-  
+  include Authenticatable
+  before_action :set_debt, only: %i[show update destroy]
+
   def index
-    debts = current_user.debts.includes(:user)
-    render json: debts, each_serializer: DebtSerializer
+    debts = current_user.debts.order(created_at: :desc)
+    render json: { status: 'success', data: debts.map { |d| DebtSerializer.new(d).as_json } }
   end
 
   def show
-    debt = current_user.debts.find(params[:id])
-    render json: debt, serializer: DebtSerializer
+    render json: { status: 'success', data: DebtSerializer.new(@debt).as_json }
   end
 
   def create
     debt = current_user.debts.build(debt_params)
     if debt.save
-      render json: debt, serializer: DebtSerializer, status: :created
+      render json: { status: 'success', data: DebtSerializer.new(debt).as_json }, status: :created
     else
-      render json: { errors: debt.errors }, status: :unprocessable_entity
+      render json: { status: 'error', error: debt.errors.full_messages.join(', ') }, status: :unprocessable_entity
     end
   end
 
   def update
-    debt = current_user.debts.find(params[:id])
-    if debt.update(debt_params)
-      render json: debt, serializer: DebtSerializer
+    if @debt.update(debt_params)
+      render json: { status: 'success', data: DebtSerializer.new(@debt).as_json }
     else
-      render json: { errors: debt.errors }, status: :unprocessable_entity
+      render json: { status: 'error', error: @debt.errors.full_messages.join(', ') }, status: :unprocessable_entity
     end
   end
 
   def destroy
-    debt = current_user.debts.find(params[:id])
-    debt.destroy
+    @debt.destroy
     head :no_content
-  end
-
-  def mark_as_paid
-    debt = current_user.debts.find(params[:id])
-    if debt.update(status: 'paid')
-      render json: debt, serializer: DebtSerializer
-    else
-      render json: { errors: debt.errors }, status: :unprocessable_entity
-    end
   end
 
   private
 
+  def set_debt
+    @debt = current_user.debts.find(params[:id])
+  end
+
   def debt_params
-    params.require(:debt).permit(
-      :title,
-      :amount,
-      :creditor,
-      :description,
-      :due_date,
-      :status,
-      :debt_type,
-      :interest_rate,
-      :is_recurring,
-      :recurring_period
-    )
+    params.permit(:title, :amount, :creditor, :due_date, :status, :debt_type, :interest_rate, :is_recurring)
   end
 end

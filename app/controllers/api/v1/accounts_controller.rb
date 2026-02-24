@@ -1,61 +1,45 @@
 class Api::V1::AccountsController < ApplicationController
-  skip_before_action :verify_authenticity_token
-  load_and_authorize_resource
-  
+  include Authenticatable
+  before_action :set_account, only: %i[show update destroy]
+
   def index
-    accounts = current_user.accounts.active.includes(:user)
-    render json: accounts, each_serializer: AccountSerializer
+    accounts = current_user.accounts.active
+    render json: { status: 'success', data: accounts.map { |a| AccountSerializer.new(a).as_json } }
   end
 
   def show
-    account = current_user.accounts.find(params[:id])
-    render json: account, serializer: AccountSerializer
+    render json: { status: 'success', data: AccountSerializer.new(@account).as_json }
   end
 
   def create
     account = current_user.accounts.build(account_params)
     if account.save
-      render json: account, serializer: AccountSerializer, status: :created
+      render json: { status: 'success', data: AccountSerializer.new(account).as_json }, status: :created
     else
-      render json: { errors: account.errors }, status: :unprocessable_entity
+      render json: { status: 'error', error: account.errors.full_messages.join(', ') }, status: :unprocessable_entity
     end
   end
 
   def update
-    account = current_user.accounts.find(params[:id])
-    if account.update(account_params)
-      render json: account, serializer: AccountSerializer
+    if @account.update(account_params)
+      render json: { status: 'success', data: AccountSerializer.new(@account).as_json }
     else
-      render json: { errors: account.errors }, status: :unprocessable_entity
+      render json: { status: 'error', error: @account.errors.full_messages.join(', ') }, status: :unprocessable_entity
     end
   end
 
   def destroy
-    account = current_user.accounts.find(params[:id])
-    account.update(is_active: false)
+    @account.update(is_active: false)
     head :no_content
-  end
-
-  def update_balance
-    account = current_user.accounts.find(params[:id])
-    if account.update(balance: params[:balance])
-      render json: account, serializer: AccountSerializer
-    else
-      render json: { errors: account.errors }, status: :unprocessable_entity
-    end
   end
 
   private
 
+  def set_account
+    @account = current_user.accounts.find(params[:id])
+  end
+
   def account_params
-    params.require(:account).permit(
-      :name,
-      :account_type,
-      :bank_name,
-      :balance,
-      :currency,
-      :description,
-      :is_active
-    )
+    params.permit(:name, :account_type, :bank_name, :balance, :currency, :account_number, :is_active)
   end
 end

@@ -1,48 +1,59 @@
 class Api::V1::ProfilesController < ApplicationController
-  skip_before_action :verify_authenticity_token
-  skip_authorization_check
+  include Authenticatable
 
-  def show
-    render json: current_user, serializer: UserSerializer
-  end
-
+  # PUT /api/v1/profile
   def update
     if current_user.update(profile_params)
-      render json: current_user, serializer: UserSerializer
+      render json: { status: 'success', data: user_json(current_user) }
     else
-      render json: { errors: current_user.errors }, status: :unprocessable_entity
+      render json: { status: 'error', error: current_user.errors.full_messages.join(', ') }, status: :unprocessable_entity
     end
   end
 
-  def dashboard_summary
-    summary = {
-      user: UserSerializer.new(current_user).serializable_hash[:data][:attributes],
-      accounts_summary: {
-        total_accounts: current_user.accounts.active.count,
-        total_balance: current_user.accounts.active.sum(:balance),
-        account_types: current_user.accounts.active.group(:account_type).count
-      },
-      financial_overview: {
-        total_income_this_month: current_user.transactions.income.this_month.sum(:amount),
-        total_expenses_this_month: current_user.transactions.expense.this_month.sum(:amount),
-        active_budgets: current_user.budgets.count,
-        saving_goals: current_user.saving_goals.count,
-        pending_debts: current_user.debts.pending.count,
-        overdue_debts: current_user.debts.overdue.count
-      }
-    }
-    
-    render json: { data: summary }
+  # POST /api/v1/profile/upload_photo
+  def upload_photo
+    if params[:photo].present?
+      # For now, accept a URL. Active Storage can be added later.
+      current_user.update!(photo_url: params[:photo_url] || params[:photo])
+      render json: { status: 'success', data: user_json(current_user) }
+    else
+      render json: { status: 'error', error: 'No photo provided' }, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /api/v1/profile/delete_photo
+  def delete_photo
+    current_user.update!(photo_url: nil)
+    render json: { status: 'success', data: user_json(current_user) }
+  end
+
+  # DELETE /api/v1/profile/delete_account
+  def delete_account
+    current_user.destroy
+    render json: { status: 'success', data: { message: 'Account deleted successfully' } }
   end
 
   private
 
   def profile_params
-    params.require(:user).permit(
-      :first_name,
-      :last_name,
-      :email,
-      :currency
-    )
+    params.permit(:first_name, :last_name, :email, :currency, :preferred_currency, :timezone, :photo_url)
+  end
+
+  def user_json(user)
+    {
+      id: user.id,
+      email: user.email,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      currency: user.currency,
+      preferred_currency: user.preferred_currency,
+      timezone: user.timezone,
+      photo_url: user.photo_url,
+      is_admin: user.is_admin,
+      is_active: user.is_active,
+      provider: user.provider,
+      created_at: user.created_at,
+      updated_at: user.updated_at
+    }
   end
 end

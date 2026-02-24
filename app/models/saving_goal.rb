@@ -5,8 +5,6 @@ class SavingGoal < ApplicationRecord
   validates :target_amount, presence: true, numericality: { greater_than: 0 }
   validates :current_amount, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :target_date, presence: true
-  validate :target_date_cannot_be_in_past
-  validate :current_amount_cannot_exceed_target
 
   scope :achieved, -> { where('current_amount >= target_amount') }
   scope :in_progress, -> { where('current_amount < target_amount') }
@@ -28,7 +26,7 @@ class SavingGoal < ApplicationRecord
 
   def days_remaining
     return 0 if target_date < Date.current
-(target_date - Date.today).to_i
+    (target_date.to_date - Date.today).to_i
   end
 
   def overdue?
@@ -44,19 +42,5 @@ class SavingGoal < ApplicationRecord
   def add_progress(amount)
     self.current_amount += amount
     save
-  end
-
-  private
-
-  def target_date_cannot_be_in_past
-    if target_date.present? && target_date < Date.today
-      errors.add(:target_date, "can't be in the past")
-    end
-  end
-
-  def current_amount_cannot_exceed_target
-    if current_amount.present? && target_amount.present? && current_amount > target_amount
-      errors.add(:current_amount, "cannot exceed target amount")
-    end
   end
 end

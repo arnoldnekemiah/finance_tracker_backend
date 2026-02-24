@@ -6,19 +6,10 @@ class Admin::BaseController < ApplicationController
 
   def ensure_admin_access
     unless current_user&.admin?
-      render json: { 
-        error: 'Admin access required',
-        message: 'You must be an administrator to access this resource'
-      }, status: :forbidden
+      respond_to do |format|
+        format.html { redirect_to admin_login_path, alert: 'Admin access required' }
+        format.json { render json: { error: 'Admin access required' }, status: :forbidden }
+      end
     end
-  end
-
-  def authorize_admin_action!(action, resource = nil)
-    authorize! action, resource || :admin_panel
-  rescue CanCan::AccessDenied
-    render json: { 
-      error: 'Insufficient permissions',
-      message: 'You do not have permission to perform this action'
-    }, status: :forbidden
   end
 end

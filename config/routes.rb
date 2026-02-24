@@ -1,109 +1,80 @@
 Rails.application.routes.draw do
-  mount Rswag::Ui::Engine => '/api-docs'
-  mount Rswag::Api::Engine => '/api-docs'
   # Health check
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Authentication routes
-  devise_for :users, path: '', path_names: {
-    sign_in: 'login',
-    sign_out: 'logout',
-    registration: 'signup'
-  },
-  controllers: {
-    sessions: 'users/sessions',
-    registrations: 'users/registrations'
-  }
 
   # API routes
   namespace :api do
     namespace :v1 do
-      # Transaction routes
-      resources :transactions, only: [:index, :create, :show, :update, :destroy]
-      
-      # Debt routes (replaces recurring transactions)
-      resources :debts, only: [:index, :create, :show, :update, :destroy] do
-        member do
-          patch :mark_as_paid
+      # Auth (public + authenticated)
+      post   'auth/signup',          to: 'auth#signup'
+      post   'auth/login',           to: 'auth#login'
+      post   'auth/google',          to: 'auth#google'
+      delete 'auth/logout',          to: 'auth#logout'
+      get    'auth/me',              to: 'auth#me'
+      post   'auth/forgot_password', to: 'auth#forgot_password'
+      post   'auth/verify_otp',      to: 'auth#verify_otp'
+      post   'auth/reset_password',  to: 'auth#reset_password'
+
+      # CRUD Resources
+      resources :accounts
+      resources :categories
+      resources :transactions do
+        collection do
+          get :stats
+          get :spending_by_category
         end
       end
-      
-      # Account routes
-      resources :accounts, only: [:index, :create, :show, :update, :destroy] do
-        member do
-          patch :update_balance
+      resources :budgets do
+        collection do
+          get :active
+          get :summary
         end
       end
-      
-      # Budget routes
-      resources :budgets, only: [:index, :create, :show, :update, :destroy]
-      
-      # Saving goals routes
-      resources :saving_goals, only: [:index, :create, :show, :update, :destroy] do
-        member do
-          patch :update_progress
-        end
-      end
-      
-      # Category routes
-      resources :categories, only: [:index, :create, :show, :update, :destroy]
-      
-      # Dashboard routes
-      get 'dashboard', to: 'dashboard#index'
-      get 'dashboard/financial_overview', to: 'dashboard#financial_overview'
-      get 'dashboard/monthly_summary', to: 'dashboard#monthly_summary_by_month'
-      
-      # Currency routes
-      get 'currencies', to: 'currencies#index'
-      patch 'currencies/preference', to: 'currencies#update_preference'
-      get 'currencies/exchange_rates', to: 'currencies#exchange_rates'
+      resources :debts
+      resources :saving_goals
 
-      # Profile routes
-      resource :profile, only: [:show, :update] do
-        get :dashboard_summary
-      end
+      # Dashboard & Insights
+      get 'dashboard/overview',             to: 'dashboard#overview'
+      get 'dashboard/financial_overview',   to: 'dashboard#financial_overview'
+      get 'dashboard/spending_by_category', to: 'dashboard#spending_by_category'
 
-      # Insights routes
-      namespace :insights do
-        get :overview
-        get :spending_by_category
-        get :spending_comparison
-        get :weekly_trends
-end
+      get 'insights/monthly_overview',      to: 'insights#monthly_overview'
+      get 'insights/spending_by_category',  to: 'insights#spending_by_category'
+      get 'insights/weekly_trends',         to: 'insights#weekly_trends'
+      get 'insights/spending_comparison',   to: 'insights#spending_comparison'
 
-      # Reports routes
-      namespace :reports do
-        get :monthly_comparison
-        get :spending_by_category
-      end
-      
-      # Password reset routes
-      post 'password_reset', to: 'password_resets#create'
-      patch 'password_reset', to: 'password_resets#update'
+      # Profile
+      put    'profile',                to: 'profiles#update'
+      post   'profile/upload_photo',   to: 'profiles#upload_photo'
+      delete 'profile/delete_photo',   to: 'profiles#delete_photo'
+      delete 'profile/delete_account', to: 'profiles#delete_account'
+
+      # Support
+      resources :support_messages, only: [:index, :create]
+
+      # Data Reset
+      post 'data/start_afresh',   to: 'data_reset#start_afresh'
+      post 'data/delete_all',     to: 'data_reset#delete_all'
+      post 'data/reset_balances', to: 'data_reset#reset_balances'
     end
   end
 
   # Admin routes
   namespace :admin do
-    # Root route for admin
     root 'dashboard#index'
-    
-    # Admin authentication
+
     get 'login', to: 'sessions#new'
     post 'login', to: 'sessions#create'
     delete 'logout', to: 'sessions#destroy'
     get 'validate_token', to: 'sessions#validate_token'
-    
-    # Password reset
+
     post 'password_reset', to: 'password_resets#create'
     patch 'password_reset', to: 'password_resets#update'
     patch 'change_password', to: 'password_resets#change_password'
-    
-    # Admin dashboard
+
     get 'dashboard', to: 'dashboard#index'
     get 'dashboard/health', to: 'dashboard#health_metrics'
-    
-    # User management
+
     resources :users, only: [:index, :show, :update, :destroy] do
       member do
         patch :activate
@@ -112,8 +83,7 @@ end
         patch :remove_admin
       end
     end
-    
-    # Analytics
+
     get 'analytics', to: 'analytics#index'
     namespace :analytics do
       get :user_growth
@@ -123,8 +93,7 @@ end
       get :revenue_analytics
       get :export_data
     end
-    
-    # Reports
+
     get 'reports', to: 'reports#index'
     namespace :reports do
       post :generate_daily
@@ -133,8 +102,7 @@ end
       post :generate_custom
       get :schedule_reports
     end
-    
-    # Settings
+
     get 'settings', to: 'settings#index'
   end
 end

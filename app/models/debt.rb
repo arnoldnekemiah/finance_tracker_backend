@@ -18,6 +18,6 @@ class Debt < ApplicationRecord
   end
 
   def days_until_due
-    (due_date - Date.current).to_i
+    (due_date.to_date - Date.current).to_i
   end
 end

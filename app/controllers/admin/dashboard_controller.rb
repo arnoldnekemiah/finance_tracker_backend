@@ -2,22 +2,16 @@ class Admin::DashboardController < ApplicationController
   layout 'admin'
   skip_before_action :authenticate_user!
   before_action :authenticate_admin_user!
-  before_action :ensure_admin_access
-  
+
   rescue_from StandardError, with: :handle_dashboard_error
-  rescue_from CanCan::AccessDenied, with: :handle_access_denied
 
   def index
-    authorize! :manage, :admin_dashboard
-    
     begin
       @stats = system_statistics
       @user_metrics = user_metrics
       @financial_metrics = financial_metrics
       @recent_activity = recent_activity
       @health = system_health
-      
-      # Admin dashboard only supports HTML views
       render :index
     rescue => e
       handle_dashboard_error(e)
@@ -25,8 +19,6 @@ class Admin::DashboardController < ApplicationController
   end
 
   def health_metrics
-    authorize! :manage, :admin_dashboard
-    
     render json: {
       database_status: database_health,
       system_health: system_health,
@@ -42,23 +34,13 @@ class Admin::DashboardController < ApplicationController
     end
   end
 
-  def ensure_admin_access
-    unless current_user&.admin?
-      respond_to do |format|
-        format.html { redirect_to admin_login_path, alert: 'Admin access required' }
-        format.json { render json: { error: 'Admin access required' }, status: :forbidden }
-      end
-    end
-  end
-
   def system_statistics
     {
       total_users: User.count,
       admin_users: User.admins.count,
-      active_users_today: UserAnalytics.where(
-        event_type: 'login',
-        created_at: Date.current.beginning_of_day..Date.current.end_of_day
-      ).distinct.count(:user_id),
+      active_users_today: User.where(
+        updated_at: Date.current.beginning_of_day..Date.current.end_of_day
+      ).count,
       new_registrations_today: User.where(
         created_at: Date.current.beginning_of_day..Date.current.end_of_day
       ).count,
@@ -70,28 +52,25 @@ class Admin::DashboardController < ApplicationController
   end
 
   def user_metrics
-    UserAnalytics.user_growth_metrics(30.days.ago, Time.current)
+    registrations = User.where('created_at >= ?', 30.days.ago)
+                       .group("DATE(created_at)")
+                       .count
+    { registrations_by_day: registrations }
   end
 
   def financial_metrics
-    UserAnalytics.transaction_volume_metrics(30.days.ago, Time.current)
+    transactions = Transaction.where('created_at >= ?', 30.days.ago)
+                             .group("DATE(created_at)")
+                             .count
+    { transactions_by_day: transactions }
   end
 
   def recent_activity
-    UserAnalytics.includes(:user)
-                 .recent
-                 .limit(20)
-                 .map do |activity|
+    User.order(updated_at: :desc).limit(10).map do |user|
       {
-        id: activity.id,
-        user: {
-          id: activity.user.id,
-          name: activity.user.full_name,
-          email: activity.user.email
-        },
-        event_type: activity.event_type,
-        event_data: activity.event_data,
-        created_at: activity.created_at
+        user: { id: user.id, name: user.full_name, email: user.email },
+        event_type: 'activity',
+        created_at: user.updated_at
       }
     end
   end
@@ -103,10 +82,7 @@ class Admin::DashboardController < ApplicationController
       tables_count: ActiveRecord::Base.connection.tables.count
     }
   rescue => e
-    {
-      status: 'unhealthy',
-      error: e.message
-    }
+    { status: 'unhealthy', error: e.message }
   end
 
   def system_health
@@ -121,31 +97,22 @@ class Admin::DashboardController < ApplicationController
 
   def performance_metrics
     {
-      average_response_time: '< 100ms', # This would be calculated from logs in production
-      requests_per_minute: 0, # This would be calculated from logs in production
-      error_rate: '< 1%' # This would be calculated from logs in production
+      average_response_time: '< 100ms',
+      requests_per_minute: 0,
+      error_rate: '< 1%'
     }
   end
-  
-  # Error handling methods
+
   def handle_dashboard_error(exception)
     Rails.logger.error "Dashboard Error: #{exception.message}"
-    Rails.logger.error exception.backtrace.join("\n")
-    
-    flash[:alert] = "Unable to load dashboard data. Please refresh the page or try again later."
-    
-    # Set safe default values for dashboard
-    @stats = { total_users: 0, admin_users: 0, active_users_today: 0, new_users_today: 0, total_transactions: 0, transactions_today: 0 }
-    @user_metrics = { total_users: 0, new_users_period: 0, active_users_period: 0, registrations_by_day: {} }
-    @financial_metrics = { total_transactions: 0, transactions_period: 0, transaction_volume: 0, transactions_by_day: {}, avg_transaction_amount: 0 }
+    flash[:alert] = "Unable to load dashboard data."
+
+    @stats = { total_users: 0, admin_users: 0, active_users_today: 0, new_registrations_today: 0, total_transactions: 0, transactions_today: 0 }
+    @user_metrics = { registrations_by_day: {} }
+    @financial_metrics = { transactions_by_day: {} }
     @recent_activity = []
     @health = { rails_env: Rails.env, ruby_version: RUBY_VERSION, rails_version: Rails.version, uptime: 'Unknown', memory_usage: 0 }
-    
+
     render :index
-  end
-  
-  def handle_access_denied(exception)
-    flash[:alert] = "You don't have permission to access the admin dashboard."
-    redirect_to admin_login_path
   end
 end

@@ -7,14 +7,14 @@ class Category < ApplicationRecord
 
   validates :name, presence: true
   validates :transaction_type, presence: true, inclusion: { in: %w[income expense] }
-  
+
   scope :parent_categories, -> { where(parent_category_id: nil) }
-  scope :subcategories, -> { where.not(parent_category_id: nil) }
-  
+  scope :subcategories_only, -> { where.not(parent_category_id: nil) }
+
   def is_parent?
     parent_category_id.nil?
   end
-  
+
   def is_subcategory?
     parent_category_id.present?
   end
