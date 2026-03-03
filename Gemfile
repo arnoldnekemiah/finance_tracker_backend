@@ -24,6 +24,11 @@ gem 'active_model_serializers'
 # Pagination
 gem 'kaminari'
 
+# Swagger Documentation
+gem 'rswag-api'
+gem 'rswag-ui'
+gem 'ostruct'
+
 # Image Processing
 gem "image_processing", "~> 1.2"
 
@@ -39,6 +44,7 @@ group :development, :test do
   gem 'faker'
   gem "debug", platforms: %i[ mri windows ]
   gem 'letter_opener'
+  gem 'rswag-specs'
 end
 
 group :development do
