@@ -3,8 +3,9 @@ class User < ApplicationRecord
 
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
-         :jwt_authenticatable, jwt_revocation_strategy: self,
-         :omniauthable, omniauth_providers: [:google_oauth2]
+         :jwt_authenticatable, :omniauthable,
+         jwt_revocation_strategy: self,
+         omniauth_providers: [:google_oauth2]
 
   has_many :accounts,         dependent: :destroy
   has_many :categories,       dependent: :destroy
@@ -86,7 +87,7 @@ class User < ApplicationRecord
   private
 
   def password_required?
-    provider.blank? || provider == 'email' ? super : false
+    respond_to?(:provider) && provider.present? && provider != 'email' ? false : super
   end
 
   def create_default_categories
