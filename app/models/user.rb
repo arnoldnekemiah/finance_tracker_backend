@@ -14,6 +14,8 @@ class User < ApplicationRecord
   has_many :debts,            dependent: :destroy
   has_many :saving_goals,     dependent: :destroy
   has_many :support_messages, dependent: :destroy
+  has_many :admin_audit_logs, dependent: :destroy
+  has_many :sent_invitations, class_name: 'AdminInvitation', foreign_key: :invited_by_id, dependent: :nullify
 
   validates :email, presence: true, uniqueness: true,
             format: { with: URI::MailTo::EMAIL_REGEXP }
@@ -22,46 +24,72 @@ class User < ApplicationRecord
 
   after_create :create_default_categories, :create_default_account
 
-  # Admin scopes
-  scope :admins, -> { where(is_admin: true) }
-  scope :regular_users, -> { where(is_admin: false) }
-  scope :active_users, -> { where(is_active: true) }
+  scope :admins, -> { where(admin: true) }
+  scope :regular_users, -> { where(admin: false) }
+  scope :active_users, -> { where(active: true) }
 
-  # OTP Methods
+  # Alias methods for compatibility
+  alias_attribute :is_admin, :admin
+  alias_attribute :is_active, :active
+
+  def admin?
+    admin
+  end
+
+  # OTP Methods with rate limiting
   def generate_reset_otp!
+    if otp_locked_until.present? && Time.current < otp_locked_until
+      raise StandardError, "Too many OTP attempts. Try again after #{otp_locked_until.strftime('%H:%M')}"
+    end
+
     self.reset_otp = rand(100_000..999_999).to_s
     self.reset_otp_sent_at = Time.current
+    self.otp_attempts = 0
+    self.otp_locked_until = nil
     save!
   end
 
   def verify_reset_otp(otp)
     return false if reset_otp.blank? || reset_otp_sent_at.blank?
     return false if Time.current > reset_otp_sent_at + 10.minutes
-    reset_otp == otp
+
+    if otp_locked_until.present? && Time.current < otp_locked_until
+      return false
+    end
+
+    if reset_otp == otp
+      true
+    else
+      increment!(:otp_attempts)
+      if otp_attempts >= 3
+        update!(otp_locked_until: 30.minutes.from_now)
+      end
+      false
+    end
   end
 
   def clear_reset_otp!
-    update!(reset_otp: nil, reset_otp_sent_at: nil)
+    update!(reset_otp: nil, reset_otp_sent_at: nil, otp_attempts: 0, otp_locked_until: nil)
   end
 
   def full_name
     "#{first_name} #{last_name}"
   end
 
-  def admin?
-    is_admin == true
-  end
-
   def make_admin!
-    update!(is_admin: true)
+    update!(admin: true)
   end
 
   def remove_admin!
-    update!(is_admin: false)
+    update!(admin: false)
   end
 
   def effective_currency
     preferred_currency || currency || 'USD'
+  end
+
+  def record_admin_login!
+    update!(last_admin_login_at: Time.current)
   end
 
   # Google OAuth
@@ -79,7 +107,8 @@ class User < ApplicationRecord
         provider: 'google',
         uid: auth[:uid],
         photo_url: auth[:photo_url],
-        password: Devise.friendly_token[0, 20]
+        password: Devise.friendly_token[0, 20],
+        jti: SecureRandom.uuid
       )
     end
   end
@@ -87,7 +116,7 @@ class User < ApplicationRecord
   private
 
   def password_required?
-    respond_to?(:provider) && provider.present? && provider != 'email' ? false : super
+    provider.present? && provider != 'email' ? false : super
   end
 
   def create_default_categories

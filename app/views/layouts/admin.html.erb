@@ -8,25 +8,25 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
 
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Tailwind CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          fontFamily: {
+            sans: ['DM Sans', 'sans-serif'],
+            mono: ['IBM Plex Mono', 'monospace']
+          },
           colors: {
-            brand: { 50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 300: '#fcd34d', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 700: '#b45309' },
-            dark: { 800: '#1e1e2e', 900: '#11111b', 950: '#0a0a14' }
+            surface: { 50: '#0D1117', 100: '#161B22', 200: '#1C2128', 300: '#21262D', 400: '#30363D' },
+            accent: { DEFAULT: '#00D4AA', light: '#00F5C8', dark: '#00B894', dim: 'rgba(0,212,170,0.15)' },
+            fg: { primary: '#E6EDF3', secondary: '#8B949E', muted: '#484F58' }
           }
         }
       }
@@ -34,99 +34,158 @@
   </script>
 
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .sidebar { background: linear-gradient(180deg, #11111b 0%, #1e1e2e 100%); }
-    .sidebar-item { transition: all 0.2s ease; border-radius: 8px; margin: 2px 8px; }
-    .sidebar-item:hover { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
-    .sidebar-active { background: rgba(251, 191, 36, 0.15) !important; color: #fbbf24 !important; font-weight: 600; border-left: 3px solid #fbbf24; }
-    .stat-card { transition: all 0.3s ease; }
-    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
-    .glass { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.3); }
+    body { font-family: 'DM Sans', sans-serif; background: #0D1117; color: #E6EDF3; }
+    .font-mono { font-family: 'IBM Plex Mono', monospace; }
+
+    .sidebar { background: linear-gradient(180deg, #0D1117 0%, #161B22 100%); border-right: 1px solid #21262D; }
+    .sidebar-item { transition: all 0.2s ease; border-radius: 6px; margin: 1px 8px; border-left: 3px solid transparent; }
+    .sidebar-item:hover { background: rgba(0,212,170,0.08); color: #00D4AA; }
+    .sidebar-active { background: rgba(0,212,170,0.12) !important; color: #00D4AA !important; font-weight: 600; border-left-color: #00D4AA; }
+
+    .card { background: #161B22; border: 1px solid #21262D; border-radius: 8px; transition: all 0.3s ease; }
+    .card:hover { border-color: #30363D; box-shadow: 0 0 20px rgba(0,212,170,0.06); transform: translateY(-2px); }
+
+    .stat-glow:hover { box-shadow: 0 0 30px rgba(0,212,170,0.12); }
+
+    .badge-active { background: rgba(46,160,67,0.15); color: #3FB950; }
+    .badge-suspended { background: rgba(248,81,73,0.15); color: #F85149; }
+    .badge-pending { background: rgba(210,153,34,0.15); color: #D2992A; }
+
+    .header-bar { background: rgba(22,27,34,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid #21262D; }
+
+    .table-row { transition: background 0.15s ease; }
+    .table-row:hover { background: rgba(0,212,170,0.04); }
+    .table-row:hover .row-action { opacity: 1; }
+    .row-action { opacity: 0; transition: opacity 0.15s ease; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-card { animation: fadeSlideIn 0.4s cubic-bezier(0.16,1,0.3,1) both; }
+    .animate-card:nth-child(1) { animation-delay: 0.05s; }
+    .animate-card:nth-child(2) { animation-delay: 0.1s; }
+    .animate-card:nth-child(3) { animation-delay: 0.15s; }
+    .animate-card:nth-child(4) { animation-delay: 0.2s; }
+    .animate-card:nth-child(5) { animation-delay: 0.25s; }
+    .animate-card:nth-child(6) { animation-delay: 0.3s; }
+
+    .toast { animation: fadeSlideIn 0.3s ease; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0D1117; }
+    ::-webkit-scrollbar-thumb { background: #30363D; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #484F58; }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body>
   <div class="flex h-screen overflow-hidden">
     <!-- Sidebar -->
-    <aside class="sidebar w-64 flex-shrink-0 flex flex-col text-gray-300">
-      <div class="px-5 py-6 border-b border-white/10">
+    <aside id="sidebar" class="sidebar w-64 flex-shrink-0 flex flex-col text-fg-secondary">
+      <div class="px-5 py-5 border-b border-surface-300">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center">
-            <i data-lucide="bar-chart-3" class="w-5 h-5 text-white"></i>
+          <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-accent to-accent-dark flex items-center justify-center shadow-lg shadow-accent/20">
+            <i data-lucide="bar-chart-3" class="w-5 h-5 text-surface-50"></i>
           </div>
           <div>
-            <h1 class="text-lg font-bold text-white tracking-tight">Accountanta</h1>
-            <p class="text-[11px] text-gray-500 -mt-0.5">Admin Panel</p>
+            <h1 class="text-base font-bold text-fg-primary tracking-tight">Accountanta</h1>
+            <p class="text-[10px] text-fg-muted font-mono uppercase tracking-wider">Admin Console</p>
           </div>
         </div>
       </div>
 
-      <nav class="flex-1 py-4 space-y-1 overflow-y-auto">
-        <p class="px-5 text-[10px] font-semibold uppercase tracking-widest text-gray-600 mb-2">Main</p>
+      <nav class="flex-1 py-4 space-y-0.5 overflow-y-auto">
+        <p class="px-5 text-[10px] font-semibold uppercase tracking-widest text-fg-muted mb-2 font-mono">Overview</p>
 
-        <%= link_to admin_dashboard_path, class: "flex items-center gap-3 px-4 py-2.5 text-sm sidebar-item #{'sidebar-active' if current_page?(admin_dashboard_path)}" do %>
+        <%= link_to admin_dashboard_path, class: "flex items-center gap-3 px-4 py-2 text-sm sidebar-item #{'sidebar-active' if current_page?(admin_dashboard_path) || current_page?(admin_root_path)}" do %>
           <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
         <% end %>
 
-        <%= link_to admin_users_path, class: "flex items-center gap-3 px-4 py-2.5 text-sm sidebar-item #{'sidebar-active' if current_page?(admin_users_path)}" do %>
-          <i data-lucide="users" class="w-4 h-4"></i> Users
+        <%= link_to admin_users_path, class: "flex items-center gap-3 px-4 py-2 text-sm sidebar-item #{'sidebar-active' if controller_name == 'users'}" do %>
+          <i data-lucide="users" class="w-4 h-4"></i> User Management
         <% end %>
 
-        <%= link_to admin_analytics_path, class: "flex items-center gap-3 px-4 py-2.5 text-sm sidebar-item #{'sidebar-active' if controller_name == 'analytics'}" do %>
-          <i data-lucide="trending-up" class="w-4 h-4"></i> Analytics
+        <p class="px-5 text-[10px] font-semibold uppercase tracking-widest text-fg-muted mt-5 mb-2 font-mono">Intelligence</p>
+
+        <%= link_to admin_analytics_path, class: "flex items-center gap-3 px-4 py-2 text-sm sidebar-item #{'sidebar-active' if controller_name == 'analytics'}" do %>
+          <i data-lucide="trending-up" class="w-4 h-4"></i> Analytics & Reports
         <% end %>
 
-        <%= link_to admin_reports_path, class: "flex items-center gap-3 px-4 py-2.5 text-sm sidebar-item #{'sidebar-active' if controller_name == 'reports'}" do %>
-          <i data-lucide="file-text" class="w-4 h-4"></i> Reports
+        <%= link_to admin_reports_path, class: "flex items-center gap-3 px-4 py-2 text-sm sidebar-item #{'sidebar-active' if controller_name == 'reports'}" do %>
+          <i data-lucide="file-bar-chart" class="w-4 h-4"></i> Report Generator
         <% end %>
 
-        <div class="border-t border-white/5 mt-4 pt-4">
-          <p class="px-5 text-[10px] font-semibold uppercase tracking-widest text-gray-600 mb-2">System</p>
+        <p class="px-5 text-[10px] font-semibold uppercase tracking-widest text-fg-muted mt-5 mb-2 font-mono">Administration</p>
 
-          <%= link_to admin_settings_path, class: "flex items-center gap-3 px-4 py-2.5 text-sm sidebar-item" do %>
+        <%= link_to admin_invitations_path, class: "flex items-center gap-3 px-4 py-2 text-sm sidebar-item #{'sidebar-active' if controller_name == 'invitations'}" do %>
+          <i data-lucide="mail-plus" class="w-4 h-4"></i> Invite Admins
+        <% end %>
+
+        <%= link_to admin_audit_logs_path, class: "flex items-center gap-3 px-4 py-2 text-sm sidebar-item #{'sidebar-active' if controller_name == 'audit_logs'}" do %>
+          <i data-lucide="shield-check" class="w-4 h-4"></i> Audit Logs
+        <% end %>
+
+        <div class="border-t border-surface-300 mt-4 pt-4">
+          <p class="px-5 text-[10px] font-semibold uppercase tracking-widest text-fg-muted mb-2 font-mono">Links</p>
+
+          <%= link_to '/api-docs', class: "flex items-center gap-3 px-4 py-2 text-sm sidebar-item", target: "_blank" do %>
+            <i data-lucide="book-open" class="w-4 h-4"></i> API Docs
+          <% end %>
+
+          <%= link_to admin_settings_path, class: "flex items-center gap-3 px-4 py-2 text-sm sidebar-item #{'sidebar-active' if controller_name == 'settings'}" do %>
             <i data-lucide="settings" class="w-4 h-4"></i> Settings
           <% end %>
 
-          <%= link_to admin_logout_path, method: :delete, class: "flex items-center gap-3 px-4 py-2.5 text-sm sidebar-item text-red-400 hover:text-red-300" do %>
+          <%= link_to admin_logout_path, method: :delete, class: "flex items-center gap-3 px-4 py-2 text-sm sidebar-item text-red-400 hover:text-red-300" do %>
             <i data-lucide="log-out" class="w-4 h-4"></i> Logout
           <% end %>
         </div>
       </nav>
 
-      <div class="px-4 py-4 border-t border-white/5">
+      <% if current_admin_user %>
+      <div class="px-4 py-4 border-t border-surface-300">
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full bg-brand-500/20 flex items-center justify-center">
-            <i data-lucide="user" class="w-4 h-4 text-brand-400"></i>
-          </div>
+          <% if current_admin_user.photo_url.present? %>
+            <img src="<%= current_admin_user.photo_url %>" class="w-8 h-8 rounded-full object-cover" alt="Avatar">
+          <% else %>
+            <div class="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
+              <span class="text-xs font-bold text-accent"><%= current_admin_user.first_name&.first %><%= current_admin_user.last_name&.first %></span>
+            </div>
+          <% end %>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-white truncate"><%= current_user&.full_name || "Admin" %></p>
-            <p class="text-[11px] text-gray-500 truncate"><%= current_user&.email %></p>
+            <p class="text-sm font-medium text-fg-primary truncate"><%= current_admin_user.full_name %></p>
+            <p class="text-[11px] text-fg-muted truncate font-mono"><%= current_admin_user.email %></p>
           </div>
         </div>
       </div>
+      <% end %>
     </aside>
 
-    <!-- Main -->
+    <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
-      <header class="glass border-b border-gray-200/60 px-8 py-4">
+      <header class="header-bar px-8 py-4">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-xl font-semibold text-gray-900"><%= content_for?(:page_title) ? yield(:page_title) : "Dashboard" %></h2>
-            <p class="text-sm text-gray-500 mt-0.5"><%= content_for?(:page_description) ? yield(:page_description) : "Overview" %></p>
+            <h2 class="text-lg font-semibold text-fg-primary"><%= content_for?(:page_title) ? yield(:page_title) : "Dashboard" %></h2>
+            <p class="text-xs text-fg-muted mt-0.5 font-mono"><%= content_for?(:page_description) ? yield(:page_description) : "Platform overview" %></p>
           </div>
           <div class="flex items-center gap-4">
-            <span class="text-sm text-gray-500"><%= Time.current.strftime("%b %d, %Y") %></span>
+            <span class="text-xs text-fg-muted font-mono"><%= Time.current.strftime("%Y-%m-%d %H:%M UTC") %></span>
+            <button id="sidebar-toggle" class="lg:hidden p-2 rounded-lg hover:bg-surface-200">
+              <i data-lucide="menu" class="w-5 h-5 text-fg-secondary"></i>
+            </button>
           </div>
         </div>
       </header>
 
-      <main class="flex-1 overflow-y-auto p-8">
+      <main class="flex-1 overflow-y-auto p-6 lg:p-8">
         <% if notice %>
-          <div class="mb-6 p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm flex items-center gap-2" role="alert">
+          <div class="toast mb-6 p-3 rounded-lg bg-accent/10 border border-accent/30 text-accent text-sm flex items-center gap-2" role="alert">
             <i data-lucide="check-circle-2" class="w-4 h-4"></i> <%= notice %>
           </div>
         <% end %>
         <% if alert %>
-          <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2" role="alert">
+          <div class="toast mb-6 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm flex items-center gap-2" role="alert">
             <i data-lucide="alert-triangle" class="w-4 h-4"></i> <%= alert %>
           </div>
         <% end %>
@@ -137,13 +196,27 @@
 
   <script>lucide.createIcons();</script>
   <script>
+    // Auto-dismiss toasts
     setTimeout(() => {
       document.querySelectorAll('[role="alert"]').forEach(el => {
-        el.style.transition = 'opacity 0.4s';
+        el.style.transition = 'opacity 0.4s, transform 0.4s';
         el.style.opacity = '0';
+        el.style.transform = 'translateY(-8px)';
         setTimeout(() => el.remove(), 400);
       });
     }, 5000);
+
+    // Sidebar toggle for mobile
+    const toggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        sidebar.classList.toggle('hidden');
+        sidebar.classList.toggle('absolute');
+        sidebar.classList.toggle('z-50');
+        sidebar.classList.toggle('h-full');
+      });
+    }
   </script>
 </body>
 </html>

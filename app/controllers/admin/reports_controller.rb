@@ -1,7 +1,4 @@
-class Admin::ReportsController < ApplicationController
-  layout 'admin'
-  skip_before_action :authenticate_user!
-  before_action :authenticate_admin_user!
+class Admin::ReportsController < Admin::BaseController
 
   def index
     # Reports index page
@@ -49,12 +46,6 @@ class Admin::ReportsController < ApplicationController
   end
 
   private
-
-  def authenticate_admin_user!
-    unless current_user&.admin?
-      redirect_to admin_login_path, alert: 'Admin access required'
-    end
-  end
 
   def generate_report(type, start_date, end_date)
     transactions = Transaction.where(date: start_date..end_date)

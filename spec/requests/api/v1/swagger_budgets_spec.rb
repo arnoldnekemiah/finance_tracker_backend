@@ -156,6 +156,11 @@ RSpec.describe 'Budgets API', type: :request do
         }
         run_test!
       end
+
+      response '401', 'Unauthorized' do
+        schema '$ref' => '#/components/schemas/error_response'
+        run_test!
+      end
     end
   end
 
@@ -185,6 +190,11 @@ RSpec.describe 'Budgets API', type: :request do
             }
           }
         }
+        run_test!
+      end
+
+      response '401', 'Unauthorized' do
+        schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
     end

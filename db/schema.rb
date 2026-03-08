@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_03_03_000011) do
+ActiveRecord::Schema[7.1].define(version: 2026_03_08_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -47,6 +47,18 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_03_000011) do
     t.index ["action"], name: "index_admin_audit_logs_on_action"
     t.index ["resource_type", "resource_id"], name: "index_admin_audit_logs_on_resource_type_and_resource_id"
     t.index ["user_id"], name: "index_admin_audit_logs_on_user_id"
+  end
+
+  create_table "admin_invitations", force: :cascade do |t|
+    t.string "email", null: false
+    t.bigint "invited_by_id", null: false
+    t.string "token", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_admin_invitations_on_email"
+    t.index ["token"], name: "index_admin_invitations_on_token", unique: true
   end
 
   create_table "budgets", force: :cascade do |t|
@@ -184,16 +196,32 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_03_000011) do
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "provider"
+    t.string "uid"
+    t.string "photo_url"
+    t.string "reset_otp"
+    t.datetime "reset_otp_sent_at"
+    t.integer "otp_attempts", default: 0, null: false
+    t.datetime "otp_locked_until"
+    t.string "admin_role", default: "admin"
+    t.string "invitation_token"
+    t.datetime "invitation_sent_at"
+    t.bigint "invited_by_id"
+    t.datetime "last_admin_login_at"
     t.index ["active"], name: "index_users_on_active"
     t.index ["admin"], name: "index_users_on_admin"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["invitation_token"], name: "index_users_on_invitation_token", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["preferred_currency"], name: "index_users_on_preferred_currency"
+    t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
+    t.index ["provider"], name: "index_users_on_provider"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "accounts", "users"
   add_foreign_key "admin_audit_logs", "users"
+  add_foreign_key "admin_invitations", "users", column: "invited_by_id"
   add_foreign_key "budgets", "categories"
   add_foreign_key "budgets", "users"
   add_foreign_key "categories", "categories", column: "parent_category_id"
@@ -207,4 +235,5 @@ ActiveRecord::Schema[7.1].define(version: 2026_03_03_000011) do
   add_foreign_key "transactions", "categories"
   add_foreign_key "transactions", "users"
   add_foreign_key "user_analytics", "users"
+  add_foreign_key "users", "users", column: "invited_by_id"
 end

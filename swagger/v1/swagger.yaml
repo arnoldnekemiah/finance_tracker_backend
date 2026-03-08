@@ -1074,6 +1074,12 @@ paths:
                     type: array
                     items:
                       "$ref": "#/components/schemas/budget"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
   "/api/v1/budgets/summary":
     get:
       summary: Get overall budget summary
@@ -1110,6 +1116,12 @@ paths:
                         type: array
                         items:
                           "$ref": "#/components/schemas/budget"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
   "/api/v1/categories":
     get:
       summary: List all categories
@@ -1434,6 +1446,12 @@ paths:
                         type: number
                       savings_rate:
                         type: number
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
   "/api/v1/dashboard/spending_by_category":
     get:
       summary: Get dashboard spending by category
@@ -1483,6 +1501,12 @@ paths:
                           type: number
                         percentage:
                           type: number
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
   "/api/v1/data/start_afresh":
     post:
       summary: Reset financial data (keep accounts & categories)
@@ -1848,6 +1872,12 @@ paths:
                           type: number
                         percentage:
                           type: number
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
   "/api/v1/insights/weekly_trends":
     get:
       summary: Get weekly spending trends (last 4 weeks)
@@ -1882,6 +1912,12 @@ paths:
                           format: date
                         spending:
                           type: number
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
   "/api/v1/insights/spending_comparison":
     get:
       summary: Compare spending between current and last month
@@ -1910,6 +1946,12 @@ paths:
                         type: number
                       percentage_change:
                         type: number
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
   "/api/v1/profile":
     put:
       summary: Update user profile

@@ -1,0 +1,29 @@
+<div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0D1117; color: #c9d1d9; padding: 40px 30px; border-radius: 12px;">
+  <div style="text-align: center; margin-bottom: 32px;">
+    <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, #00D4AA, #00B894); border-radius: 12px; line-height: 48px; font-size: 24px; font-weight: bold; color: #0D1117;">A</div>
+    <h1 style="margin: 12px 0 4px; font-size: 24px; color: #ffffff;">Accountanta</h1>
+    <p style="margin: 0; color: #8b949e; font-size: 14px;">Admin Platform Invitation</p>
+  </div>
+
+  <div style="background: #161B22; border: 1px solid #30363d; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+    <p style="margin: 0 0 16px; font-size: 16px; color: #e6edf3;">Hello,</p>
+    <p style="margin: 0 0 16px; color: #c9d1d9;">
+      <strong style="color: #00D4AA;"><%= @inviter.full_name %></strong> has invited you to join the
+      <strong>Accountanta Admin Panel</strong>.
+    </p>
+    <p style="margin: 0 0 24px; color: #8b949e; font-size: 14px;">
+      This invitation expires in 7 days. Click the button below to accept and set up your admin account.
+    </p>
+
+    <div style="text-align: center;">
+      <a href="<%= @accept_url %>" style="display: inline-block; background: linear-gradient(135deg, #00D4AA, #00B894); color: #0D1117; text-decoration: none; padding: 12px 32px; border-radius: 8px; font-weight: 600; font-size: 14px;">
+        Accept Invitation
+      </a>
+    </div>
+  </div>
+
+  <p style="color: #8b949e; font-size: 12px; text-align: center; margin: 0;">
+    If you did not expect this invitation, you can safely ignore this email.<br>
+    &copy; <%= Date.current.year %> Accountanta
+  </p>
+</div>

@@ -1,15 +1,14 @@
 class Admin::BaseController < ApplicationController
-  before_action :authenticate_user!
-  before_action :ensure_admin_access
+  include AdminAuthenticatable
+
+  skip_before_action :authenticate_user!
+  before_action :authenticate_admin_user!
+
+  layout 'admin'
 
   private
 
-  def ensure_admin_access
-    unless current_user&.admin?
-      respond_to do |format|
-        format.html { redirect_to admin_login_path, alert: 'Admin access required' }
-        format.json { render json: { error: 'Admin access required' }, status: :forbidden }
-      end
-    end
+  def current_user
+    current_admin_user
   end
 end

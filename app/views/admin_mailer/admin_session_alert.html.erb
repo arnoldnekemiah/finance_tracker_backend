@@ -1,0 +1,39 @@
+<div style="max-width: 600px; margin: 0 auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0D1117; color: #c9d1d9; padding: 40px 30px; border-radius: 12px;">
+  <div style="text-align: center; margin-bottom: 32px;">
+    <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, #00D4AA, #00B894); border-radius: 12px; line-height: 48px; font-size: 24px; font-weight: bold; color: #0D1117;">A</div>
+    <h1 style="margin: 12px 0 4px; font-size: 24px; color: #ffffff;">Accountanta</h1>
+    <p style="margin: 0; color: #8b949e; font-size: 14px;">Security Alert</p>
+  </div>
+
+  <div style="background: #161B22; border: 1px solid #30363d; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
+    <p style="margin: 0 0 16px; font-size: 16px; color: #e6edf3;">Hello <%= @user.first_name %>,</p>
+    <p style="margin: 0 0 16px; color: #c9d1d9;">
+      A new admin login was detected on your account:
+    </p>
+
+    <div style="background: #0D1117; border: 1px solid #30363d; border-radius: 6px; padding: 16px; margin: 16px 0;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 6px 0; color: #8b949e; font-size: 13px;">Time</td>
+          <td style="padding: 6px 0; color: #e6edf3; font-size: 13px; text-align: right;"><%= @login_time.strftime('%B %d, %Y at %H:%M UTC') %></td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0; color: #8b949e; font-size: 13px;">IP Address</td>
+          <td style="padding: 6px 0; color: #e6edf3; font-size: 13px; text-align: right;"><%= @ip_address %></td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0; color: #8b949e; font-size: 13px;">Device</td>
+          <td style="padding: 6px 0; color: #e6edf3; font-size: 13px; text-align: right;"><%= @user_agent.truncate(80) %></td>
+        </tr>
+      </table>
+    </div>
+
+    <p style="margin: 16px 0 0; color: #f85149; font-size: 13px;">
+      If this was not you, please change your password immediately and contact support.
+    </p>
+  </div>
+
+  <p style="color: #8b949e; font-size: 12px; text-align: center; margin: 0;">
+    &copy; <%= Date.current.year %> Accountanta
+  </p>
+</div>
