@@ -5,7 +5,9 @@ FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
 
 WORKDIR /rails
 
-ENV RAILS_ENV="production" \
+# Suppress debconf prompts during apt-get (avoids slow interactive fallback)
+ENV DEBIAN_FRONTEND=noninteractive \
+    RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test" \
@@ -15,9 +17,7 @@ ENV RAILS_ENV="production" \
 FROM base as builder
 
 # Install packages needed for building
-RUN rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/lock* && \
-    apt-get clean && \
-    apt-get update -qq && \
+RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     build-essential \
     git \
@@ -47,9 +47,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 FROM base
 
 # Install runtime dependencies only
-RUN rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/lock* && \
-    apt-get clean && \
-    apt-get update -qq && \
+RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     libvips \
     postgresql-client \
