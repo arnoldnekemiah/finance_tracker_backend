@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:1
 
-ARG RUBY_VERSION=3.3.1
+ARG RUBY_VERSION=3.4.5
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
 
 WORKDIR /rails
@@ -68,6 +68,6 @@ RUN useradd rails --create-home --shell /bin/bash && \
 
 USER rails:rails
 
-EXPOSE 3001
+EXPOSE 3000
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 CMD ["./bin/rails", "server"]
