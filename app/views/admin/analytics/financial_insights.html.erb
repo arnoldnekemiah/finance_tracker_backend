@@ -1,128 +1,92 @@
-<div class="p-6">
-  <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Financial Insights Analytics</h1>
-    <p class="text-gray-600">Deep dive into financial patterns and user behavior</p>
-  </div>
+<% content_for :page_title, "Financial Insights" %>
+<% content_for :page_description, "Platform-wide financial health" %>
 
-  <!-- Date Range Filter -->
-  <div class="bg-white rounded-lg shadow mb-6 p-6">
-    <%= form_with url: admin_analytics_financial_insights_path, method: :get, local: true, class: "flex items-end space-x-4" do |form| %>
+<div class="space-y-6">
+  <div class="card p-4 animate-card">
+    <%= form_with url: admin_analytics_financial_insights_path, method: :get, local: true, class: "flex flex-wrap items-end gap-3" do |f| %>
       <div>
-        <%= form.label :start_date, "Start Date", class: "block text-sm font-medium text-gray-700" %>
-        <%= form.date_field :start_date, value: @start_date&.strftime('%Y-%m-%d'), class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm" %>
+        <label class="block text-[10px] font-mono uppercase tracking-wider text-fg-muted mb-1">From</label>
+        <%= f.date_field :start_date, value: @start_date&.to_date, class: "px-3 py-2 rounded-lg bg-surface-50 border border-surface-400 text-fg-secondary text-sm outline-none focus:border-accent" %>
       </div>
       <div>
-        <%= form.label :end_date, "End Date", class: "block text-sm font-medium text-gray-700" %>
-        <%= form.date_field :end_date, value: @end_date&.strftime('%Y-%m-%d'), class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm" %>
+        <label class="block text-[10px] font-mono uppercase tracking-wider text-fg-muted mb-1">To</label>
+        <%= f.date_field :end_date, value: @end_date&.to_date, class: "px-3 py-2 rounded-lg bg-surface-50 border border-surface-400 text-fg-secondary text-sm outline-none focus:border-accent" %>
       </div>
-      <div>
-        <%= form.submit "Update", class: "gold-bg text-black px-4 py-2 rounded-md font-medium hover:opacity-90" %>
-      </div>
+      <%= f.submit "Apply", class: "px-5 py-2 rounded-lg bg-accent text-surface-50 text-sm font-semibold cursor-pointer hover:bg-accent-light transition-colors" %>
     <% end %>
   </div>
 
-  <!-- Financial Insights Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-    <% if @insights.present? %>
-      <% @insights.each do |key, value| %>
-        <div class="admin-card bg-white p-6 rounded-lg shadow">
-          <div class="flex items-center">
-            <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
-              <i class="fas fa-chart-pie"></i>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600"><%= key.to_s.humanize %></p>
-              <p class="text-2xl font-semibold text-gray-900">
-                <% if value.is_a?(Numeric) %>
-                  <% if key.to_s.include?('amount') || key.to_s.include?('value') %>
-                    $<%= number_with_delimiter(value) %>
-                  <% else %>
-                    <%= number_with_delimiter(value) %>
-                  <% end %>
-                <% else %>
-                  <%= value %>
-                <% end %>
-              </p>
-            </div>
-          </div>
-        </div>
-      <% end %>
-    <% else %>
-      <div class="col-span-full">
-        <div class="admin-card bg-white p-6 rounded-lg shadow text-center">
-          <div class="p-3 rounded-full bg-gray-100 text-gray-400 mx-auto w-16 h-16 flex items-center justify-center mb-4">
-            <i class="fas fa-chart-pie text-2xl"></i>
-          </div>
-          <p class="text-gray-600">No financial insights data available for the selected period.</p>
-        </div>
-      </div>
-    <% end %>
-  </div>
-
-  <!-- Insights Summary -->
-  <div class="bg-white rounded-lg shadow mb-8">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-medium text-gray-900">Financial Insights Summary</h3>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="card p-4 animate-card">
+      <span class="text-[10px] font-mono uppercase text-fg-muted">Total Income</span>
+      <p class="text-xl font-bold text-accent font-mono mt-1">$<%= number_with_delimiter(@insights[:total_income]) %></p>
     </div>
-    <div class="p-6">
-      <% if @insights.present? %>
-        <div class="space-y-4">
-          <% @insights.each do |key, value| %>
-            <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
-              <span class="text-sm font-medium text-gray-700"><%= key.to_s.humanize %></span>
-              <span class="text-sm text-gray-900">
-                <% if value.is_a?(Numeric) %>
-                  <% if key.to_s.include?('amount') || key.to_s.include?('value') %>
-                    $<%= number_with_delimiter(value) %>
-                  <% else %>
-                    <%= number_with_delimiter(value) %>
-                  <% end %>
-                <% else %>
-                  <%= value %>
-                <% end %>
-              </span>
-            </div>
-          <% end %>
-        </div>
-      <% else %>
-        <p class="text-gray-600 text-center py-8">No financial insights available for the selected date range.</p>
-      <% end %>
+    <div class="card p-4 animate-card">
+      <span class="text-[10px] font-mono uppercase text-fg-muted">Total Expenses</span>
+      <p class="text-xl font-bold text-red-400 font-mono mt-1">$<%= number_with_delimiter(@insights[:total_expenses]) %></p>
+    </div>
+    <div class="card p-4 animate-card">
+      <span class="text-[10px] font-mono uppercase text-fg-muted">Net Savings</span>
+      <p class="text-xl font-bold font-mono mt-1 <%= @insights[:net_savings] >= 0 ? 'text-accent' : 'text-red-400' %>">$<%= number_with_delimiter(@insights[:net_savings]) %></p>
+    </div>
+    <div class="card p-4 animate-card">
+      <span class="text-[10px] font-mono uppercase text-fg-muted">Savings Rate</span>
+      <p class="text-xl font-bold text-blue-400 font-mono mt-1"><%= @insights[:savings_rate] %>%</p>
     </div>
   </div>
 
-  <!-- Export Options -->
-  <div class="bg-white rounded-lg shadow mb-8">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-medium text-gray-900">Export Financial Data</h3>
-    </div>
-    <div class="p-6">
-      <div class="flex space-x-4">
-        <%= link_to admin_analytics_export_data_path(format: 'csv'), 
-            class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
-          <i class="fas fa-file-csv mr-2"></i>
-          Export as CSV
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="card p-5 animate-card">
+      <h3 class="text-sm font-semibold text-fg-primary mb-4">Top Expense Categories</h3>
+      <div class="space-y-3">
+        <% @insights[:top_expense_categories].each do |cat| %>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-fg-secondary"><%= cat[:category] %></span>
+            <span class="text-xs font-mono text-fg-primary">$<%= number_with_delimiter(cat[:amount]) %></span>
+          </div>
         <% end %>
-        
-        <%= link_to admin_analytics_export_data_path(format: 'json'), 
-            class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
-          <i class="fas fa-file-code mr-2"></i>
-          Export as JSON
+      </div>
+    </div>
+    <div class="card p-5 animate-card">
+      <h3 class="text-sm font-semibold text-fg-primary mb-4">Top Income Categories</h3>
+      <div class="space-y-3">
+        <% @insights[:top_income_categories].each do |cat| %>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-fg-secondary"><%= cat[:category] %></span>
+            <span class="text-xs font-mono text-accent">$<%= number_with_delimiter(cat[:amount]) %></span>
+          </div>
         <% end %>
       </div>
     </div>
   </div>
 
-  <!-- Back to Analytics -->
-  <div class="mt-8">
-    <%= link_to admin_analytics_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
-      <i class="fas fa-arrow-left mr-2"></i>
-      Back to Analytics Overview
-    <% end %>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="card p-5 animate-card">
+      <h3 class="text-sm font-semibold text-fg-primary mb-3">Account Health</h3>
+      <div class="space-y-2">
+        <div class="flex justify-between"><span class="text-xs text-fg-muted">Total Balance</span><span class="text-xs font-mono text-fg-primary">$<%= number_with_delimiter(@insights[:total_account_balance]) %></span></div>
+        <div class="flex justify-between"><span class="text-xs text-fg-muted">Asset Accounts</span><span class="text-xs font-mono text-accent">$<%= number_with_delimiter(@insights[:asset_account_balance]) %></span></div>
+        <div class="flex justify-between"><span class="text-xs text-fg-muted">Debt Accounts</span><span class="text-xs font-mono text-red-400">$<%= number_with_delimiter(@insights[:debt_account_balance]) %></span></div>
+      </div>
+    </div>
+    <div class="card p-5 animate-card">
+      <h3 class="text-sm font-semibold text-fg-primary mb-3">Debt Summary</h3>
+      <div class="space-y-2">
+        <div class="flex justify-between"><span class="text-xs text-fg-muted">Outstanding</span><span class="text-xs font-mono text-amber-400">$<%= number_with_delimiter(@insights[:total_outstanding_debt]) %></span></div>
+        <div class="flex justify-between"><span class="text-xs text-fg-muted">Overdue</span><span class="text-xs font-mono text-red-400">$<%= number_with_delimiter(@insights[:overdue_debt]) %></span></div>
+      </div>
+    </div>
+    <div class="card p-5 animate-card">
+      <h3 class="text-sm font-semibold text-fg-primary mb-3">Savings Goals</h3>
+      <div class="space-y-2">
+        <div class="flex justify-between"><span class="text-xs text-fg-muted">Target</span><span class="text-xs font-mono text-fg-primary">$<%= number_with_delimiter(@insights[:total_saving_goal_progress][:target]) %></span></div>
+        <div class="flex justify-between"><span class="text-xs text-fg-muted">Saved</span><span class="text-xs font-mono text-accent">$<%= number_with_delimiter(@insights[:total_saving_goal_progress][:saved]) %></span></div>
+        <% goal_pct = @insights[:total_saving_goal_progress][:target].to_f > 0 ? ((@insights[:total_saving_goal_progress][:saved].to_f / @insights[:total_saving_goal_progress][:target].to_f) * 100).round(1) : 0 %>
+        <div class="mt-2 h-2 bg-surface-300 rounded-full overflow-hidden">
+          <div class="h-full bg-accent rounded-full" style="width: <%= [goal_pct, 100].min %>%"></div>
+        </div>
+        <p class="text-[10px] font-mono text-fg-muted text-center"><%= goal_pct %>% progress</p>
+      </div>
+    </div>
   </div>
 </div>
-
-<style>
-  .gold-bg {
-    background: linear-gradient(45deg, #FFD700, #FFA500);
-  }
-</style>

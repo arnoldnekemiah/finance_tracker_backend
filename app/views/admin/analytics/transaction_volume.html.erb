@@ -1,131 +1,67 @@
-<div class="p-6">
-  <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Transaction Volume Analytics</h1>
-    <p class="text-gray-600">Monitor transaction patterns and financial activity</p>
-  </div>
+<% content_for :page_title, "Transaction Volume" %>
+<% content_for :page_description, "Volume analysis and payment breakdown" %>
 
-  <!-- Date Range Filter -->
-  <div class="bg-white rounded-lg shadow mb-6 p-6">
-    <%= form_with url: admin_analytics_transaction_volume_path, method: :get, local: true, class: "flex items-end space-x-4" do |form| %>
+<div class="space-y-6">
+  <div class="card p-4 animate-card">
+    <%= form_with url: admin_analytics_transaction_volume_path, method: :get, local: true, class: "flex flex-wrap items-end gap-3" do |f| %>
       <div>
-        <%= form.label :start_date, "Start Date", class: "block text-sm font-medium text-gray-700" %>
-        <%= form.date_field :start_date, value: @start_date&.strftime('%Y-%m-%d'), class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm" %>
+        <label class="block text-[10px] font-mono uppercase tracking-wider text-fg-muted mb-1">From</label>
+        <%= f.date_field :start_date, value: @start_date&.to_date, class: "px-3 py-2 rounded-lg bg-surface-50 border border-surface-400 text-fg-secondary text-sm outline-none focus:border-accent" %>
       </div>
       <div>
-        <%= form.label :end_date, "End Date", class: "block text-sm font-medium text-gray-700" %>
-        <%= form.date_field :end_date, value: @end_date&.strftime('%Y-%m-%d'), class: "mt-1 block w-full border-gray-300 rounded-md shadow-sm" %>
+        <label class="block text-[10px] font-mono uppercase tracking-wider text-fg-muted mb-1">To</label>
+        <%= f.date_field :end_date, value: @end_date&.to_date, class: "px-3 py-2 rounded-lg bg-surface-50 border border-surface-400 text-fg-secondary text-sm outline-none focus:border-accent" %>
       </div>
-      <div>
-        <%= form.submit "Update", class: "gold-bg text-black px-4 py-2 rounded-md font-medium hover:opacity-90" %>
-      </div>
+      <%= f.submit "Apply", class: "px-5 py-2 rounded-lg bg-accent text-surface-50 text-sm font-semibold cursor-pointer hover:bg-accent-light transition-colors" %>
     <% end %>
   </div>
 
-  <!-- Metrics Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-    <div class="admin-card bg-white p-6 rounded-lg shadow">
-      <div class="flex items-center">
-        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-          <i class="fas fa-receipt"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-600">Total Transactions</p>
-          <p class="text-2xl font-semibold text-gray-900"><%= @metrics[:total_transactions] %></p>
-        </div>
-      </div>
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="card p-4 animate-card">
+      <span class="text-[10px] font-mono uppercase tracking-wider text-fg-muted">Total</span>
+      <p class="text-xl font-bold text-fg-primary font-mono mt-1"><%= number_with_delimiter(@metrics[:total_transactions]) %></p>
     </div>
-
-    <div class="admin-card bg-white p-6 rounded-lg shadow">
-      <div class="flex items-center">
-        <div class="p-3 rounded-full bg-green-100 text-green-600">
-          <i class="fas fa-plus-circle"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-600">Period Transactions</p>
-          <p class="text-2xl font-semibold text-gray-900"><%= @metrics[:transactions_period] %></p>
-        </div>
-      </div>
+    <div class="card p-4 animate-card">
+      <span class="text-[10px] font-mono uppercase tracking-wider text-fg-muted">Income Volume</span>
+      <p class="text-xl font-bold text-accent font-mono mt-1">$<%= number_with_delimiter(@metrics[:total_income_volume]) %></p>
     </div>
-
-    <div class="admin-card bg-white p-6 rounded-lg shadow">
-      <div class="flex items-center">
-        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-          <i class="fas fa-dollar-sign"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-600">Transaction Volume</p>
-          <p class="text-2xl font-semibold text-gray-900">$<%= number_with_delimiter(@metrics[:transaction_volume] || 0) %></p>
-        </div>
-      </div>
+    <div class="card p-4 animate-card">
+      <span class="text-[10px] font-mono uppercase tracking-wider text-fg-muted">Expense Volume</span>
+      <p class="text-xl font-bold text-red-400 font-mono mt-1">$<%= number_with_delimiter(@metrics[:total_expense_volume]) %></p>
     </div>
-
-    <div class="admin-card bg-white p-6 rounded-lg shadow">
-      <div class="flex items-center">
-        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-          <i class="fas fa-chart-bar"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-600">Average Amount</p>
-          <p class="text-2xl font-semibold text-gray-900">$<%= number_with_delimiter(@metrics[:avg_transaction_amount] || 0) %></p>
-        </div>
-      </div>
+    <div class="card p-4 animate-card">
+      <span class="text-[10px] font-mono uppercase tracking-wider text-fg-muted">Avg Amount</span>
+      <p class="text-xl font-bold text-blue-400 font-mono mt-1">$<%= @metrics[:avg_transaction_amount] %></p>
     </div>
   </div>
 
-  <!-- Transaction Volume Chart -->
-  <div class="bg-white rounded-lg shadow mb-8">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-medium text-gray-900">Daily Transaction Volume</h3>
-    </div>
-    <div class="p-6">
-      <canvas id="transactionVolumeChart" width="400" height="200"></canvas>
-    </div>
-  </div>
-
-  <!-- Back to Analytics -->
-  <div class="mt-8">
-    <%= link_to admin_analytics_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
-      <i class="fas fa-arrow-left mr-2"></i>
-      Back to Analytics Overview
-    <% end %>
+  <div class="card p-5 animate-card">
+    <h3 class="text-sm font-semibold text-fg-primary mb-1">Income vs Expenses</h3>
+    <p class="text-xs text-fg-muted font-mono mb-4">Daily volume comparison</p>
+    <canvas id="volumeChart" height="250"></canvas>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Transaction Volume Chart
-  const ctx = document.getElementById('transactionVolumeChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: <%= raw @metrics[:transactions_by_day].keys.to_json %>,
-      datasets: [{
-        label: 'Daily Transactions',
-        data: <%= raw @metrics[:transactions_by_day].values.to_json %>,
-        backgroundColor: 'rgba(59, 130, 246, 0.6)',
-        borderColor: 'rgb(59, 130, 246)',
-        borderWidth: 1
-      }]
+document.addEventListener('DOMContentLoaded', function() {
+  const income = <%= raw @metrics[:income_by_day].to_json %>;
+  const expenses = <%= raw @metrics[:expenses_by_day].to_json %>;
+  const dates = [...new Set([...Object.keys(income), ...Object.keys(expenses)])].sort();
+  new Chart(document.getElementById('volumeChart'), {
+    type: 'line', data: {
+      labels: dates.map(d => d.slice(5)),
+      datasets: [
+        { label: 'Income', data: dates.map(d => income[d] || 0), borderColor: '#00D4AA', backgroundColor: 'rgba(0,212,170,0.08)', tension: 0.4, fill: true, borderWidth: 2, pointRadius: 0 },
+        { label: 'Expenses', data: dates.map(d => expenses[d] || 0), borderColor: '#F85149', backgroundColor: 'rgba(248,81,73,0.05)', tension: 0.4, fill: true, borderWidth: 2, pointRadius: 0 }
+      ]
     },
     options: {
-      responsive: true,
-      plugins: {
-        title: {
-          display: true,
-          text: 'Transaction Count by Day'
-        }
-      },
+      responsive: true, plugins: { legend: { labels: { color: '#8B949E', font: { family: 'IBM Plex Mono', size: 11 } } } },
       scales: {
-        y: {
-          beginAtZero: true
-        }
+        x: { grid: { color: '#21262D' }, ticks: { color: '#484F58', font: { family: 'IBM Plex Mono', size: 10 } } },
+        y: { grid: { color: '#21262D' }, ticks: { color: '#484F58', font: { family: 'IBM Plex Mono', size: 10 } }, beginAtZero: true }
       }
     }
   });
+});
 </script>
-
-<style>
-  .gold-bg {
-    background: linear-gradient(45deg, #FFD700, #FFA500);
-  }
-</style>

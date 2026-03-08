@@ -1,0 +1,99 @@
+<% content_for :page_title, "Report Generator" %>
+<% content_for :page_description, "Generate and export platform reports" %>
+
+<div class="space-y-6">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Daily Report -->
+    <div class="card p-5 animate-card">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+          <i data-lucide="calendar" class="w-5 h-5 text-accent"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-fg-primary">Daily Report</h3>
+          <p class="text-xs text-fg-muted font-mono">Yesterday's summary</p>
+        </div>
+      </div>
+      <%= link_to admin_reports_generate_daily_path, method: :post, class: "block w-full py-2.5 rounded-lg bg-surface-200 text-fg-secondary text-sm text-center font-mono hover:bg-surface-300 transition-colors" do %>
+        Generate Daily
+      <% end %>
+    </div>
+
+    <!-- Weekly Report -->
+    <div class="card p-5 animate-card">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+          <i data-lucide="calendar-range" class="w-5 h-5 text-blue-400"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-fg-primary">Weekly Report</h3>
+          <p class="text-xs text-fg-muted font-mono">Last 7 days</p>
+        </div>
+      </div>
+      <%= link_to admin_reports_generate_weekly_path, method: :post, class: "block w-full py-2.5 rounded-lg bg-surface-200 text-fg-secondary text-sm text-center font-mono hover:bg-surface-300 transition-colors" do %>
+        Generate Weekly
+      <% end %>
+    </div>
+
+    <!-- Monthly Report -->
+    <div class="card p-5 animate-card">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+          <i data-lucide="calendar-days" class="w-5 h-5 text-purple-400"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold text-fg-primary">Monthly Report</h3>
+          <p class="text-xs text-fg-muted font-mono">Last 30 days</p>
+        </div>
+      </div>
+      <%= link_to admin_reports_generate_monthly_path, method: :post, class: "block w-full py-2.5 rounded-lg bg-surface-200 text-fg-secondary text-sm text-center font-mono hover:bg-surface-300 transition-colors" do %>
+        Generate Monthly
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Custom Report -->
+  <div class="card p-5 animate-card">
+    <h3 class="text-sm font-semibold text-fg-primary mb-4">Custom Date Range Report</h3>
+    <%= form_with url: admin_reports_generate_custom_path, method: :post, local: true, class: "flex flex-wrap items-end gap-4" do |f| %>
+      <div>
+        <label class="block text-[10px] font-mono uppercase tracking-wider text-fg-muted mb-1">Start Date</label>
+        <%= f.date_field :start_date, required: true,
+            class: "px-3 py-2.5 rounded-lg bg-surface-50 border border-surface-400 text-fg-secondary text-sm outline-none focus:border-accent" %>
+      </div>
+      <div>
+        <label class="block text-[10px] font-mono uppercase tracking-wider text-fg-muted mb-1">End Date</label>
+        <%= f.date_field :end_date, required: true,
+            class: "px-3 py-2.5 rounded-lg bg-surface-50 border border-surface-400 text-fg-secondary text-sm outline-none focus:border-accent" %>
+      </div>
+      <%= f.submit "Generate Custom Report", class: "px-5 py-2.5 rounded-lg bg-accent text-surface-50 text-sm font-semibold cursor-pointer hover:bg-accent-light transition-colors" %>
+    <% end %>
+  </div>
+
+  <!-- Data Export -->
+  <div class="card p-5 animate-card">
+    <h3 class="text-sm font-semibold text-fg-primary mb-4">Export Platform Data (CSV)</h3>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <%= link_to admin_analytics_export_data_path(data_type: 'users', format: 'csv'),
+          class: "flex items-center gap-2 p-3 rounded-lg bg-surface-50 border border-surface-300 hover:border-accent/30 hover:bg-accent/5 transition-all" do %>
+        <i data-lucide="users" class="w-4 h-4 text-accent"></i>
+        <span class="text-sm text-fg-primary">Users</span>
+      <% end %>
+      <%= link_to admin_analytics_export_data_path(data_type: 'transactions', format: 'csv'),
+          class: "flex items-center gap-2 p-3 rounded-lg bg-surface-50 border border-surface-300 hover:border-accent/30 hover:bg-accent/5 transition-all" do %>
+        <i data-lucide="arrow-left-right" class="w-4 h-4 text-blue-400"></i>
+        <span class="text-sm text-fg-primary">Transactions</span>
+      <% end %>
+      <%= link_to admin_analytics_export_data_path(data_type: 'debts', format: 'csv'),
+          class: "flex items-center gap-2 p-3 rounded-lg bg-surface-50 border border-surface-300 hover:border-accent/30 hover:bg-accent/5 transition-all" do %>
+        <i data-lucide="credit-card" class="w-4 h-4 text-red-400"></i>
+        <span class="text-sm text-fg-primary">Debts</span>
+      <% end %>
+      <%= link_to admin_analytics_export_data_path(data_type: 'saving_goals', format: 'csv'),
+          class: "flex items-center gap-2 p-3 rounded-lg bg-surface-50 border border-surface-300 hover:border-accent/30 hover:bg-accent/5 transition-all" do %>
+        <i data-lucide="target" class="w-4 h-4 text-purple-400"></i>
+        <span class="text-sm text-fg-primary">Saving Goals</span>
+      <% end %>
+    </div>
+  </div>
+</div>

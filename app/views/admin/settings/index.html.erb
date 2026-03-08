@@ -1,0 +1,97 @@
+<% content_for :page_title, "Settings" %>
+<% content_for :page_description, "Platform configuration" %>
+
+<div class="space-y-6">
+  <!-- Platform Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="card p-5 animate-card">
+      <span class="text-xs font-mono uppercase tracking-wider text-fg-muted">Total Users</span>
+      <p class="text-2xl font-bold text-fg-primary font-mono mt-2"><%= @platform_stats[:total_users] %></p>
+    </div>
+    <div class="card p-5 animate-card">
+      <span class="text-xs font-mono uppercase tracking-wider text-fg-muted">Admins</span>
+      <p class="text-2xl font-bold text-accent font-mono mt-2"><%= @platform_stats[:total_admins] %></p>
+    </div>
+    <div class="card p-5 animate-card">
+      <span class="text-xs font-mono uppercase tracking-wider text-fg-muted">Pending Invites</span>
+      <p class="text-2xl font-bold text-amber-400 font-mono mt-2"><%= @platform_stats[:pending_invitations] %></p>
+    </div>
+    <div class="card p-5 animate-card">
+      <span class="text-xs font-mono uppercase tracking-wider text-fg-muted">Audit Entries</span>
+      <p class="text-2xl font-bold text-fg-primary font-mono mt-2"><%= number_with_delimiter(@platform_stats[:audit_logs_count]) %></p>
+    </div>
+  </div>
+
+  <!-- Admin Users List -->
+  <div class="card overflow-hidden animate-card">
+    <div class="px-5 py-4 border-b border-surface-300 flex items-center justify-between">
+      <div>
+        <h3 class="text-sm font-semibold text-fg-primary">Admin Users</h3>
+        <p class="text-xs text-fg-muted font-mono">Users with admin privileges</p>
+      </div>
+      <%= link_to admin_invitations_path, class: "px-4 py-2 rounded-lg bg-accent text-surface-50 text-xs font-semibold hover:bg-accent-light transition-colors" do %>
+        <i data-lucide="mail-plus" class="w-3.5 h-3.5 inline mr-1"></i> Invite Admin
+      <% end %>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="text-left text-[11px] font-mono uppercase tracking-wider text-fg-muted border-b border-surface-300">
+            <th class="px-5 py-3">Admin</th>
+            <th class="px-5 py-3">Email</th>
+            <th class="px-5 py-3">Role</th>
+            <th class="px-5 py-3">Last Login</th>
+            <th class="px-5 py-3">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @admin_users.each do |admin| %>
+            <tr class="table-row border-b border-surface-300/50">
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center">
+                    <span class="text-[10px] font-bold text-accent"><%= admin.first_name&.first %><%= admin.last_name&.first %></span>
+                  </div>
+                  <span class="text-sm text-fg-primary font-medium"><%= admin.full_name %></span>
+                </div>
+              </td>
+              <td class="px-5 py-3 text-xs text-fg-secondary font-mono"><%= admin.email %></td>
+              <td class="px-5 py-3">
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent/10 text-accent"><%= admin.admin_role || 'admin' %></span>
+              </td>
+              <td class="px-5 py-3 text-xs text-fg-muted font-mono">
+                <%= admin.last_admin_login_at ? time_ago_in_words(admin.last_admin_login_at) + ' ago' : 'Never' %>
+              </td>
+              <td class="px-5 py-3">
+                <% if admin.active? %>
+                  <span class="badge-active text-[10px] font-mono px-2 py-0.5 rounded-full">Active</span>
+                <% else %>
+                  <span class="badge-suspended text-[10px] font-mono px-2 py-0.5 rounded-full">Inactive</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- System Info -->
+  <div class="card p-5 animate-card">
+    <h3 class="text-sm font-semibold text-fg-primary mb-4">System Information</h3>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-surface-50 rounded-lg p-3 border border-surface-300">
+        <p class="text-xs text-fg-muted font-mono">Ruby Version</p>
+        <p class="text-sm font-mono text-fg-primary mt-1"><%= RUBY_VERSION %></p>
+      </div>
+      <div class="bg-surface-50 rounded-lg p-3 border border-surface-300">
+        <p class="text-xs text-fg-muted font-mono">Rails Version</p>
+        <p class="text-sm font-mono text-fg-primary mt-1"><%= Rails.version %></p>
+      </div>
+      <div class="bg-surface-50 rounded-lg p-3 border border-surface-300">
+        <p class="text-xs text-fg-muted font-mono">Environment</p>
+        <p class="text-sm font-mono text-fg-primary mt-1"><%= Rails.env %></p>
+      </div>
+    </div>
+  </div>
+</div>

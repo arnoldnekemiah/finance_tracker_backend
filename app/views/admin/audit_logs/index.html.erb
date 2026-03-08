@@ -1,0 +1,106 @@
+<% content_for :page_title, "Audit Logs" %>
+<% content_for :page_description, "Admin activity trail" %>
+
+<div class="space-y-6">
+  <!-- Filters -->
+  <div class="card p-4 animate-card">
+    <%= form_with url: admin_audit_logs_path, method: :get, local: true, class: "flex flex-wrap items-end gap-3" do |f| %>
+      <div>
+        <label class="block text-[10px] font-mono uppercase tracking-wider text-fg-muted mb-1">Action</label>
+        <%= f.select :action_filter,
+            options_for_select([['All Actions', '']] + AdminAuditLog::ACTIONS.map { |a| [a.humanize, a] }, params[:action_filter]),
+            {}, class: "px-3 py-2 rounded-lg bg-surface-50 border border-surface-400 text-fg-secondary text-sm outline-none focus:border-accent" %>
+      </div>
+      <div>
+        <label class="block text-[10px] font-mono uppercase tracking-wider text-fg-muted mb-1">From</label>
+        <%= f.date_field :start_date, value: params[:start_date],
+            class: "px-3 py-2 rounded-lg bg-surface-50 border border-surface-400 text-fg-secondary text-sm outline-none focus:border-accent" %>
+      </div>
+      <div>
+        <label class="block text-[10px] font-mono uppercase tracking-wider text-fg-muted mb-1">To</label>
+        <%= f.date_field :end_date, value: params[:end_date],
+            class: "px-3 py-2 rounded-lg bg-surface-50 border border-surface-400 text-fg-secondary text-sm outline-none focus:border-accent" %>
+      </div>
+      <%= f.submit "Filter", class: "px-5 py-2 rounded-lg bg-accent text-surface-50 text-sm font-semibold cursor-pointer hover:bg-accent-light transition-colors" %>
+      <%= link_to "Export CSV", admin_audit_logs_path(format: :csv, action_filter: params[:action_filter], start_date: params[:start_date], end_date: params[:end_date]),
+          class: "px-4 py-2 rounded-lg bg-surface-200 text-fg-secondary text-sm font-mono hover:bg-surface-300 transition-colors" %>
+    <% end %>
+  </div>
+
+  <!-- Logs Table -->
+  <div class="card overflow-hidden animate-card">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="text-left text-[11px] font-mono uppercase tracking-wider text-fg-muted border-b border-surface-300">
+            <th class="px-5 py-3">Admin</th>
+            <th class="px-5 py-3">Action</th>
+            <th class="px-5 py-3">Resource</th>
+            <th class="px-5 py-3">Details</th>
+            <th class="px-5 py-3">IP</th>
+            <th class="px-5 py-3">Timestamp</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @audit_logs.each do |log| %>
+            <tr class="table-row border-b border-surface-300/50">
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-2">
+                  <div class="w-6 h-6 rounded-full bg-accent/10 flex items-center justify-center">
+                    <span class="text-[9px] font-bold text-accent"><%= log.user&.first_name&.first %></span>
+                  </div>
+                  <span class="text-xs text-fg-primary"><%= log.user&.full_name %></span>
+                </div>
+              </td>
+              <td class="px-5 py-3">
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full
+                  <%= case log.action
+                      when /login|logout/ then 'bg-blue-500/10 text-blue-400'
+                      when /activated|granted|accepted/ then 'bg-emerald-500/10 text-emerald-400'
+                      when /deactivated|revoked|deleted/ then 'bg-red-500/10 text-red-400'
+                      when /invitation|password/ then 'bg-purple-500/10 text-purple-400'
+                      else 'bg-surface-300 text-fg-secondary'
+                      end %>">
+                  <%= log.action.humanize %>
+                </span>
+              </td>
+              <td class="px-5 py-3 text-xs text-fg-muted font-mono"><%= log.resource_type %>#<%= log.resource_id %></td>
+              <td class="px-5 py-3 text-xs text-fg-secondary max-w-[200px] truncate"><%= log.details %></td>
+              <td class="px-5 py-3 text-xs text-fg-muted font-mono"><%= log.ip_address %></td>
+              <td class="px-5 py-3 text-xs text-fg-muted font-mono"><%= log.created_at.strftime('%Y-%m-%d %H:%M') %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @audit_logs.respond_to?(:total_pages) && @audit_logs.total_pages > 1 %>
+      <div class="px-5 py-3 border-t border-surface-300 flex items-center justify-between">
+        <p class="text-xs text-fg-muted font-mono">
+          Page <%= @audit_logs.current_page %> of <%= @audit_logs.total_pages %> (<%= @audit_logs.total_count %> entries)
+        </p>
+        <div class="flex items-center gap-2">
+          <% if @audit_logs.current_page > 1 %>
+            <%= link_to admin_audit_logs_path(page: @audit_logs.current_page - 1, action_filter: params[:action_filter]),
+                class: "px-3 py-1.5 rounded bg-surface-200 text-fg-secondary text-xs font-mono hover:bg-surface-300" do %>
+              &larr; Prev
+            <% end %>
+          <% end %>
+          <% if @audit_logs.current_page < @audit_logs.total_pages %>
+            <%= link_to admin_audit_logs_path(page: @audit_logs.current_page + 1, action_filter: params[:action_filter]),
+                class: "px-3 py-1.5 rounded bg-surface-200 text-fg-secondary text-xs font-mono hover:bg-surface-300" do %>
+              Next &rarr;
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @audit_logs.empty? %>
+      <div class="px-5 py-12 text-center">
+        <i data-lucide="shield-check" class="w-10 h-10 text-fg-muted mx-auto mb-3"></i>
+        <p class="text-sm text-fg-muted">No audit logs found</p>
+      </div>
+    <% end %>
+  </div>
+</div>

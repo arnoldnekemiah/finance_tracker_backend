@@ -1,145 +1,86 @@
-<div class="p-6">
-  <div class="mb-6">
-    <h1 class="text-2xl font-bold text-gray-900">Revenue Analytics</h1>
-    <p class="text-gray-600">Monitor revenue metrics and user lifetime value</p>
-  </div>
+<% content_for :page_title, "Revenue Analytics" %>
+<% content_for :page_description, "Platform value and user segmentation" %>
 
-  <!-- Revenue Metrics Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="admin-card bg-white p-6 rounded-lg shadow">
-      <div class="flex items-center">
-        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-          <i class="fas fa-users"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-600">Total Users</p>
-          <p class="text-2xl font-semibold text-gray-900"><%= number_with_delimiter(@revenue_data[:total_users]) %></p>
-        </div>
-      </div>
+<div class="space-y-6">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="card p-4 animate-card">
+      <span class="text-[10px] font-mono uppercase text-fg-muted">Platform AUM</span>
+      <p class="text-xl font-bold text-accent font-mono mt-1">$<%= number_with_delimiter(@revenue_data[:platform_aum]) %></p>
     </div>
-
-    <div class="admin-card bg-white p-6 rounded-lg shadow">
-      <div class="flex items-center">
-        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-          <i class="fas fa-crown"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-600">Premium Users</p>
-          <p class="text-2xl font-semibold text-gray-900"><%= number_with_delimiter(@revenue_data[:premium_users]) %></p>
-          <p class="text-xs text-gray-500">Feature not implemented</p>
-        </div>
-      </div>
+    <div class="card p-4 animate-card">
+      <span class="text-[10px] font-mono uppercase text-fg-muted">Debt Tracked</span>
+      <p class="text-xl font-bold text-amber-400 font-mono mt-1">$<%= number_with_delimiter(@revenue_data[:total_debt_tracked]) %></p>
     </div>
-
-    <div class="admin-card bg-white p-6 rounded-lg shadow">
-      <div class="flex items-center">
-        <div class="p-3 rounded-full bg-green-100 text-green-600">
-          <i class="fas fa-dollar-sign"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-600">Monthly Recurring Revenue</p>
-          <p class="text-2xl font-semibold text-gray-900">$<%= number_with_delimiter(@revenue_data[:monthly_recurring_revenue]) %></p>
-          <p class="text-xs text-gray-500">Feature not implemented</p>
-        </div>
-      </div>
+    <div class="card p-4 animate-card">
+      <span class="text-[10px] font-mono uppercase text-fg-muted">Savings Tracked</span>
+      <p class="text-xl font-bold text-blue-400 font-mono mt-1">$<%= number_with_delimiter(@revenue_data[:total_savings_tracked]) %></p>
     </div>
-
-    <div class="admin-card bg-white p-6 rounded-lg shadow">
-      <div class="flex items-center">
-        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-          <i class="fas fa-chart-line"></i>
-        </div>
-        <div class="ml-4">
-          <p class="text-sm font-medium text-gray-600">User Lifetime Value</p>
-          <p class="text-2xl font-semibold text-gray-900">$<%= number_with_delimiter(@revenue_data[:user_lifetime_value] || 0) %></p>
-        </div>
-      </div>
+    <div class="card p-4 animate-card">
+      <span class="text-[10px] font-mono uppercase text-fg-muted">Churn Rate</span>
+      <p class="text-xl font-bold text-red-400 font-mono mt-1"><%= @revenue_data[:churn_rate] %>%</p>
     </div>
   </div>
 
-  <!-- Churn Rate Section -->
-  <div class="bg-white rounded-lg shadow mb-8">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-medium text-gray-900">User Retention Metrics</h3>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="card p-5 animate-card">
+      <h3 class="text-sm font-semibold text-fg-primary mb-4">Monthly Transaction Volume</h3>
+      <canvas id="monthlyVolumeChart" height="200"></canvas>
     </div>
-    <div class="p-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="text-center">
-          <div class="text-3xl font-bold text-red-600 mb-2">
-            <%= number_to_percentage(@revenue_data[:churn_rate] || 0, precision: 1) %>
-          </div>
-          <p class="text-gray-600">Churn Rate</p>
-          <p class="text-sm text-gray-500 mt-1">Users who stopped using the app</p>
-        </div>
-        
-        <div class="text-center">
-          <div class="text-3xl font-bold text-green-600 mb-2">
-            <%= number_to_percentage(100 - (@revenue_data[:churn_rate] || 0), precision: 1) %>
-          </div>
-          <p class="text-gray-600">Retention Rate</p>
-          <p class="text-sm text-gray-500 mt-1">Users who continue using the app</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Revenue Opportunities -->
-  <div class="bg-white rounded-lg shadow mb-8">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h3 class="text-lg font-medium text-gray-900">Revenue Opportunities</h3>
-    </div>
-    <div class="p-6">
+    <div class="card p-5 animate-card">
+      <h3 class="text-sm font-semibold text-fg-primary mb-4">User Segments</h3>
       <div class="space-y-4">
-        <div class="flex items-start space-x-3">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <i class="fas fa-lightbulb text-blue-600 text-sm"></i>
+        <% segments = @revenue_data[:user_segments] %>
+        <% total = segments.values.sum.to_f %>
+        <% [
+          ['High Activity (20+ txns)', segments[:high_activity], 'bg-accent', 'text-accent'],
+          ['Medium (5-19 txns)', segments[:medium_activity], 'bg-blue-400', 'text-blue-400'],
+          ['Low (1-4 txns)', segments[:low_activity], 'bg-amber-400', 'text-amber-400'],
+          ['No Activity', segments[:no_activity], 'bg-red-400', 'text-red-400']
+        ].each do |label, count, bar_color, text_color| %>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs text-fg-secondary"><%= label %></span>
+              <span class="text-xs font-mono <%= text_color %>"><%= count %></span>
+            </div>
+            <div class="h-2 bg-surface-300 rounded-full overflow-hidden">
+              <div class="h-full <%= bar_color %> rounded-full" style="width: <%= total > 0 ? (count / total * 100).round(1) : 0 %>%"></div>
             </div>
           </div>
-          <div>
-            <h4 class="text-sm font-medium text-gray-900">Premium Features</h4>
-            <p class="text-sm text-gray-600">Implement premium subscription tiers with advanced analytics, unlimited budgets, and priority support.</p>
-          </div>
-        </div>
-        
-        <div class="flex items-start space-x-3">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <i class="fas fa-chart-bar text-green-600 text-sm"></i>
-            </div>
-          </div>
-          <div>
-            <h4 class="text-sm font-medium text-gray-900">Advanced Reporting</h4>
-            <p class="text-sm text-gray-600">Offer detailed financial reports and insights as a paid add-on service.</p>
-          </div>
-        </div>
-        
-        <div class="flex items-start space-x-3">
-          <div class="flex-shrink-0">
-            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-              <i class="fas fa-mobile-alt text-purple-600 text-sm"></i>
-            </div>
-          </div>
-          <div>
-            <h4 class="text-sm font-medium text-gray-900">Mobile App</h4>
-            <p class="text-sm text-gray-600">Develop mobile applications with premium features and in-app purchases.</p>
-          </div>
-        </div>
+        <% end %>
       </div>
     </div>
   </div>
 
-  <!-- Back to Analytics -->
-  <div class="mt-8">
-    <%= link_to admin_analytics_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50" do %>
-      <i class="fas fa-arrow-left mr-2"></i>
-      Back to Analytics Overview
-    <% end %>
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="card p-5 animate-card">
+      <h3 class="text-sm font-semibold text-fg-primary mb-3">Value Metrics</h3>
+      <div class="space-y-3">
+        <div class="flex justify-between"><span class="text-xs text-fg-muted">Avg Txn Volume/User</span><span class="text-xs font-mono text-fg-primary">$<%= number_with_delimiter(@revenue_data[:avg_user_transaction_volume]) %></span></div>
+        <div class="flex justify-between"><span class="text-xs text-fg-muted">User Lifetime Value</span><span class="text-xs font-mono text-accent">$<%= number_with_delimiter(@revenue_data[:user_lifetime_value]) %></span></div>
+        <div class="flex justify-between"><span class="text-xs text-fg-muted">Active Users</span><span class="text-xs font-mono text-fg-primary"><%= @revenue_data[:active_users] %></span></div>
+      </div>
+    </div>
   </div>
 </div>
 
-<style>
-  .gold-bg {
-    background: linear-gradient(45deg, #FFD700, #FFA500);
-  }
-</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const monthlyData = <%= raw @revenue_data[:monthly_transaction_volume].to_json %>;
+  new Chart(document.getElementById('monthlyVolumeChart'), {
+    type: 'bar', data: {
+      labels: monthlyData.map(m => m.month),
+      datasets: [
+        { label: 'Income', data: monthlyData.map(m => m.income), backgroundColor: 'rgba(0,212,170,0.4)', borderColor: '#00D4AA', borderWidth: 1, borderRadius: 3 },
+        { label: 'Expenses', data: monthlyData.map(m => m.expenses), backgroundColor: 'rgba(248,81,73,0.3)', borderColor: '#F85149', borderWidth: 1, borderRadius: 3 }
+      ]
+    },
+    options: {
+      responsive: true, plugins: { legend: { labels: { color: '#8B949E', font: { family: 'IBM Plex Mono', size: 11 } } } },
+      scales: {
+        x: { grid: { color: '#21262D' }, ticks: { color: '#484F58', font: { family: 'IBM Plex Mono', size: 10 } } },
+        y: { grid: { color: '#21262D' }, ticks: { color: '#484F58', font: { family: 'IBM Plex Mono', size: 10 } }, beginAtZero: true }
+      }
+    }
+  });
+});
+</script>

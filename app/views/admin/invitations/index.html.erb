@@ -1,0 +1,94 @@
+<% content_for :page_title, "Admin Invitations" %>
+
+
+<% content_for :page_description, "Invite new administrators to the platform" %>
+
+<div class="space-y-6">
+  <!-- Send Invitation -->
+  <div class="card p-5 animate-card">
+    <h3 class="text-sm font-semibold text-fg-primary mb-4">Send Invitation</h3>
+    <%= form_with url: admin_invitations_path, method: :post, local: true, class: "flex items-end gap-3" do |f| %>
+      <div class="flex-1">
+        <label class="block text-xs font-mono uppercase tracking-wider text-fg-muted mb-1.5">Email Address</label>
+        <%= f.email_field :email, required: true,
+            class: "w-full px-4 py-2.5 rounded-lg bg-surface-50 border border-surface-400 text-fg-primary text-sm outline-none focus:border-accent placeholder:text-fg-muted font-mono",
+            placeholder: "newadmin@example.com" %>
+      </div>
+      <%= f.submit "Send Invitation", class: "px-5 py-2.5 rounded-lg bg-accent text-surface-50 text-sm font-semibold cursor-pointer hover:bg-accent-light transition-colors whitespace-nowrap" %>
+    <% end %>
+  </div>
+
+  <!-- Pending Invitations -->
+  <div class="card overflow-hidden animate-card">
+    <div class="px-5 py-4 border-b border-surface-300">
+      <h3 class="text-sm font-semibold text-fg-primary">Pending Invitations</h3>
+      <p class="text-xs text-fg-muted font-mono"><%= @pending_invitations.count %> pending</p>
+    </div>
+    <% if @pending_invitations.any? %>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="text-left text-[11px] font-mono uppercase tracking-wider text-fg-muted border-b border-surface-300">
+              <th class="px-5 py-3">Email</th>
+              <th class="px-5 py-3">Invited By</th>
+              <th class="px-5 py-3">Sent</th>
+              <th class="px-5 py-3">Expires In</th>
+              <th class="px-5 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @pending_invitations.each do |inv| %>
+              <tr class="table-row border-b border-surface-300/50">
+                <td class="px-5 py-3 text-sm text-fg-primary font-mono"><%= inv.email %></td>
+                <td class="px-5 py-3 text-xs text-fg-secondary"><%= inv.inviter&.full_name %></td>
+                <td class="px-5 py-3 text-xs text-fg-muted font-mono"><%= time_ago_in_words(inv.created_at) %> ago</td>
+                <td class="px-5 py-3">
+                  <span class="badge-pending text-[10px] font-mono px-2 py-0.5 rounded-full"><%= inv.time_remaining %> hrs</span>
+                </td>
+                <td class="px-5 py-3">
+                  <%= link_to admin_invitation_path(inv), method: :delete, class: "text-xs text-red-400 hover:text-red-300 font-mono", data: { confirm: "Revoke invitation for #{inv.email}?" } do %>
+                    Revoke
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="px-5 py-8 text-center">
+        <i data-lucide="mail" class="w-8 h-8 text-fg-muted mx-auto mb-2"></i>
+        <p class="text-sm text-fg-muted">No pending invitations</p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Accepted Invitations -->
+  <% if @accepted_invitations.any? %>
+    <div class="card overflow-hidden animate-card">
+      <div class="px-5 py-4 border-b border-surface-300">
+        <h3 class="text-sm font-semibold text-fg-primary">Recently Accepted</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="text-left text-[11px] font-mono uppercase tracking-wider text-fg-muted border-b border-surface-300">
+              <th class="px-5 py-3">Email</th>
+              <th class="px-5 py-3">Invited By</th>
+              <th class="px-5 py-3">Accepted</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @accepted_invitations.each do |inv| %>
+              <tr class="table-row border-b border-surface-300/50">
+                <td class="px-5 py-3 text-sm text-fg-primary font-mono"><%= inv.email %></td>
+                <td class="px-5 py-3 text-xs text-fg-secondary"><%= inv.inviter&.full_name %></td>
+                <td class="px-5 py-3 text-xs text-fg-muted font-mono"><%= inv.accepted_at&.strftime('%Y-%m-%d %H:%M') %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
+</div>

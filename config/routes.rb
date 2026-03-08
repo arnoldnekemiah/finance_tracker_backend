@@ -66,18 +66,26 @@ Rails.application.routes.draw do
   namespace :admin do
     root 'dashboard#index'
 
+    # Authentication
     get 'login', to: 'sessions#new'
     post 'login', to: 'sessions#create'
     delete 'logout', to: 'sessions#destroy'
     get 'validate_token', to: 'sessions#validate_token'
 
+    # Password reset (OTP-based)
     post 'password_reset', to: 'password_resets#create'
     patch 'password_reset', to: 'password_resets#update'
     patch 'change_password', to: 'password_resets#change_password'
+    post 'send_reset_otp', to: 'sessions#send_reset_otp', as: :send_reset_otp
+    post 'verify_reset_otp', to: 'sessions#verify_reset_otp', as: :verify_reset_otp
+    get 'reset_password', to: 'sessions#forgot_password', as: :reset_password
+    post 'reset_password', to: 'sessions#reset_password'
 
+    # Dashboard
     get 'dashboard', to: 'dashboard#index'
     get 'dashboard/health', to: 'dashboard#health_metrics'
 
+    # User management
     resources :users, only: [:index, :show, :update, :destroy] do
       member do
         patch :activate
@@ -87,6 +95,15 @@ Rails.application.routes.draw do
       end
     end
 
+    # Admin invitations
+    resources :invitations, only: [:index, :create, :destroy]
+    get 'invitations/:token/accept', to: 'invitations#show', as: :accept_invitation
+    post 'invitations/:token/accept', to: 'invitations#accept', as: :process_invitation
+
+    # Audit logs
+    resources :audit_logs, only: [:index]
+
+    # Analytics
     get 'analytics', to: 'analytics#index'
     namespace :analytics do
       get :user_growth
@@ -97,6 +114,7 @@ Rails.application.routes.draw do
       get :export_data
     end
 
+    # Reports
     get 'reports', to: 'reports#index'
     namespace :reports do
       post :generate_daily
@@ -106,6 +124,7 @@ Rails.application.routes.draw do
       get :schedule_reports
     end
 
+    # Settings
     get 'settings', to: 'settings#index'
   end
 end

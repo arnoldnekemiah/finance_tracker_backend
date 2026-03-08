@@ -1,177 +1,96 @@
 <% content_for :page_title, "User Management" %>
-<% content_for :page_description, "Manage user accounts and permissions" %>
+<% content_for :page_description, "#{@total_count} registered users" %>
 
 <div class="space-y-6">
-  <!-- Search and Filters -->
-  <div class="bg-white rounded-lg shadow p-6">
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-      <div class="flex-1 max-w-lg">
-        <%= form_with url: admin_users_path, method: :get, local: true, class: "flex" do |form| %>
-          <div class="relative flex-1">
-            <%= form.text_field :search, 
-                placeholder: "Search users by email...", 
-                value: params[:search],
-                class: "w-full pl-10 pr-4 py-2 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500" %>
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i class="fas fa-search text-gray-400"></i>
-            </div>
-          </div>
-          <%= form.submit "Search", class: "px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500" %>
-        <% end %>
-      </div>
-      
-      <div class="flex items-center space-x-4">
-        <div class="flex items-center space-x-2">
-          <%= link_to admin_users_path(admin: 'true'), 
-              class: "px-3 py-2 text-sm border rounded-lg #{params[:admin] == 'true' ? 'bg-blue-100 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}" do %>
-            <i class="fas fa-crown mr-1"></i>
-            Admins Only
-          <% end %>
-          
-          <%= link_to admin_users_path, 
-              class: "px-3 py-2 text-sm border rounded-lg #{params[:admin].blank? ? 'bg-blue-100 border-blue-300 text-blue-700' : 'border-gray-300 text-gray-700 hover:bg-gray-50'}" do %>
-            <i class="fas fa-users mr-1"></i>
-            All Users
-          <% end %>
+  <!-- Search & Filters -->
+  <div class="card p-4 animate-card">
+    <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
+      <%= form_with url: admin_users_path, method: :get, local: true, class: "flex-1 flex items-center gap-3 flex-wrap" do |f| %>
+        <div class="relative flex-1 min-w-[200px]">
+          <i data-lucide="search" class="w-4 h-4 text-fg-muted absolute left-3 top-1/2 -translate-y-1/2"></i>
+          <%= f.text_field :search, value: params[:search],
+              class: "w-full pl-10 pr-4 py-2.5 rounded-lg bg-surface-50 border border-surface-400 text-fg-primary text-sm outline-none focus:border-accent placeholder:text-fg-muted font-mono",
+              placeholder: "Search by email..." %>
         </div>
-        
-        <button onclick="exportUsers()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500">
-          <i class="fas fa-download mr-2"></i>
-          Export CSV
-        </button>
-      </div>
+        <%= f.select :is_admin, options_for_select([['All Users', ''], ['Admins', 'true'], ['Regular', 'false']], params[:is_admin]),
+            {}, class: "px-3 py-2.5 rounded-lg bg-surface-50 border border-surface-400 text-fg-secondary text-sm outline-none focus:border-accent" %>
+        <%= f.submit "Filter", class: "px-5 py-2.5 rounded-lg bg-accent text-surface-50 text-sm font-semibold cursor-pointer hover:bg-accent-light transition-colors" %>
+      <% end %>
     </div>
   </div>
-  
+
   <!-- Users Table -->
-  <div class="bg-white rounded-lg shadow overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-medium text-gray-900">
-          Users (<%= @total_count %>)
-        </h3>
-        <div class="text-sm text-gray-500">
-          Showing <%= @offset + 1 %>-<%= [@offset + @per_page, @total_count].min %> of <%= @total_count %>
-        </div>
-      </div>
-    </div>
-    
+  <div class="card overflow-hidden animate-card">
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              User
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Activity
-            </th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Joined
-            </th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
+      <table class="w-full">
+        <thead>
+          <tr class="text-left text-[11px] font-mono uppercase tracking-wider text-fg-muted border-b border-surface-300">
+            <th class="px-5 py-3">#</th>
+            <th class="px-5 py-3">User</th>
+            <th class="px-5 py-3">Email</th>
+            <th class="px-5 py-3">Auth</th>
+            <th class="px-5 py-3">Txns</th>
+            <th class="px-5 py-3">Accounts</th>
+            <th class="px-5 py-3">Joined</th>
+            <th class="px-5 py-3">Status</th>
+            <th class="px-5 py-3">Actions</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <% @users.each do |user| %>
-            <tr class="table-row">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10">
-                    <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                      <i class="fas fa-user text-gray-600"></i>
+        <tbody>
+          <% @users.each_with_index do |user, idx| %>
+            <tr class="table-row border-b border-surface-300/50">
+              <td class="px-5 py-3 text-xs text-fg-muted font-mono"><%= @offset + idx + 1 %></td>
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-2.5">
+                  <% if user.photo_url.present? %>
+                    <img src="<%= user.photo_url %>" class="w-8 h-8 rounded-full object-cover" alt="">
+                  <% else %>
+                    <div class="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center">
+                      <span class="text-[10px] font-bold text-accent"><%= user.first_name&.first %><%= user.last_name&.first %></span>
                     </div>
-                  </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">
-                      <%= user.full_name %>
-                      <% if user.admin? %>
-                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                          <i class="fas fa-crown mr-1"></i>
-                          Admin
-                        </span>
-                      <% end %>
-                    </div>
-                    <div class="text-sm text-gray-500">
-                      <%= user.email %>
-                    </div>
+                  <% end %>
+                  <div>
+                    <p class="text-sm text-fg-primary font-medium"><%= user.full_name %></p>
+                    <% if user.admin? %>
+                      <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-accent/10 text-accent">ADMIN</span>
+                    <% end %>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <% if user.respond_to?(:active) && user.active? %>
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    <i class="fas fa-check-circle mr-1"></i>
-                    Active
-                  </span>
+              <td class="px-5 py-3 text-xs text-fg-secondary font-mono"><%= user.email %></td>
+              <td class="px-5 py-3">
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-surface-300 text-fg-secondary"><%= user.provider || 'email' %></span>
+              </td>
+              <td class="px-5 py-3 text-xs text-fg-primary font-mono"><%= user.transactions.size %></td>
+              <td class="px-5 py-3 text-xs text-fg-primary font-mono"><%= user.accounts.size %></td>
+              <td class="px-5 py-3 text-xs text-fg-muted font-mono"><%= user.created_at.strftime('%Y-%m-%d') %></td>
+              <td class="px-5 py-3">
+                <% if user.active? %>
+                  <span class="badge-active text-[10px] font-mono px-2 py-0.5 rounded-full">Active</span>
                 <% else %>
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                    <i class="fas fa-times-circle mr-1"></i>
-                    Inactive
-                  </span>
+                  <span class="badge-suspended text-[10px] font-mono px-2 py-0.5 rounded-full">Suspended</span>
                 <% end %>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                <div>
-                  <div class="font-medium"><%= user.transactions.count %> transactions</div>
-                  <div class="text-gray-500"><%= user.accounts.count %> accounts</div>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <%= user.created_at.strftime("%b %d, %Y") %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center justify-end space-x-2">
-                  <%= link_to admin_user_path(user), 
-                      class: "text-blue-600 hover:text-blue-900" do %>
-                    <i class="fas fa-eye"></i>
-                  <% end %>
-                  
-                  <% unless user.admin? %>
-                    <%= link_to make_admin_admin_user_path(user), 
-                        method: :patch,
-                        data: { confirm: "Grant admin privileges to #{user.full_name}?" },
-                        class: "text-blue-600 hover:text-blue-900" do %>
-                      <i class="fas fa-crown"></i>
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-1 row-action">
+                  <% if user.active? %>
+                    <%= link_to deactivate_admin_user_path(user), method: :patch, class: "p-1.5 rounded hover:bg-red-500/10", title: "Suspend", data: { confirm: "Suspend #{user.full_name}?" } do %>
+                      <i data-lucide="user-x" class="w-3.5 h-3.5 text-red-400"></i>
                     <% end %>
                   <% else %>
-                    <%= link_to remove_admin_admin_user_path(user), 
-                        method: :patch,
-                        data: { confirm: "Remove admin privileges from #{user.full_name}?" },
-                        class: "text-orange-600 hover:text-orange-900" do %>
-                      <i class="fas fa-user-minus"></i>
+                    <%= link_to activate_admin_user_path(user), method: :patch, class: "p-1.5 rounded hover:bg-accent/10", title: "Activate" do %>
+                      <i data-lucide="user-check" class="w-3.5 h-3.5 text-accent"></i>
                     <% end %>
                   <% end %>
-                  
-                  <% if user.respond_to?(:active) %>
-                    <% if user.active? %>
-                      <%= link_to deactivate_admin_user_path(user), 
-                          method: :patch,
-                          data: { confirm: "Deactivate #{user.full_name}?" },
-                          class: "text-red-600 hover:text-red-900" do %>
-                        <i class="fas fa-ban"></i>
-                      <% end %>
-                    <% else %>
-                      <%= link_to activate_admin_user_path(user), 
-                          method: :patch,
-                          data: { confirm: "Activate #{user.full_name}?" },
-                          class: "text-green-600 hover:text-green-900" do %>
-                        <i class="fas fa-check"></i>
-                      <% end %>
+                  <% unless user.admin? %>
+                    <%= link_to make_admin_admin_user_path(user), method: :patch, class: "p-1.5 rounded hover:bg-purple-500/10", title: "Grant Admin", data: { confirm: "Grant admin to #{user.full_name}?" } do %>
+                      <i data-lucide="shield-plus" class="w-3.5 h-3.5 text-purple-400"></i>
                     <% end %>
-                  <% end %>
-                  
-                  <% unless user.admin? || (User.admins.count <= 1 && user.admin?) %>
-                    <%= link_to admin_user_path(user), 
-                        method: :delete,
-                        data: { confirm: "Delete #{user.full_name}? This action cannot be undone." },
-                        class: "text-red-600 hover:text-red-900" do %>
-                      <i class="fas fa-trash"></i>
+                  <% else %>
+                    <% if User.admins.count > 1 %>
+                      <%= link_to remove_admin_admin_user_path(user), method: :patch, class: "p-1.5 rounded hover:bg-amber-500/10", title: "Revoke Admin", data: { confirm: "Remove admin from #{user.full_name}?" } do %>
+                        <i data-lucide="shield-minus" class="w-3.5 h-3.5 text-amber-400"></i>
+                      <% end %>
                     <% end %>
                   <% end %>
                 </div>
@@ -181,76 +100,27 @@
         </tbody>
       </table>
     </div>
-    
+
     <!-- Pagination -->
-    <% if @users.respond_to?(:total_pages) && @users.total_pages > 1 %>
-      <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-        <div class="flex items-center justify-between">
-          <div class="flex-1 flex justify-between sm:hidden">
-            <% if @users.prev_page %>
-              <%= link_to admin_users_path(page: @users.prev_page, search: params[:search], admin: params[:admin]), 
-                  class: "relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
-                Previous
-              <% end %>
-            <% end %>
-            <% if @users.next_page %>
-              <%= link_to admin_users_path(page: @users.next_page, search: params[:search], admin: params[:admin]), 
-                  class: "ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" do %>
-                Next
-              <% end %>
-            <% end %>
-          </div>
-          <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p class="text-sm text-gray-700">
-                Showing page <span class="font-medium"><%= @users.current_page %></span> of <span class="font-medium"><%= @users.total_pages %></span>
-              </p>
-            </div>
-            <div>
-              <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                <% if @users.prev_page %>
-                  <%= link_to admin_users_path(page: @users.prev_page, search: params[:search], admin: params[:admin]), 
-                      class: "relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" do %>
-                    <i class="fas fa-chevron-left"></i>
-                  <% end %>
-                <% end %>
-                
-                <% (1..@users.total_pages).each do |page| %>
-                  <% if page == @users.current_page %>
-                    <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600">
-                      <%= page %>
-                    </span>
-                  <% elsif (page - @users.current_page).abs <= 2 || page == 1 || page == @users.total_pages %>
-                    <%= link_to admin_users_path(page: page, search: params[:search], admin: params[:admin]), 
-                        class: "relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50" do %>
-                      <%= page %>
-                    <% end %>
-                  <% elsif (page - @users.current_page).abs == 3 %>
-                    <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-                      ...
-                    </span>
-                  <% end %>
-                <% end %>
-                
-                <% if @users.next_page %>
-                  <%= link_to admin_users_path(page: @users.next_page, search: params[:search], admin: params[:admin]), 
-                      class: "relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" do %>
-                    <i class="fas fa-chevron-right"></i>
-                  <% end %>
-                <% end %>
-              </nav>
-            </div>
-          </div>
-        </div>
+    <div class="px-5 py-3 border-t border-surface-300 flex items-center justify-between">
+      <p class="text-xs text-fg-muted font-mono">
+        Showing <%= @offset + 1 %>–<%= [@offset + @per_page, @total_count].min %> of <%= @total_count %>
+      </p>
+      <div class="flex items-center gap-2">
+        <% if @current_page > 1 %>
+          <%= link_to admin_users_path(page: @current_page - 1, search: params[:search], is_admin: params[:is_admin]),
+              class: "px-3 py-1.5 rounded bg-surface-200 text-fg-secondary text-xs font-mono hover:bg-surface-300 transition-colors" do %>
+            &larr; Prev
+          <% end %>
+        <% end %>
+        <span class="text-xs text-fg-muted font-mono">Page <%= @current_page %></span>
+        <% if @offset + @per_page < @total_count %>
+          <%= link_to admin_users_path(page: @current_page + 1, search: params[:search], is_admin: params[:is_admin]),
+              class: "px-3 py-1.5 rounded bg-surface-200 text-fg-secondary text-xs font-mono hover:bg-surface-300 transition-colors" do %>
+            Next &rarr;
+          <% end %>
+        <% end %>
       </div>
-    <% end %>
+    </div>
   </div>
 </div>
-
-<script>
-function exportUsers() {
-  const params = new URLSearchParams(window.location.search);
-  params.set('format', 'csv');
-  window.location.href = '<%= admin_analytics_export_data_path %>?' + params.toString() + '&data_type=users';
-}
-</script>
