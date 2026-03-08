@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development:test" \
-    BUNDLE_JOBS=4 \
+    BUNDLE_JOBS=1 \
     BUNDLE_RETRY=3
 
 FROM base as builder
