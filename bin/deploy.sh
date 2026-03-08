@@ -7,7 +7,8 @@
 #   SKIP_BUILD=1 ./bin/deploy.sh  - skip docker build (fast rollback)
 set -euo pipefail
 
-APP_DIR="/opt/accountanta"
+# Resolve app dir from the script's own location so it works wherever the repo is cloned
+APP_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 COMPOSE="docker compose -f docker-compose.production.yml"
 
 echo "==> Pulling latest code..."
