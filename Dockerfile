@@ -20,6 +20,7 @@ RUN apt-get update -qq && \
     build-essential \
     git \
     libpq-dev \
+    libyaml-dev \
     pkg-config && \
     rm -rf /var/lib/apt/lists/*
 
