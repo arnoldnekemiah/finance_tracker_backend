@@ -11,6 +11,10 @@ set -euo pipefail
 APP_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 COMPOSE="docker compose -f docker-compose.production.yml"
 
+# Force sequential Docker builds — faster on single-vCPU Droplets
+export DOCKER_BUILDKIT=0
+export COMPOSE_DOCKER_CLI_BUILD=0
+
 echo "==> Pulling latest code..."
 cd "$APP_DIR"
 git pull origin main
