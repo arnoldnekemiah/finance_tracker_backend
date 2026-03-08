@@ -30,7 +30,7 @@ gem 'rswag-ui'
 gem 'ostruct'
 
 # Image Processing
-gem "image_processing", "~> 1.2"
+# gem "image_processing", "~> 1.2"  # not used — no file attachments in this app
 
 # Windows timezone data
 gem "tzinfo-data", platforms: %i[ windows jruby ]

@@ -22,7 +22,6 @@ RUN apt-get update -qq && \
     build-essential \
     git \
     libpq-dev \
-    libvips \
     pkg-config && \
     rm -rf /var/lib/apt/lists/*
 
@@ -49,7 +48,6 @@ FROM base
 # Install runtime dependencies only
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
-    libvips \
     postgresql-client \
     curl && \
     rm -rf /var/lib/apt/lists/*
