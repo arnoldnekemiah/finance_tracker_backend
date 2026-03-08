@@ -1,4 +1,4 @@
-class Api::V1::CategoriesController < ApplicationController
+class Api::V1::CategoriesController < Api::BaseController
   include Authenticatable
   before_action :set_category, only: %i[show update destroy]
 

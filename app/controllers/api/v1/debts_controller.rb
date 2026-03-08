@@ -1,4 +1,4 @@
-class Api::V1::DebtsController < ApplicationController
+class Api::V1::DebtsController < Api::BaseController
   include Authenticatable
   before_action :set_debt, only: %i[show update destroy]
 

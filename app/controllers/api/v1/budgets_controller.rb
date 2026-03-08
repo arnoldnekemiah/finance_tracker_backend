@@ -1,4 +1,4 @@
-class Api::V1::BudgetsController < ApplicationController
+class Api::V1::BudgetsController < Api::BaseController
   include Authenticatable
   before_action :set_budget, only: %i[show update destroy]
 

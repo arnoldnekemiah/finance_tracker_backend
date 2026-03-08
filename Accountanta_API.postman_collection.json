@@ -1,0 +1,1794 @@
+{
+  "info": {
+    "name": "Accountanta Finance Tracker API",
+    "description": "Complete API collection for Accountanta — personal finance management platform.\n\nIncludes: Authentication (email + Google OAuth), Accounts, Categories, Transactions, Budgets, Debts, Saving Goals, Dashboard, Insights, Support, Data Management, and Admin endpoints.\n\nJWT-based auth — after login/signup, the token is automatically stored in the `token` collection variable.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "admin_base_url",
+      "value": "http://localhost:3000/admin",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "account_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "category_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "budget_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "debt_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "saving_goal_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "reset_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "Sign up, log in (email + Google OAuth), logout, password reset with OTP",
+      "item": [
+        {
+          "name": "Sign Up",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('token', json.data.token);",
+                  "  pm.collectionVariables.set('user_id', json.data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\",\n  \"password_confirmation\": \"Password123!\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/signup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "signup"]
+            },
+            "description": "Create a new user account. Returns JWT token and user data."
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('token', json.data.token);",
+                  "  pm.collectionVariables.set('user_id', json.data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Sign in with email and password. Returns JWT token."
+          }
+        },
+        {
+          "name": "Google OAuth Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('token', json.data.token);",
+                  "  pm.collectionVariables.set('user_id', json.data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"googleuser@gmail.com\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"uid\": \"google-uid-12345\",\n  \"photo_url\": \"https://lh3.googleusercontent.com/photo.jpg\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/google",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "google"]
+            },
+            "description": "Authenticate via Google OAuth. Pass Google user info from the mobile client."
+          }
+        },
+        {
+          "name": "Get Current User (Me)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Get the authenticated user's profile."
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Sign out. Client should discard JWT token."
+          }
+        },
+        {
+          "name": "Forgot Password (Send OTP)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/forgot_password",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "forgot_password"]
+            },
+            "description": "Request a password reset OTP. Always returns success to prevent email enumeration."
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('reset_token', json.data.reset_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/verify_otp",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "verify_otp"]
+            },
+            "description": "Verify the 6-digit OTP. Returns a temporary reset_token (15 min expiry)."
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{reset_token}}\",\n  \"password\": \"NewPassword123!\",\n  \"password_confirmation\": \"NewPassword123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/reset_password",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "reset_password"]
+            },
+            "description": "Reset password using the token from verify_otp."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "description": "Manage user profile, photo, and account deletion",
+      "item": [
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"currency\": \"USD\",\n  \"preferred_currency\": \"EUR\",\n  \"timezone\": \"Africa/Nairobi\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/profile",
+              "host": ["{{base_url}}"],
+              "path": ["profile"]
+            }
+          }
+        },
+        {
+          "name": "Upload Photo",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "photo", "type": "file", "src": "" }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/profile/upload_photo",
+              "host": ["{{base_url}}"],
+              "path": ["profile", "upload_photo"]
+            }
+          }
+        },
+        {
+          "name": "Delete Photo",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/profile/delete_photo",
+              "host": ["{{base_url}}"],
+              "path": ["profile", "delete_photo"]
+            }
+          }
+        },
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/profile/delete_account",
+              "host": ["{{base_url}}"],
+              "path": ["profile", "delete_account"]
+            },
+            "description": "Permanently delete user account and all associated data."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "description": "Manage bank accounts, wallets, and other financial accounts",
+      "item": [
+        {
+          "name": "List Accounts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/accounts",
+              "host": ["{{base_url}}"],
+              "path": ["accounts"]
+            }
+          }
+        },
+        {
+          "name": "Create Account",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('account_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Savings Account\",\n  \"account_type\": \"savings\",\n  \"bank_name\": \"Chase Bank\",\n  \"balance\": 5000.00,\n  \"currency\": \"USD\",\n  \"account_number\": \"****5678\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/accounts",
+              "host": ["{{base_url}}"],
+              "path": ["accounts"]
+            }
+          }
+        },
+        {
+          "name": "Get Account",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/accounts/{{account_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["accounts", "{{account_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Account",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Savings\",\n  \"balance\": 7500.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/accounts/{{account_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["accounts", "{{account_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/accounts/{{account_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["accounts", "{{account_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "description": "Manage income and expense categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": ["{{base_url}}"],
+              "path": ["categories"]
+            }
+          }
+        },
+        {
+          "name": "Create Category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('category_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Groceries\",\n  \"icon\": \"🛒\",\n  \"color\": \"#4CAF50\",\n  \"transaction_type\": \"expense\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": ["{{base_url}}"],
+              "path": ["categories"]
+            }
+          }
+        },
+        {
+          "name": "Get Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/categories/{{category_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["categories", "{{category_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Food & Groceries\",\n  \"color\": \"#FF5722\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categories/{{category_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["categories", "{{category_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/categories/{{category_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["categories", "{{category_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "description": "Record and manage income, expenses, and transfers",
+      "item": [
+        {
+          "name": "List Transactions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/transactions",
+              "host": ["{{base_url}}"],
+              "path": ["transactions"]
+            }
+          }
+        },
+        {
+          "name": "Create Transaction",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('transaction_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 50.00,\n  \"category_id\": {{category_id}},\n  \"transaction_type\": \"expense\",\n  \"description\": \"Weekly groceries\",\n  \"date\": \"2026-03-08T10:00:00Z\",\n  \"payment_method\": \"credit_card\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/transactions",
+              "host": ["{{base_url}}"],
+              "path": ["transactions"]
+            }
+          }
+        },
+        {
+          "name": "Get Transaction",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/transactions/{{transaction_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["transactions", "{{transaction_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Transaction",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 75.00,\n  \"description\": \"Updated groceries\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/transactions/{{transaction_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["transactions", "{{transaction_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Transaction",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/transactions/{{transaction_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["transactions", "{{transaction_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Transaction Stats",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/transactions/stats?start_date=2026-03-01&end_date=2026-03-31",
+              "host": ["{{base_url}}"],
+              "path": ["transactions", "stats"],
+              "query": [
+                { "key": "start_date", "value": "2026-03-01" },
+                { "key": "end_date", "value": "2026-03-31" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Spending by Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/transactions/spending_by_category?start_date=2026-03-01&end_date=2026-03-31",
+              "host": ["{{base_url}}"],
+              "path": ["transactions", "spending_by_category"],
+              "query": [
+                { "key": "start_date", "value": "2026-03-01" },
+                { "key": "end_date", "value": "2026-03-31" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Budgets",
+      "description": "Set and track spending budgets per category",
+      "item": [
+        {
+          "name": "List Budgets",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/budgets?page=1&per_page=20",
+              "host": ["{{base_url}}"],
+              "path": ["budgets"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Budget",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('budget_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": {{category_id}},\n  \"limit\": 500.00,\n  \"spent\": 0.00,\n  \"start_date\": \"2026-03-01T00:00:00Z\",\n  \"end_date\": \"2026-03-31T23:59:59Z\",\n  \"period\": \"monthly\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/budgets",
+              "host": ["{{base_url}}"],
+              "path": ["budgets"]
+            }
+          }
+        },
+        {
+          "name": "Get Budget",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/budgets/{{budget_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["budgets", "{{budget_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Budget",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"limit\": 750.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/budgets/{{budget_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["budgets", "{{budget_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Budget",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/budgets/{{budget_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["budgets", "{{budget_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Active Budgets",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/budgets/active",
+              "host": ["{{base_url}}"],
+              "path": ["budgets", "active"]
+            }
+          }
+        },
+        {
+          "name": "Budget Summary",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/budgets/summary",
+              "host": ["{{base_url}}"],
+              "path": ["budgets", "summary"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Debts",
+      "description": "Track loans, debts, and repayment schedules",
+      "item": [
+        {
+          "name": "List Debts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/debts",
+              "host": ["{{base_url}}"],
+              "path": ["debts"]
+            }
+          }
+        },
+        {
+          "name": "Create Debt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('debt_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Car Loan\",\n  \"amount\": 15000.00,\n  \"creditor\": \"ABC Bank\",\n  \"description\": \"Monthly car loan payment\",\n  \"due_date\": \"2026-12-31\",\n  \"status\": \"pending\",\n  \"debt_type\": \"loan\",\n  \"interest_rate\": 5.5,\n  \"is_recurring\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/debts",
+              "host": ["{{base_url}}"],
+              "path": ["debts"]
+            }
+          }
+        },
+        {
+          "name": "Get Debt",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/debts/{{debt_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["debts", "{{debt_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Debt",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"paid\",\n  \"amount\": 14000.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/debts/{{debt_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["debts", "{{debt_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Debt",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/debts/{{debt_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["debts", "{{debt_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Saving Goals",
+      "description": "Set savings targets and track progress",
+      "item": [
+        {
+          "name": "List Saving Goals",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/saving_goals",
+              "host": ["{{base_url}}"],
+              "path": ["saving_goals"]
+            }
+          }
+        },
+        {
+          "name": "Create Saving Goal",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('saving_goal_id', json.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Emergency Fund\",\n  \"target_amount\": 10000.00,\n  \"current_amount\": 2500.00,\n  \"target_date\": \"2026-12-31T00:00:00Z\",\n  \"notes\": \"6 months of expenses\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/saving_goals",
+              "host": ["{{base_url}}"],
+              "path": ["saving_goals"]
+            }
+          }
+        },
+        {
+          "name": "Get Saving Goal",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/saving_goals/{{saving_goal_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["saving_goals", "{{saving_goal_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Saving Goal",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_amount\": 5000.00,\n  \"notes\": \"Halfway there!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/saving_goals/{{saving_goal_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["saving_goals", "{{saving_goal_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Saving Goal",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/saving_goals/{{saving_goal_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["saving_goals", "{{saving_goal_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "description": "High-level financial overview and quick stats",
+      "item": [
+        {
+          "name": "Dashboard Overview",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/dashboard/overview",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "overview"]
+            }
+          }
+        },
+        {
+          "name": "Financial Overview",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/dashboard/financial_overview",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "financial_overview"]
+            }
+          }
+        },
+        {
+          "name": "Spending by Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/dashboard/spending_by_category?start_date=2026-03-01&end_date=2026-03-31",
+              "host": ["{{base_url}}"],
+              "path": ["dashboard", "spending_by_category"],
+              "query": [
+                { "key": "start_date", "value": "2026-03-01" },
+                { "key": "end_date", "value": "2026-03-31" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Insights",
+      "description": "Spending trends, comparisons, and analytical breakdowns",
+      "item": [
+        {
+          "name": "Monthly Overview",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/insights/monthly_overview",
+              "host": ["{{base_url}}"],
+              "path": ["insights", "monthly_overview"]
+            }
+          }
+        },
+        {
+          "name": "Spending by Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/insights/spending_by_category",
+              "host": ["{{base_url}}"],
+              "path": ["insights", "spending_by_category"]
+            }
+          }
+        },
+        {
+          "name": "Weekly Trends",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/insights/weekly_trends",
+              "host": ["{{base_url}}"],
+              "path": ["insights", "weekly_trends"]
+            }
+          }
+        },
+        {
+          "name": "Spending Comparison",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/insights/spending_comparison",
+              "host": ["{{base_url}}"],
+              "path": ["insights", "spending_comparison"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Support",
+      "description": "Submit and view support messages",
+      "item": [
+        {
+          "name": "List Support Messages",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/support_messages",
+              "host": ["{{base_url}}"],
+              "path": ["support_messages"]
+            }
+          }
+        },
+        {
+          "name": "Create Support Message",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"display_name\": \"John Doe\",\n  \"message_type\": \"bug_report\",\n  \"message\": \"I found a bug when adding a transaction.\",\n  \"app_version\": \"1.2.0\",\n  \"build_number\": \"42\",\n  \"platform\": \"ios\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/support_messages",
+              "host": ["{{base_url}}"],
+              "path": ["support_messages"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Data Management",
+      "description": "Reset or delete financial data",
+      "item": [
+        {
+          "name": "Start Afresh (Keep Accounts & Categories)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/data/start_afresh",
+              "host": ["{{base_url}}"],
+              "path": ["data", "start_afresh"]
+            },
+            "description": "Deletes transactions, budgets, debts, saving goals, support messages. Resets balances. Keeps accounts & categories."
+          }
+        },
+        {
+          "name": "Delete All Data",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/data/delete_all",
+              "host": ["{{base_url}}"],
+              "path": ["data", "delete_all"]
+            },
+            "description": "Permanently deletes ALL user data including accounts and categories."
+          }
+        },
+        {
+          "name": "Reset Balances",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/data/reset_balances",
+              "host": ["{{base_url}}"],
+              "path": ["data", "reset_balances"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Authentication",
+      "description": "Admin login, logout, password reset (JSON API)",
+      "item": [
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('admin_token', json.token);",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@accountanta.com\",\n  \"password\": \"admin_password\"\n}"
+            },
+            "url": {
+              "raw": "{{admin_base_url}}/login",
+              "host": ["{{admin_base_url}}"],
+              "path": ["login"]
+            }
+          }
+        },
+        {
+          "name": "Validate Admin Token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/validate_token",
+              "host": ["{{admin_base_url}}"],
+              "path": ["validate_token"]
+            }
+          }
+        },
+        {
+          "name": "Admin Send Reset OTP",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@accountanta.com\"\n}"
+            },
+            "url": {
+              "raw": "{{admin_base_url}}/send_reset_otp",
+              "host": ["{{admin_base_url}}"],
+              "path": ["send_reset_otp"]
+            }
+          }
+        },
+        {
+          "name": "Admin Verify OTP",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@accountanta.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{admin_base_url}}/verify_reset_otp",
+              "host": ["{{admin_base_url}}"],
+              "path": ["verify_reset_otp"]
+            }
+          }
+        },
+        {
+          "name": "Admin Reset Password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{reset_token}}\",\n  \"password\": \"NewAdminPass123!\",\n  \"password_confirmation\": \"NewAdminPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{admin_base_url}}/reset_password",
+              "host": ["{{admin_base_url}}"],
+              "path": ["reset_password"]
+            }
+          }
+        },
+        {
+          "name": "Admin Change Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"admin_password\",\n  \"user\": {\n    \"password\": \"NewPassword123!\",\n    \"password_confirmation\": \"NewPassword123!\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{admin_base_url}}/change_password",
+              "host": ["{{admin_base_url}}"],
+              "path": ["change_password"]
+            }
+          }
+        },
+        {
+          "name": "Admin Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/logout",
+              "host": ["{{admin_base_url}}"],
+              "path": ["logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin — User Management",
+      "description": "List, view, activate, deactivate, grant/revoke admin",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/users?page=1&per_page=25&search=&is_admin=",
+              "host": ["{{admin_base_url}}"],
+              "path": ["users"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "25" },
+                { "key": "search", "value": "", "description": "Filter by email" },
+                { "key": "is_admin", "value": "", "description": "true/false or empty" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/users/{{user_id}}",
+              "host": ["{{admin_base_url}}"],
+              "path": ["users", "{{user_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user\": {\n    \"first_name\": \"Updated\",\n    \"last_name\": \"Name\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{admin_base_url}}/users/{{user_id}}",
+              "host": ["{{admin_base_url}}"],
+              "path": ["users", "{{user_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Activate User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/users/{{user_id}}/activate",
+              "host": ["{{admin_base_url}}"],
+              "path": ["users", "{{user_id}}", "activate"]
+            }
+          }
+        },
+        {
+          "name": "Deactivate User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/users/{{user_id}}/deactivate",
+              "host": ["{{admin_base_url}}"],
+              "path": ["users", "{{user_id}}", "deactivate"]
+            }
+          }
+        },
+        {
+          "name": "Grant Admin",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/users/{{user_id}}/make_admin",
+              "host": ["{{admin_base_url}}"],
+              "path": ["users", "{{user_id}}", "make_admin"]
+            }
+          }
+        },
+        {
+          "name": "Revoke Admin",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "PATCH",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/users/{{user_id}}/remove_admin",
+              "host": ["{{admin_base_url}}"],
+              "path": ["users", "{{user_id}}", "remove_admin"]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/users/{{user_id}}",
+              "host": ["{{admin_base_url}}"],
+              "path": ["users", "{{user_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Invitations",
+      "description": "Invite new admins via email",
+      "item": [
+        {
+          "name": "List Invitations",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/invitations",
+              "host": ["{{admin_base_url}}"],
+              "path": ["invitations"]
+            }
+          }
+        },
+        {
+          "name": "Send Invitation",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newadmin@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{admin_base_url}}/invitations",
+              "host": ["{{admin_base_url}}"],
+              "path": ["invitations"]
+            }
+          }
+        },
+        {
+          "name": "Revoke Invitation",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/invitations/1",
+              "host": ["{{admin_base_url}}"],
+              "path": ["invitations", "1"]
+            },
+            "description": "Replace 1 with the invitation ID to revoke."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Analytics",
+      "description": "Platform analytics: user growth, transactions, financial insights, revenue",
+      "item": [
+        {
+          "name": "User Growth",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/analytics/user_growth?start_date=2026-02-01&end_date=2026-03-08",
+              "host": ["{{admin_base_url}}"],
+              "path": ["analytics", "user_growth"],
+              "query": [
+                { "key": "start_date", "value": "2026-02-01" },
+                { "key": "end_date", "value": "2026-03-08" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Transaction Volume",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/analytics/transaction_volume?start_date=2026-02-01&end_date=2026-03-08",
+              "host": ["{{admin_base_url}}"],
+              "path": ["analytics", "transaction_volume"],
+              "query": [
+                { "key": "start_date", "value": "2026-02-01" },
+                { "key": "end_date", "value": "2026-03-08" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Financial Insights",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/analytics/financial_insights?start_date=2026-02-01&end_date=2026-03-08",
+              "host": ["{{admin_base_url}}"],
+              "path": ["analytics", "financial_insights"],
+              "query": [
+                { "key": "start_date", "value": "2026-02-01" },
+                { "key": "end_date", "value": "2026-03-08" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "User Activity",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/analytics/user_activity",
+              "host": ["{{admin_base_url}}"],
+              "path": ["analytics", "user_activity"]
+            }
+          }
+        },
+        {
+          "name": "Revenue Analytics",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/analytics/revenue_analytics",
+              "host": ["{{admin_base_url}}"],
+              "path": ["analytics", "revenue_analytics"]
+            }
+          }
+        },
+        {
+          "name": "Export Data (CSV)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "text/csv" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/analytics/export_data?data_type=users&format=csv",
+              "host": ["{{admin_base_url}}"],
+              "path": ["analytics", "export_data"],
+              "query": [
+                { "key": "data_type", "value": "users", "description": "users, transactions, debts, saving_goals" },
+                { "key": "format", "value": "csv" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Reports",
+      "description": "Generate daily, weekly, monthly, and custom reports",
+      "item": [
+        {
+          "name": "Generate Daily Report",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/reports/generate_daily",
+              "host": ["{{admin_base_url}}"],
+              "path": ["reports", "generate_daily"]
+            }
+          }
+        },
+        {
+          "name": "Generate Weekly Report",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/reports/generate_weekly",
+              "host": ["{{admin_base_url}}"],
+              "path": ["reports", "generate_weekly"]
+            }
+          }
+        },
+        {
+          "name": "Generate Monthly Report",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/reports/generate_monthly",
+              "host": ["{{admin_base_url}}"],
+              "path": ["reports", "generate_monthly"]
+            }
+          }
+        },
+        {
+          "name": "Generate Custom Report",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"start_date\": \"2026-01-01\",\n  \"end_date\": \"2026-03-08\"\n}"
+            },
+            "url": {
+              "raw": "{{admin_base_url}}/reports/generate_custom",
+              "host": ["{{admin_base_url}}"],
+              "path": ["reports", "generate_custom"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Audit Logs",
+      "description": "View admin activity audit trail",
+      "item": [
+        {
+          "name": "List Audit Logs",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/audit_logs?page=1&action_filter=&start_date=&end_date=",
+              "host": ["{{admin_base_url}}"],
+              "path": ["audit_logs"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "action_filter", "value": "", "description": "e.g. admin_login, invitation_sent" },
+                { "key": "start_date", "value": "" },
+                { "key": "end_date", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Audit Logs (CSV)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "text/csv" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/audit_logs.csv",
+              "host": ["{{admin_base_url}}"],
+              "path": ["audit_logs.csv"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin — Dashboard",
+      "description": "Admin dashboard health metrics",
+      "item": [
+        {
+          "name": "Dashboard Health Metrics",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{admin_base_url}}/dashboard/health",
+              "host": ["{{admin_base_url}}"],
+              "path": ["dashboard", "health"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

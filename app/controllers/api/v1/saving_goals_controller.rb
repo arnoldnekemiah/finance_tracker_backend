@@ -1,4 +1,4 @@
-class Api::V1::SavingGoalsController < ApplicationController
+class Api::V1::SavingGoalsController < Api::BaseController
   include Authenticatable
   before_action :set_saving_goal, only: %i[show update destroy]
 

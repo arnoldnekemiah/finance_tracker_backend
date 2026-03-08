@@ -1,4 +1,4 @@
-class Api::V1::SupportMessagesController < ApplicationController
+class Api::V1::SupportMessagesController < Api::BaseController
   include Authenticatable
 
   # GET /api/v1/support_messages

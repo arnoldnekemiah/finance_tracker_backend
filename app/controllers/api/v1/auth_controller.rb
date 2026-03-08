@@ -1,4 +1,4 @@
-class Api::V1::AuthController < ApplicationController
+class Api::V1::AuthController < Api::BaseController
   include Authenticatable
 
   skip_before_action :authenticate_user!, only: [:signup, :login, :google, :forgot_password, :verify_otp, :reset_password]
@@ -10,7 +10,7 @@ class Api::V1::AuthController < ApplicationController
     user.jti = SecureRandom.uuid
 
     if user.save
-      token = JwtService.encode(user.id)
+      token = JwtService.encode(user.id, jti: user.jti)
       render json: {
         status: 'success',
         data: {
@@ -38,7 +38,7 @@ class Api::V1::AuthController < ApplicationController
         }, status: :unauthorized
       end
 
-      token = JwtService.encode(user.id)
+      token = JwtService.encode(user.id, jti: user.jti)
       render json: {
         status: 'success',
         data: {
@@ -65,7 +65,7 @@ class Api::V1::AuthController < ApplicationController
         photo_url: params[:photo_url]
       )
 
-      token = JwtService.encode(user.id)
+      token = JwtService.encode(user.id, jti: user.jti)
       render json: {
         status: 'success',
         data: {
@@ -83,7 +83,10 @@ class Api::V1::AuthController < ApplicationController
 
   # DELETE /api/v1/auth/logout
   def logout
-    # JWT is stateless — client should discard token
+    # Rotate the JTI so any existing tokens for this user become invalid.
+    # The JTIMatcher revocation strategy checks jti on every request, so any
+    # token carrying the old jti will be rejected after this.
+    current_user.update_column(:jti, SecureRandom.uuid)
     render json: {
       status: 'success',
       data: { message: 'Logged out successfully' }

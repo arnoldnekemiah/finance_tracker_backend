@@ -318,12 +318,10 @@ Devise.setup do |config|
 
   config.jwt do |jwt|
     jwt.secret = Rails.application.credentials.devise_jwt_secret_key || Rails.application.credentials.secret_key_base || ENV['JWT_SECRET_KEY'] || 'dev-fallback-secret'
-    jwt.dispatch_requests = [
-      ['POST', %r{^/api/v1/auth/login$}]
-    ]
-    jwt.revocation_requests = [
-      ['DELETE', %r{^/api/v1/auth/logout$}]
-    ]
+    # dispatch_requests and revocation_requests are intentionally omitted.
+    # This app uses JwtService (not devise-jwt) for issuing and verifying tokens.
+    # Enabling them would cause Warden::JWTAuth::Middleware to crash trying to
+    # decode JwtService tokens, which have a different secret and payload format.
     jwt.expiration_time = 1.day.to_i
   end
 end

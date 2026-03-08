@@ -14,8 +14,14 @@ module Authenticatable
       # Try custom JWT first
       payload = JwtService.decode(token)
       if payload && payload['user_id']
-        @current_user = User.find_by(id: payload['user_id'])
-        return if @current_user
+        user = User.find_by(id: payload['user_id'])
+        # Verify the JTI matches the one stored on the user record.
+        # On logout the JTI is rotated, so any token issued before logout
+        # will carry a stale JTI and be rejected here.
+        if user && user.jti == payload['jti']
+          @current_user = user
+          return
+        end
       end
 
       # Try Devise JWT

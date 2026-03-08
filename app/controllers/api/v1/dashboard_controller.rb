@@ -1,4 +1,4 @@
-class Api::V1::DashboardController < ApplicationController
+class Api::V1::DashboardController < Api::BaseController
   include Authenticatable
 
   # GET /api/v1/dashboard/overview

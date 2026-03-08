@@ -315,190 +315,38 @@ components:
           type: integer
 servers:
 - url: http://localhost:3000
-  description: Local development
+  description: Local development (localhost)
+- url: http://127.0.0.1:3000
+  description: Local development (127.0.0.1)
 - url: https://accountanta-api.onrender.com
   description: Production (Render)
+tags:
+- name: Authentication
+  description: Sign up, log in, Google OAuth, log out, and password reset flows
+- name: Profile
+  description: View and update your user profile, photo, and account settings
+- name: Accounts
+  description: Manage bank accounts, wallets, and other financial accounts
+- name: Categories
+  description: Organise income and expense categories used across transactions and budgets
+- name: Transactions
+  description: Record and manage financial transactions (income, expenses, transfers)
+- name: Budgets
+  description: Set and track spending budgets per category and period
+- name: Debts
+  description: Track loans, debts, and repayment schedules
+- name: Saving Goals
+  description: Set savings targets and monitor progress towards them
+- name: Dashboard
+  description: High-level financial overview, recent activity, and quick stats
+- name: Insights
+  description: Spending trends, month-over-month comparisons, and analytical breakdowns
+- name: Support
+  description: Submit and view support messages and feedback
+- name: Data Management
+  description: Reset or permanently delete financial data
+
 paths:
-  "/api/v1/accounts":
-    get:
-      summary: List all active accounts
-      tags:
-      - Accounts
-      operationId: listAccounts
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: List of active accounts
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: array
-                    items:
-                      "$ref": "#/components/schemas/account"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-    post:
-      summary: Create a new account
-      tags:
-      - Accounts
-      operationId: createAccount
-      security:
-      - bearer_auth: []
-      parameters: []
-      responses:
-        '201':
-          description: Account created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/account"
-        '422':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: Checking Account
-                account_type:
-                  type: string
-                  example: checking
-                  description: e.g. checking, savings, credit_card, cash, investment
-                bank_name:
-                  type: string
-                  example: Chase Bank
-                balance:
-                  type: number
-                  example: 1000.0
-                currency:
-                  type: string
-                  example: USD
-                account_number:
-                  type: string
-                  example: "****1234"
-                is_active:
-                  type: boolean
-                  example: true
-              required:
-              - name
-              - account_type
-  "/api/v1/accounts/{id}":
-    parameters:
-    - name: id
-      in: path
-      description: Account ID
-      required: true
-      schema:
-        type: integer
-    get:
-      summary: Get account details
-      tags:
-      - Accounts
-      operationId: getAccount
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Account details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/account"
-        '404':
-          description: Account not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-    put:
-      summary: Update an account
-      tags:
-      - Accounts
-      operationId: updateAccount
-      security:
-      - bearer_auth: []
-      parameters: []
-      responses:
-        '200':
-          description: Account updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/account"
-        '422':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                account_type:
-                  type: string
-                bank_name:
-                  type: string
-                balance:
-                  type: number
-                currency:
-                  type: string
-                account_number:
-                  type: string
-                is_active:
-                  type: boolean
-    delete:
-      summary: Delete (deactivate) an account
-      tags:
-      - Accounts
-      operationId: deleteAccount
-      security:
-      - bearer_auth: []
-      responses:
-        '204':
-          description: Account deactivated
-        '404':
-          description: Account not found
   "/api/v1/auth/signup":
     post:
       summary: Create a new user account
@@ -854,155 +702,18 @@ paths:
               - token
               - password
               - password_confirmation
-  "/api/v1/budgets":
-    get:
-      summary: List all budgets (paginated)
-      tags:
-      - Budgets
-      operationId: listBudgets
-      security:
-      - bearer_auth: []
-      parameters:
-      - name: page
-        in: query
-        required: false
-        description: 'Page number (default: 1)'
-        schema:
-          type: integer
-      - name: per_page
-        in: query
-        required: false
-        description: 'Items per page (default: 20)'
-        schema:
-          type: integer
-      responses:
-        '200':
-          description: Paginated list of budgets
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: array
-                    items:
-                      "$ref": "#/components/schemas/budget"
-                  pagination:
-                    "$ref": "#/components/schemas/pagination"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-    post:
-      summary: Create a new budget
-      tags:
-      - Budgets
-      operationId: createBudget
-      security:
-      - bearer_auth: []
-      parameters: []
-      responses:
-        '201':
-          description: Budget created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/budget"
-        '422':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                category_id:
-                  type: integer
-                  example: 1
-                limit:
-                  type: number
-                  example: 500.0
-                  description: Budget limit amount
-                spent:
-                  type: number
-                  example: 0.0
-                start_date:
-                  type: string
-                  format: date-time
-                  example: '2026-03-01T00:00:00Z'
-                end_date:
-                  type: string
-                  format: date-time
-                  example: '2026-03-31T23:59:59Z'
-                period:
-                  type: string
-                  example: monthly
-                  description: e.g. weekly, monthly, yearly
-              required:
-              - category_id
-              - limit
-              - start_date
-              - end_date
-  "/api/v1/budgets/{id}":
-    parameters:
-    - name: id
-      in: path
-      description: Budget ID
-      required: true
-      schema:
-        type: integer
-    get:
-      summary: Get budget details
-      tags:
-      - Budgets
-      operationId: getBudget
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Budget details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/budget"
-        '404':
-          description: Budget not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
+  "/api/v1/profile":
     put:
-      summary: Update a budget
+      summary: Update user profile
       tags:
-      - Budgets
-      operationId: updateBudget
+      - Profile
+      operationId: updateProfile
       security:
       - bearer_auth: []
       parameters: []
       responses:
         '200':
-          description: Budget updated
+          description: Profile updated
           content:
             application/json:
               schema:
@@ -1012,9 +723,15 @@ paths:
                     type: string
                     example: success
                   data:
-                    "$ref": "#/components/schemas/budget"
+                    "$ref": "#/components/schemas/user"
         '422':
           description: Validation errors
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+        '401':
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -1025,43 +742,39 @@ paths:
             schema:
               type: object
               properties:
-                category_id:
-                  type: integer
-                limit:
-                  type: number
-                spent:
-                  type: number
-                start_date:
+                first_name:
                   type: string
-                  format: date-time
-                end_date:
+                  example: John
+                last_name:
                   type: string
-                  format: date-time
-                period:
+                  example: Doe
+                email:
                   type: string
-    delete:
-      summary: Delete a budget
+                  format: email
+                currency:
+                  type: string
+                  example: USD
+                preferred_currency:
+                  type: string
+                  example: EUR
+                timezone:
+                  type: string
+                  example: Africa/Nairobi
+                photo_url:
+                  type: string
+                  nullable: true
+  "/api/v1/profile/upload_photo":
+    post:
+      summary: Upload profile photo
       tags:
-      - Budgets
-      operationId: deleteBudget
+      - Profile
+      operationId: uploadProfilePhoto
       security:
       - bearer_auth: []
-      responses:
-        '204':
-          description: Budget deleted
-        '404':
-          description: Budget not found
-  "/api/v1/budgets/active":
-    get:
-      summary: List currently active budgets
-      tags:
-      - Budgets
-      operationId: getActiveBudgets
-      security:
-      - bearer_auth: []
+      parameters: []
       responses:
         '200':
-          description: Active budgets
+          description: Photo uploaded
           content:
             application/json:
               schema:
@@ -1071,26 +784,51 @@ paths:
                     type: string
                     example: success
                   data:
-                    type: array
-                    items:
-                      "$ref": "#/components/schemas/budget"
-        '401':
-          description: Unauthorized
+                    "$ref": "#/components/schemas/user"
+        '422':
+          description: No photo provided
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/error_response"
-  "/api/v1/budgets/summary":
-    get:
-      summary: Get overall budget summary
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: file
+        description: Photo file upload
+  "/api/v1/profile/delete_photo":
+    delete:
+      summary: Remove profile photo
       tags:
-      - Budgets
-      operationId: getBudgetSummary
+      - Profile
+      operationId: deleteProfilePhoto
       security:
       - bearer_auth: []
       responses:
         '200':
-          description: Budget summary
+          description: Photo removed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/user"
+  "/api/v1/profile/delete_account":
+    delete:
+      summary: Permanently delete user account and all data
+      tags:
+      - Profile
+      operationId: deleteUserAccount
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Account deleted
           content:
             application/json:
               schema:
@@ -1102,26 +840,189 @@ paths:
                   data:
                     type: object
                     properties:
-                      total_budget:
-                        type: number
-                      total_spent:
-                        type: number
-                      total_remaining:
-                        type: number
-                      budget_count:
-                        type: integer
-                      over_budget_count:
-                        type: integer
-                      budgets:
-                        type: array
-                        items:
-                          "$ref": "#/components/schemas/budget"
+                      message:
+                        type: string
+                        example: Account deleted successfully
+  "/api/v1/accounts":
+    get:
+      summary: List all active accounts
+      tags:
+      - Accounts
+      operationId: listAccounts
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: List of active accounts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/account"
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
                 "$ref": "#/components/schemas/error_response"
+    post:
+      summary: Create a new account
+      tags:
+      - Accounts
+      operationId: createAccount
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/account"
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Checking Account
+                account_type:
+                  type: string
+                  example: checking
+                  description: e.g. checking, savings, credit_card, cash, investment
+                bank_name:
+                  type: string
+                  example: Chase Bank
+                balance:
+                  type: number
+                  example: 1000.0
+                currency:
+                  type: string
+                  example: USD
+                account_number:
+                  type: string
+                  example: "****1234"
+                is_active:
+                  type: boolean
+                  example: true
+              required:
+              - name
+              - account_type
+  "/api/v1/accounts/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: Account ID
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get account details
+      tags:
+      - Accounts
+      operationId: getAccount
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Account details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/account"
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+    put:
+      summary: Update an account
+      tags:
+      - Accounts
+      operationId: updateAccount
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: Account updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/account"
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                account_type:
+                  type: string
+                bank_name:
+                  type: string
+                balance:
+                  type: number
+                currency:
+                  type: string
+                account_number:
+                  type: string
+                is_active:
+                  type: boolean
+    delete:
+      summary: Delete (deactivate) an account
+      tags:
+      - Accounts
+      operationId: deleteAccount
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: Account deactivated
+        '404':
+          description: Account not found
   "/api/v1/categories":
     get:
       summary: List all categories
@@ -1299,1059 +1200,6 @@ paths:
           description: Category deleted
         '404':
           description: Category not found
-  "/api/v1/dashboard/overview":
-    get:
-      summary: Get full dashboard overview
-      tags:
-      - Dashboard
-      operationId: getDashboardOverview
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Dashboard overview data
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: object
-                    properties:
-                      balance_overview:
-                        type: object
-                        properties:
-                          current_balance:
-                            type: number
-                          monthly_income:
-                            type: number
-                          monthly_expenses:
-                            type: number
-                          net_income:
-                            type: number
-                      monthly_summary:
-                        type: object
-                        properties:
-                          budget_utilization:
-                            type: number
-                          income:
-                            type: number
-                          expenses:
-                            type: number
-                          savings_rate:
-                            type: number
-                      weekly_spending:
-                        type: object
-                        properties:
-                          current_week:
-                            type: array
-                            items:
-                              type: number
-                            description: 7 daily amounts
-                          labels:
-                            type: array
-                            items:
-                              type: string
-                            example:
-                            - Mon
-                            - Tue
-                            - Wed
-                            - Thu
-                            - Fri
-                            - Sat
-                            - Sun
-                      top_spending_categories:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            category_id:
-                              type: integer
-                            category_name:
-                              type: string
-                            amount:
-                              type: number
-                            percentage:
-                              type: number
-                            icon:
-                              type: string
-                            color:
-                              type: string
-                      recent_transactions:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: integer
-                            amount:
-                              type: number
-                            description:
-                              type: string
-                            category:
-                              type: string
-                            date:
-                              type: string
-                            type:
-                              type: string
-                      quick_stats:
-                        type: object
-                        properties:
-                          total_budgets:
-                            type: integer
-                          active_debts:
-                            type: integer
-                          saving_goals:
-                            type: integer
-                          transactions_this_month:
-                            type: integer
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-  "/api/v1/dashboard/financial_overview":
-    get:
-      summary: Get financial overview summary
-      tags:
-      - Dashboard
-      operationId: getFinancialOverview
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Financial overview
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: object
-                    properties:
-                      total_balance:
-                        type: number
-                      total_income:
-                        type: number
-                      total_expenses:
-                        type: number
-                      net_worth:
-                        type: number
-                      savings_rate:
-                        type: number
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-  "/api/v1/dashboard/spending_by_category":
-    get:
-      summary: Get dashboard spending by category
-      tags:
-      - Dashboard
-      operationId: getDashboardSpendingByCategory
-      security:
-      - bearer_auth: []
-      parameters:
-      - name: start_date
-        in: query
-        format: date
-        required: false
-        schema:
-          type: string
-      - name: end_date
-        in: query
-        format: date
-        required: false
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Spending by category
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        category_id:
-                          type: integer
-                        category_name:
-                          type: string
-                        icon:
-                          type: string
-                        color:
-                          type: string
-                        amount:
-                          type: number
-                        percentage:
-                          type: number
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-  "/api/v1/data/start_afresh":
-    post:
-      summary: Reset financial data (keep accounts & categories)
-      tags:
-      - Data Management
-      operationId: startAfresh
-      security:
-      - bearer_auth: []
-      description: Deletes all transactions, budgets, debts, saving goals, and support
-        messages. Resets account balances to 0. Preserves accounts and categories.
-      responses:
-        '200':
-          description: Data reset successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                        example: All financial data has been reset. Your account and
-                          categories are preserved.
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-  "/api/v1/data/delete_all":
-    post:
-      summary: Delete all user data
-      tags:
-      - Data Management
-      operationId: deleteAllData
-      security:
-      - bearer_auth: []
-      description: Permanently deletes all user data including accounts, categories,
-        transactions, budgets, debts, saving goals, and support messages.
-      responses:
-        '200':
-          description: All data deleted
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                        example: All data has been deleted.
-  "/api/v1/data/reset_balances":
-    post:
-      summary: Reset all account balances to zero
-      tags:
-      - Data Management
-      operationId: resetBalances
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Balances reset
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                        example: All account balances have been reset to 0.
-  "/api/v1/debts":
-    get:
-      summary: List all debts
-      tags:
-      - Debts
-      operationId: listDebts
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: List of debts
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: array
-                    items:
-                      "$ref": "#/components/schemas/debt"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-    post:
-      summary: Create a new debt
-      tags:
-      - Debts
-      operationId: createDebt
-      security:
-      - bearer_auth: []
-      parameters: []
-      responses:
-        '201':
-          description: Debt created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/debt"
-        '422':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  example: Car Loan
-                amount:
-                  type: number
-                  example: 15000.0
-                creditor:
-                  type: string
-                  example: ABC Bank
-                description:
-                  type: string
-                  example: Monthly car loan payment
-                due_date:
-                  type: string
-                  format: date
-                  example: '2026-12-31'
-                status:
-                  type: string
-                  enum:
-                  - pending
-                  - paid
-                  - overdue
-                  example: pending
-                debt_type:
-                  type: string
-                  example: loan
-                interest_rate:
-                  type: number
-                  example: 5.5
-                is_recurring:
-                  type: boolean
-                  example: true
-              required:
-              - title
-              - amount
-              - creditor
-              - due_date
-              - debt_type
-  "/api/v1/debts/{id}":
-    parameters:
-    - name: id
-      in: path
-      description: Debt ID
-      required: true
-      schema:
-        type: integer
-    get:
-      summary: Get debt details
-      tags:
-      - Debts
-      operationId: getDebt
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Debt details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/debt"
-        '404':
-          description: Debt not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-    put:
-      summary: Update a debt
-      tags:
-      - Debts
-      operationId: updateDebt
-      security:
-      - bearer_auth: []
-      parameters: []
-      responses:
-        '200':
-          description: Debt updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/debt"
-        '422':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                amount:
-                  type: number
-                creditor:
-                  type: string
-                description:
-                  type: string
-                due_date:
-                  type: string
-                  format: date
-                status:
-                  type: string
-                  enum:
-                  - pending
-                  - paid
-                  - overdue
-                debt_type:
-                  type: string
-                interest_rate:
-                  type: number
-                is_recurring:
-                  type: boolean
-    delete:
-      summary: Delete a debt
-      tags:
-      - Debts
-      operationId: deleteDebt
-      security:
-      - bearer_auth: []
-      responses:
-        '204':
-          description: Debt deleted
-        '404':
-          description: Debt not found
-  "/api/v1/insights/monthly_overview":
-    get:
-      summary: Get monthly income/expense overview
-      tags:
-      - Insights
-      operationId: getMonthlyOverview
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Monthly overview
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: object
-                    properties:
-                      total_income:
-                        type: number
-                      total_expenses:
-                        type: number
-                      top_categories:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            category:
-                              type: string
-                            amount:
-                              type: number
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-  "/api/v1/insights/spending_by_category":
-    get:
-      summary: Get spending breakdown by category (last 30 days)
-      tags:
-      - Insights
-      operationId: getInsightsSpendingByCategory
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Spending by category
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        category_id:
-                          type: integer
-                        category_name:
-                          type: string
-                        icon:
-                          type: string
-                        color:
-                          type: string
-                        amount:
-                          type: number
-                        percentage:
-                          type: number
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-  "/api/v1/insights/weekly_trends":
-    get:
-      summary: Get weekly spending trends (last 4 weeks)
-      tags:
-      - Insights
-      operationId: getWeeklyTrends
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Weekly spending trends
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        week:
-                          type: integer
-                        start_date:
-                          type: string
-                          format: date
-                        end_date:
-                          type: string
-                          format: date
-                        spending:
-                          type: number
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-  "/api/v1/insights/spending_comparison":
-    get:
-      summary: Compare spending between current and last month
-      tags:
-      - Insights
-      operationId: getSpendingComparison
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Spending comparison
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: object
-                    properties:
-                      current_month:
-                        type: number
-                      last_month:
-                        type: number
-                      percentage_change:
-                        type: number
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-  "/api/v1/profile":
-    put:
-      summary: Update user profile
-      tags:
-      - Profile
-      operationId: updateProfile
-      security:
-      - bearer_auth: []
-      parameters: []
-      responses:
-        '200':
-          description: Profile updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/user"
-        '422':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                first_name:
-                  type: string
-                  example: John
-                last_name:
-                  type: string
-                  example: Doe
-                email:
-                  type: string
-                  format: email
-                currency:
-                  type: string
-                  example: USD
-                preferred_currency:
-                  type: string
-                  example: EUR
-                timezone:
-                  type: string
-                  example: Africa/Nairobi
-                photo_url:
-                  type: string
-                  nullable: true
-  "/api/v1/profile/upload_photo":
-    post:
-      summary: Upload profile photo
-      tags:
-      - Profile
-      operationId: uploadProfilePhoto
-      security:
-      - bearer_auth: []
-      parameters: []
-      responses:
-        '200':
-          description: Photo uploaded
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/user"
-        '422':
-          description: No photo provided
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              type: file
-        description: Photo file upload
-  "/api/v1/profile/delete_photo":
-    delete:
-      summary: Remove profile photo
-      tags:
-      - Profile
-      operationId: deleteProfilePhoto
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Photo removed
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/user"
-  "/api/v1/profile/delete_account":
-    delete:
-      summary: Permanently delete user account and all data
-      tags:
-      - Profile
-      operationId: deleteUserAccount
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Account deleted
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: object
-                    properties:
-                      message:
-                        type: string
-                        example: Account deleted successfully
-  "/api/v1/saving_goals":
-    get:
-      summary: List all saving goals
-      tags:
-      - Saving Goals
-      operationId: listSavingGoals
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: List of saving goals
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: array
-                    items:
-                      "$ref": "#/components/schemas/saving_goal"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-    post:
-      summary: Create a new saving goal
-      tags:
-      - Saving Goals
-      operationId: createSavingGoal
-      security:
-      - bearer_auth: []
-      parameters: []
-      responses:
-        '201':
-          description: Saving goal created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/saving_goal"
-        '422':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  example: Emergency Fund
-                target_amount:
-                  type: number
-                  example: 10000.0
-                current_amount:
-                  type: number
-                  example: 2500.0
-                target_date:
-                  type: string
-                  format: date-time
-                  example: '2026-12-31T00:00:00Z'
-                notes:
-                  type: string
-                  example: 6 months of expenses
-              required:
-              - title
-              - target_amount
-  "/api/v1/saving_goals/{id}":
-    parameters:
-    - name: id
-      in: path
-      description: Saving Goal ID
-      required: true
-      schema:
-        type: integer
-    get:
-      summary: Get saving goal details
-      tags:
-      - Saving Goals
-      operationId: getSavingGoal
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: Saving goal details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/saving_goal"
-        '404':
-          description: Saving goal not found
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-    put:
-      summary: Update a saving goal
-      tags:
-      - Saving Goals
-      operationId: updateSavingGoal
-      security:
-      - bearer_auth: []
-      parameters: []
-      responses:
-        '200':
-          description: Saving goal updated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/saving_goal"
-        '422':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                target_amount:
-                  type: number
-                current_amount:
-                  type: number
-                target_date:
-                  type: string
-                  format: date-time
-                notes:
-                  type: string
-    delete:
-      summary: Delete a saving goal
-      tags:
-      - Saving Goals
-      operationId: deleteSavingGoal
-      security:
-      - bearer_auth: []
-      responses:
-        '204':
-          description: Saving goal deleted
-        '404':
-          description: Saving goal not found
-  "/api/v1/support_messages":
-    get:
-      summary: List user support messages
-      tags:
-      - Support
-      operationId: listSupportMessages
-      security:
-      - bearer_auth: []
-      responses:
-        '200':
-          description: List of support messages
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    type: array
-                    items:
-                      "$ref": "#/components/schemas/support_message"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-    post:
-      summary: Submit a support message
-      tags:
-      - Support
-      operationId: createSupportMessage
-      security:
-      - bearer_auth: []
-      parameters: []
-      responses:
-        '201':
-          description: Support message submitted
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: success
-                  data:
-                    "$ref": "#/components/schemas/support_message"
-        '422':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                "$ref": "#/components/schemas/error_response"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                  example: user@example.com
-                display_name:
-                  type: string
-                  example: John Doe
-                message_type:
-                  type: string
-                  example: bug_report
-                  description: e.g. bug_report, feature_request, general
-                message:
-                  type: string
-                  example: I found a bug when...
-                app_version:
-                  type: string
-                  example: 1.2.0
-                build_number:
-                  type: string
-                  example: '42'
-                platform:
-                  type: string
-                  example: ios
-              required:
-              - message
-              - message_type
   "/api/v1/transactions":
     get:
       summary: List all transactions
@@ -2667,3 +1515,1183 @@ paths:
                           type: number
                         percentage:
                           type: number
+  "/api/v1/budgets":
+    get:
+      summary: List all budgets (paginated)
+      tags:
+      - Budgets
+      operationId: listBudgets
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: page
+        in: query
+        required: false
+        description: 'Page number (default: 1)'
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        description: 'Items per page (default: 20)'
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Paginated list of budgets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/budget"
+                  pagination:
+                    "$ref": "#/components/schemas/pagination"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+    post:
+      summary: Create a new budget
+      tags:
+      - Budgets
+      operationId: createBudget
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: Budget created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/budget"
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category_id:
+                  type: integer
+                  example: 1
+                limit:
+                  type: number
+                  example: 500.0
+                  description: Budget limit amount
+                spent:
+                  type: number
+                  example: 0.0
+                start_date:
+                  type: string
+                  format: date-time
+                  example: '2026-03-01T00:00:00Z'
+                end_date:
+                  type: string
+                  format: date-time
+                  example: '2026-03-31T23:59:59Z'
+                period:
+                  type: string
+                  example: monthly
+                  description: e.g. weekly, monthly, yearly
+              required:
+              - category_id
+              - limit
+              - start_date
+              - end_date
+  "/api/v1/budgets/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: Budget ID
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get budget details
+      tags:
+      - Budgets
+      operationId: getBudget
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Budget details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/budget"
+        '404':
+          description: Budget not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+    put:
+      summary: Update a budget
+      tags:
+      - Budgets
+      operationId: updateBudget
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: Budget updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/budget"
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category_id:
+                  type: integer
+                limit:
+                  type: number
+                spent:
+                  type: number
+                start_date:
+                  type: string
+                  format: date-time
+                end_date:
+                  type: string
+                  format: date-time
+                period:
+                  type: string
+    delete:
+      summary: Delete a budget
+      tags:
+      - Budgets
+      operationId: deleteBudget
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: Budget deleted
+        '404':
+          description: Budget not found
+  "/api/v1/budgets/active":
+    get:
+      summary: List currently active budgets
+      tags:
+      - Budgets
+      operationId: getActiveBudgets
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Active budgets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/budget"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+  "/api/v1/budgets/summary":
+    get:
+      summary: Get overall budget summary
+      tags:
+      - Budgets
+      operationId: getBudgetSummary
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Budget summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      total_budget:
+                        type: number
+                      total_spent:
+                        type: number
+                      total_remaining:
+                        type: number
+                      budget_count:
+                        type: integer
+                      over_budget_count:
+                        type: integer
+                      budgets:
+                        type: array
+                        items:
+                          "$ref": "#/components/schemas/budget"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+  "/api/v1/debts":
+    get:
+      summary: List all debts
+      tags:
+      - Debts
+      operationId: listDebts
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: List of debts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/debt"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+    post:
+      summary: Create a new debt
+      tags:
+      - Debts
+      operationId: createDebt
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: Debt created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/debt"
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Car Loan
+                amount:
+                  type: number
+                  example: 15000.0
+                creditor:
+                  type: string
+                  example: ABC Bank
+                description:
+                  type: string
+                  example: Monthly car loan payment
+                due_date:
+                  type: string
+                  format: date
+                  example: '2026-12-31'
+                status:
+                  type: string
+                  enum:
+                  - pending
+                  - paid
+                  - overdue
+                  example: pending
+                debt_type:
+                  type: string
+                  example: loan
+                interest_rate:
+                  type: number
+                  example: 5.5
+                is_recurring:
+                  type: boolean
+                  example: true
+              required:
+              - title
+              - amount
+              - creditor
+              - due_date
+              - debt_type
+  "/api/v1/debts/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: Debt ID
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get debt details
+      tags:
+      - Debts
+      operationId: getDebt
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Debt details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/debt"
+        '404':
+          description: Debt not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+    put:
+      summary: Update a debt
+      tags:
+      - Debts
+      operationId: updateDebt
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: Debt updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/debt"
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                amount:
+                  type: number
+                creditor:
+                  type: string
+                description:
+                  type: string
+                due_date:
+                  type: string
+                  format: date
+                status:
+                  type: string
+                  enum:
+                  - pending
+                  - paid
+                  - overdue
+                debt_type:
+                  type: string
+                interest_rate:
+                  type: number
+                is_recurring:
+                  type: boolean
+    delete:
+      summary: Delete a debt
+      tags:
+      - Debts
+      operationId: deleteDebt
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: Debt deleted
+        '404':
+          description: Debt not found
+  "/api/v1/saving_goals":
+    get:
+      summary: List all saving goals
+      tags:
+      - Saving Goals
+      operationId: listSavingGoals
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: List of saving goals
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/saving_goal"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+    post:
+      summary: Create a new saving goal
+      tags:
+      - Saving Goals
+      operationId: createSavingGoal
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: Saving goal created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/saving_goal"
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Emergency Fund
+                target_amount:
+                  type: number
+                  example: 10000.0
+                current_amount:
+                  type: number
+                  example: 2500.0
+                target_date:
+                  type: string
+                  format: date-time
+                  example: '2026-12-31T00:00:00Z'
+                notes:
+                  type: string
+                  example: 6 months of expenses
+              required:
+              - title
+              - target_amount
+  "/api/v1/saving_goals/{id}":
+    parameters:
+    - name: id
+      in: path
+      description: Saving Goal ID
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Get saving goal details
+      tags:
+      - Saving Goals
+      operationId: getSavingGoal
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Saving goal details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/saving_goal"
+        '404':
+          description: Saving goal not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+    put:
+      summary: Update a saving goal
+      tags:
+      - Saving Goals
+      operationId: updateSavingGoal
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: Saving goal updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/saving_goal"
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                target_amount:
+                  type: number
+                current_amount:
+                  type: number
+                target_date:
+                  type: string
+                  format: date-time
+                notes:
+                  type: string
+    delete:
+      summary: Delete a saving goal
+      tags:
+      - Saving Goals
+      operationId: deleteSavingGoal
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: Saving goal deleted
+        '404':
+          description: Saving goal not found
+  "/api/v1/dashboard/overview":
+    get:
+      summary: Get full dashboard overview
+      tags:
+      - Dashboard
+      operationId: getDashboardOverview
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Dashboard overview data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      balance_overview:
+                        type: object
+                        properties:
+                          current_balance:
+                            type: number
+                          monthly_income:
+                            type: number
+                          monthly_expenses:
+                            type: number
+                          net_income:
+                            type: number
+                      monthly_summary:
+                        type: object
+                        properties:
+                          budget_utilization:
+                            type: number
+                          income:
+                            type: number
+                          expenses:
+                            type: number
+                          savings_rate:
+                            type: number
+                      weekly_spending:
+                        type: object
+                        properties:
+                          current_week:
+                            type: array
+                            items:
+                              type: number
+                            description: 7 daily amounts
+                          labels:
+                            type: array
+                            items:
+                              type: string
+                            example:
+                            - Mon
+                            - Tue
+                            - Wed
+                            - Thu
+                            - Fri
+                            - Sat
+                            - Sun
+                      top_spending_categories:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            category_id:
+                              type: integer
+                            category_name:
+                              type: string
+                            amount:
+                              type: number
+                            percentage:
+                              type: number
+                            icon:
+                              type: string
+                            color:
+                              type: string
+                      recent_transactions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            amount:
+                              type: number
+                            description:
+                              type: string
+                            category:
+                              type: string
+                            date:
+                              type: string
+                            type:
+                              type: string
+                      quick_stats:
+                        type: object
+                        properties:
+                          total_budgets:
+                            type: integer
+                          active_debts:
+                            type: integer
+                          saving_goals:
+                            type: integer
+                          transactions_this_month:
+                            type: integer
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+  "/api/v1/dashboard/financial_overview":
+    get:
+      summary: Get financial overview summary
+      tags:
+      - Dashboard
+      operationId: getFinancialOverview
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Financial overview
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      total_balance:
+                        type: number
+                      total_income:
+                        type: number
+                      total_expenses:
+                        type: number
+                      net_worth:
+                        type: number
+                      savings_rate:
+                        type: number
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+  "/api/v1/dashboard/spending_by_category":
+    get:
+      summary: Get dashboard spending by category
+      tags:
+      - Dashboard
+      operationId: getDashboardSpendingByCategory
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: start_date
+        in: query
+        format: date
+        required: false
+        schema:
+          type: string
+      - name: end_date
+        in: query
+        format: date
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Spending by category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category_id:
+                          type: integer
+                        category_name:
+                          type: string
+                        icon:
+                          type: string
+                        color:
+                          type: string
+                        amount:
+                          type: number
+                        percentage:
+                          type: number
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+  "/api/v1/insights/monthly_overview":
+    get:
+      summary: Get monthly income/expense overview
+      tags:
+      - Insights
+      operationId: getMonthlyOverview
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Monthly overview
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      total_income:
+                        type: number
+                      total_expenses:
+                        type: number
+                      top_categories:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            category:
+                              type: string
+                            amount:
+                              type: number
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+  "/api/v1/insights/spending_by_category":
+    get:
+      summary: Get spending breakdown by category (last 30 days)
+      tags:
+      - Insights
+      operationId: getInsightsSpendingByCategory
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Spending by category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category_id:
+                          type: integer
+                        category_name:
+                          type: string
+                        icon:
+                          type: string
+                        color:
+                          type: string
+                        amount:
+                          type: number
+                        percentage:
+                          type: number
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+  "/api/v1/insights/weekly_trends":
+    get:
+      summary: Get weekly spending trends (last 4 weeks)
+      tags:
+      - Insights
+      operationId: getWeeklyTrends
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Weekly spending trends
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        week:
+                          type: integer
+                        start_date:
+                          type: string
+                          format: date
+                        end_date:
+                          type: string
+                          format: date
+                        spending:
+                          type: number
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+  "/api/v1/insights/spending_comparison":
+    get:
+      summary: Compare spending between current and last month
+      tags:
+      - Insights
+      operationId: getSpendingComparison
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Spending comparison
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      current_month:
+                        type: number
+                      last_month:
+                        type: number
+                      percentage_change:
+                        type: number
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+  "/api/v1/support_messages":
+    get:
+      summary: List user support messages
+      tags:
+      - Support
+      operationId: listSupportMessages
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: List of support messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: array
+                    items:
+                      "$ref": "#/components/schemas/support_message"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+    post:
+      summary: Submit a support message
+      tags:
+      - Support
+      operationId: createSupportMessage
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: Support message submitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    "$ref": "#/components/schemas/support_message"
+        '422':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                display_name:
+                  type: string
+                  example: John Doe
+                message_type:
+                  type: string
+                  example: bug_report
+                  description: e.g. bug_report, feature_request, general
+                message:
+                  type: string
+                  example: I found a bug when...
+                app_version:
+                  type: string
+                  example: 1.2.0
+                build_number:
+                  type: string
+                  example: '42'
+                platform:
+                  type: string
+                  example: ios
+              required:
+              - message
+              - message_type
+  "/api/v1/data/start_afresh":
+    post:
+      summary: Reset financial data (keep accounts & categories)
+      tags:
+      - Data Management
+      operationId: startAfresh
+      security:
+      - bearer_auth: []
+      description: Deletes all transactions, budgets, debts, saving goals, and support
+        messages. Resets account balances to 0. Preserves accounts and categories.
+      responses:
+        '200':
+          description: Data reset successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: All financial data has been reset. Your account and
+                          categories are preserved.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/error_response"
+  "/api/v1/data/delete_all":
+    post:
+      summary: Delete all user data
+      tags:
+      - Data Management
+      operationId: deleteAllData
+      security:
+      - bearer_auth: []
+      description: Permanently deletes all user data including accounts, categories,
+        transactions, budgets, debts, saving goals, and support messages.
+      responses:
+        '200':
+          description: All data deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: All data has been deleted.
+  "/api/v1/data/reset_balances":
+    post:
+      summary: Reset all account balances to zero
+      tags:
+      - Data Management
+      operationId: resetBalances
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: Balances reset
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: All account balances have been reset to 0.

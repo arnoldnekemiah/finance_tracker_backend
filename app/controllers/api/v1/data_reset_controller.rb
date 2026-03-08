@@ -1,4 +1,4 @@
-class Api::V1::DataResetController < ApplicationController
+class Api::V1::DataResetController < Api::BaseController
   include Authenticatable
 
   # POST /api/v1/data/start_afresh

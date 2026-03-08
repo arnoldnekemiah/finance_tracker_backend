@@ -1,4 +1,4 @@
-class Api::V1::TransactionsController < ApplicationController
+class Api::V1::TransactionsController < Api::BaseController
   include Authenticatable
   before_action :set_transaction, only: %i[show update destroy]
 

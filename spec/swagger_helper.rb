@@ -189,7 +189,11 @@ RSpec.configure do |config|
       servers: [
         {
           url: 'http://localhost:3000',
-          description: 'Local development'
+          description: 'Local development (localhost)'
+        },
+        {
+          url: 'http://127.0.0.1:3000',
+          description: 'Local development (127.0.0.1)'
         },
         {
           url: 'https://accountanta-api.onrender.com',

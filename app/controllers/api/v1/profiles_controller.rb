@@ -1,4 +1,4 @@
-class Api::V1::ProfilesController < ApplicationController
+class Api::V1::ProfilesController < Api::BaseController
   include Authenticatable
 
   # PUT /api/v1/profile

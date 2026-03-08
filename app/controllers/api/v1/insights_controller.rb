@@ -1,4 +1,4 @@
-class Api::V1::InsightsController < ApplicationController
+class Api::V1::InsightsController < Api::BaseController
   include Authenticatable
 
   # GET /api/v1/insights/monthly_overview

@@ -3,10 +3,10 @@
 
 <div class="space-y-6">
   <!-- Search & Filters -->
-  <div class="card p-4 animate-card">
+  <div class="card p-4">
     <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
-      <%= form_with url: admin_users_path, method: :get, local: true, class: "flex-1 flex items-center gap-3 flex-wrap" do |f| %>
-        <div class="relative flex-1 min-w-[200px]">
+      <%= form_with url: admin_users_path, method: :get, local: true, class: "flex-1 flex items-center gap-3" do |f| %>
+        <div class="relative flex-1">
           <i data-lucide="search" class="w-4 h-4 text-fg-muted absolute left-3 top-1/2 -translate-y-1/2"></i>
           <%= f.text_field :search, value: params[:search],
               class: "w-full pl-10 pr-4 py-2.5 rounded-lg bg-surface-50 border border-surface-400 text-fg-primary text-sm outline-none focus:border-accent placeholder:text-fg-muted font-mono",
@@ -14,13 +14,13 @@
         </div>
         <%= f.select :is_admin, options_for_select([['All Users', ''], ['Admins', 'true'], ['Regular', 'false']], params[:is_admin]),
             {}, class: "px-3 py-2.5 rounded-lg bg-surface-50 border border-surface-400 text-fg-secondary text-sm outline-none focus:border-accent" %>
-        <%= f.submit "Filter", class: "px-5 py-2.5 rounded-lg bg-accent text-surface-50 text-sm font-semibold cursor-pointer hover:bg-accent-light transition-colors" %>
+        <%= f.submit "Filter", class: "px-4 py-2.5 rounded-lg bg-accent text-surface-50 text-sm font-semibold cursor-pointer hover:bg-accent-light transition-colors" %>
       <% end %>
     </div>
   </div>
 
   <!-- Users Table -->
-  <div class="card overflow-hidden animate-card">
+  <div class="card overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full">
         <thead>
@@ -29,7 +29,7 @@
             <th class="px-5 py-3">User</th>
             <th class="px-5 py-3">Email</th>
             <th class="px-5 py-3">Auth</th>
-            <th class="px-5 py-3">Txns</th>
+            <th class="px-5 py-3">Transactions</th>
             <th class="px-5 py-3">Accounts</th>
             <th class="px-5 py-3">Joined</th>
             <th class="px-5 py-3">Status</th>
@@ -43,7 +43,7 @@
               <td class="px-5 py-3">
                 <div class="flex items-center gap-2.5">
                   <% if user.photo_url.present? %>
-                    <img src="<%= user.photo_url %>" class="w-8 h-8 rounded-full object-cover" alt="">
+                    <img src="<%= user.photo_url %>" class="w-8 h-8 rounded-full object-cover">
                   <% else %>
                     <div class="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center">
                       <span class="text-[10px] font-bold text-accent"><%= user.first_name&.first %><%= user.last_name&.first %></span>
@@ -74,7 +74,7 @@
               <td class="px-5 py-3">
                 <div class="flex items-center gap-1 row-action">
                   <% if user.active? %>
-                    <%= link_to deactivate_admin_user_path(user), method: :patch, class: "p-1.5 rounded hover:bg-red-500/10", title: "Suspend", data: { confirm: "Suspend #{user.full_name}?" } do %>
+                    <%= link_to deactivate_admin_user_path(user), method: :patch, class: "p-1.5 rounded hover:bg-red-500/10", title: "Suspend" do %>
                       <i data-lucide="user-x" class="w-3.5 h-3.5 text-red-400"></i>
                     <% end %>
                   <% else %>
@@ -82,15 +82,10 @@
                       <i data-lucide="user-check" class="w-3.5 h-3.5 text-accent"></i>
                     <% end %>
                   <% end %>
+
                   <% unless user.admin? %>
-                    <%= link_to make_admin_admin_user_path(user), method: :patch, class: "p-1.5 rounded hover:bg-purple-500/10", title: "Grant Admin", data: { confirm: "Grant admin to #{user.full_name}?" } do %>
+                    <%= link_to make_admin_admin_user_path(user), method: :patch, class: "p-1.5 rounded hover:bg-purple-500/10", title: "Make Admin" do %>
                       <i data-lucide="shield-plus" class="w-3.5 h-3.5 text-purple-400"></i>
-                    <% end %>
-                  <% else %>
-                    <% if User.admins.count > 1 %>
-                      <%= link_to remove_admin_admin_user_path(user), method: :patch, class: "p-1.5 rounded hover:bg-amber-500/10", title: "Revoke Admin", data: { confirm: "Remove admin from #{user.full_name}?" } do %>
-                        <i data-lucide="shield-minus" class="w-3.5 h-3.5 text-amber-400"></i>
-                      <% end %>
                     <% end %>
                   <% end %>
                 </div>
@@ -104,20 +99,20 @@
     <!-- Pagination -->
     <div class="px-5 py-3 border-t border-surface-300 flex items-center justify-between">
       <p class="text-xs text-fg-muted font-mono">
-        Showing <%= @offset + 1 %>–<%= [@offset + @per_page, @total_count].min %> of <%= @total_count %>
+        Showing <%= @offset + 1 %>-<%= [@offset + @per_page, @total_count].min %> of <%= @total_count %>
       </p>
       <div class="flex items-center gap-2">
         <% if @current_page > 1 %>
           <%= link_to admin_users_path(page: @current_page - 1, search: params[:search], is_admin: params[:is_admin]),
               class: "px-3 py-1.5 rounded bg-surface-200 text-fg-secondary text-xs font-mono hover:bg-surface-300 transition-colors" do %>
-            &larr; Prev
+            Prev
           <% end %>
         <% end %>
         <span class="text-xs text-fg-muted font-mono">Page <%= @current_page %></span>
         <% if @offset + @per_page < @total_count %>
           <%= link_to admin_users_path(page: @current_page + 1, search: params[:search], is_admin: params[:is_admin]),
               class: "px-3 py-1.5 rounded bg-surface-200 text-fg-secondary text-xs font-mono hover:bg-surface-300 transition-colors" do %>
-            Next &rarr;
+            Next
           <% end %>
         <% end %>
       </div>
