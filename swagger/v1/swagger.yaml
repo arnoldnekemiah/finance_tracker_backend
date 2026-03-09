@@ -318,7 +318,7 @@ servers:
   description: Local development (localhost)
 - url: http://127.0.0.1:3000
   description: Local development (127.0.0.1)
-- url: https://accountanta-api.onrender.com
+- url: http://164.90.230.80
   description: Production (Render)
 tags:
 - name: Authentication
