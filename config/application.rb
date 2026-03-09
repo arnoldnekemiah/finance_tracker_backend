@@ -22,7 +22,10 @@ module FinanceTrackerApi
     config.session_store :cookie_store,
       key: '_accountanta_session',
       same_site: :lax,
-      secure: Rails.env.production?
+      # Only mark the cookie Secure when HTTPS is actually in use.
+      # On a raw-IP HTTP deployment (no TLS) this must be false or the
+      # browser will never send the cookie back and sessions will break.
+      secure: ENV['SESSION_SECURE_COOKIE'] == 'true'
 
     # Rswag::Ui injects a restrictive Content-Security-Policy on /api-docs pages
     # that blocks browser fetch() calls when the page origin (e.g. 127.0.0.1)
