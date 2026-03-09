@@ -73,15 +73,15 @@ Rails.application.configure do
     protocol: ENV['SESSION_SECURE_COOKIE'] == 'true' ? 'https' : 'http'
   }
 
-  if ENV['GMAIL_USERNAME'].present? || Rails.application.credentials.dig(:gmail, :username)
+  if ENV['MAILTRAP_USERNAME'].present?
     config.action_mailer.raise_delivery_errors = true
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
-      address:              'smtp.gmail.com',
+      address:              'live.smtp.mailtrap.io',
       port:                 587,
-      domain:               'gmail.com',
-      user_name:            Rails.application.credentials.dig(:gmail, :username) || ENV['GMAIL_USERNAME'],
-      password:             Rails.application.credentials.dig(:gmail, :app_password) || ENV['GMAIL_APP_PASSWORD'],
+      domain:               'mailtrap.io',
+      user_name:            ENV['MAILTRAP_USERNAME'],
+      password:             ENV['MAILTRAP_PASSWORD'],
       authentication:       'plain',
       enable_starttls_auto: true
     }
