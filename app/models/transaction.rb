@@ -11,14 +11,14 @@ class Transaction < ApplicationRecord
   scope :last_month, -> { where(date: 1.month.ago.beginning_of_month..1.month.ago.end_of_month) }
 
   validates :amount, presence: true, numericality: { greater_than: 0 }
-  validates :original_amount, presence: true, numericality: { greater_than: 0 }
+  validates :original_amount, numericality: { greater_than: 0 }, allow_nil: true
   validates :transaction_type, presence: true, inclusion: { in: %w[income expense transfer] }
   validates :date, presence: true
 
   # Conditional validations based on transaction type
   validates :category_id, presence: true, if: -> { %w[income expense].include?(transaction_type) }
-  validates :from_account_id, presence: true, if: -> { %w[expense transfer].include?(transaction_type) }
-  validates :to_account_id, presence: true, if: -> { %w[income transfer].include?(transaction_type) }
+  validates :from_account_id, presence: true, if: -> { transaction_type == 'transfer' }
+  validates :to_account_id, presence: true, if: -> { transaction_type == 'transfer' }
   validate :different_accounts_for_transfer, if: -> { transaction_type == 'transfer' }
 
   before_save :set_defaults

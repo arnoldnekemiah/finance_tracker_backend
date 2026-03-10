@@ -90,7 +90,7 @@ class Api::V1::TransactionsController < Api::BaseController
     params.permit(
       :amount, :original_amount, :original_currency, :category_id, :category_name,
       :transaction_type, :description, :date, :payment_method,
-      :from_account_id, :to_account_id
+      :from_account_id, :to_account_id, :account_id
     )
   end
 end

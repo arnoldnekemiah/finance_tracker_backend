@@ -1,0 +1,417 @@
+Accountanta Flutter App — API Integration Prompt
+=================================================
+
+You are building the Accountanta Flutter mobile application. You MUST integrate exclusively with the Accountanta Finance Tracker REST API documented below. Do NOT invent endpoints, field names, HTTP methods, or response structures. Every network call must match this specification exactly.
+
+
+BASE URL & VERSIONING
+---------------------
+
+All endpoints are prefixed with /api/v1. Use the following base URLs:
+
+  - Production:  http://164.90.230.80
+  - Local dev:   http://localhost:3000  or  http://127.0.0.1:3000
+
+All requests and responses use application/json unless the endpoint explicitly uses multipart/form-data.
+
+
+AUTHENTICATION
+--------------
+
+Mechanism: HTTP Bearer JWT
+
+Every protected endpoint requires the header:
+  Authorization: Bearer <token>
+
+The JWT token is returned in the data.token field from:
+  - POST /api/v1/auth/signup
+  - POST /api/v1/auth/login
+  - POST /api/v1/auth/google
+
+Store this token securely (e.g., flutter_secure_storage) and attach it to every subsequent request. The token is invalidated server-side on DELETE /api/v1/auth/logout.
+
+
+RESPONSE ENVELOPE
+-----------------
+
+ALL API responses follow one of these two envelope shapes. Never assume a flat response.
+
+Success:
+  {
+    "status": "success",
+    "data": { ... }   // object, array, or primitive
+  }
+
+Error:
+  {
+    "status": "error",
+    "error": "Human-readable error message"
+  }
+
+For paginated responses, a top-level pagination object is also present:
+  {
+    "status": "success",
+    "data": [ ... ],
+    "pagination": {
+      "current_page": 1,
+      "total_pages": 5,
+      "total_count": 98,
+      "per_page": 20
+    }
+  }
+
+Parse data.status and/or HTTP status codes to determine success or failure. Handle every documented HTTP error code (401, 404, 422) explicitly in the UI.
+
+
+DATA MODELS
+-----------
+
+Use these exact field names in your Dart models. All monetary values (amount, balance, limit, spent, etc.) are returned as STRINGS from the server — parse them to double where needed. Timestamps are ISO 8601 strings.
+
+User:
+  id (int), email (string), first_name (string), last_name (string),
+  currency (string), preferred_currency (string), timezone (string),
+  photo_url (string|null), is_admin (bool), is_active (bool),
+  provider (string|null), created_at (datetime), updated_at (datetime)
+
+Account:
+  id (int), name (string), account_type (string), bank_name (string|null),
+  balance (string), currency (string), description (string|null),
+  is_active (bool), account_number_masked (string|null),
+  formatted_balance (string), created_at (datetime), updated_at (datetime)
+
+Category:
+  id (int), name (string), icon (string|null), color (string|null),
+  transaction_type (enum: "income" | "expense")
+
+Transaction:
+  id (int), amount (string), original_amount (string|null),
+  original_currency (string), transaction_type (enum: "income" | "expense" | "transfer"),
+  category_id (int|null), category_name (string|null), date (datetime),
+  description (string|null), from_account_id (int|null), to_account_id (int|null),
+  payment_method (string|null), created_at (datetime), updated_at (datetime)
+
+Budget:
+  id (int), category (Category object), limit (string), spent (string),
+  start_date (datetime), end_date (datetime), period (string),
+  percentage_used (number), remaining_amount (string), over_budget (bool),
+  days_remaining (int)
+
+Debt:
+  id (int), title (string), amount (string), creditor (string),
+  description (string|null), due_date (date string "YYYY-MM-DD"),
+  status (enum: "pending" | "paid" | "overdue"), debt_type (string),
+  interest_rate (string|null), is_recurring (bool),
+  recurring_period (string|null), overdue (bool),
+  days_until_due (int), created_at (datetime), updated_at (datetime)
+
+SavingGoal:
+  id (int), title (string), target_amount (string), current_amount (string),
+  target_date (datetime), notes (string|null), progress_percentage (number),
+  remaining_amount (string), achieved (bool), days_remaining (int),
+  overdue (bool), monthly_savings_needed (string),
+  created_at (datetime), updated_at (datetime)
+
+SupportMessage:
+  id (int), email (string), display_name (string), message_type (string),
+  message (string), status (string), app_version (string|null),
+  build_number (string|null), platform (string|null),
+  created_at (datetime), updated_at (datetime)
+
+
+ENDPOINTS
+---------
+
+--- AUTHENTICATION ---
+
+POST   /api/v1/auth/signup          None    Create account
+POST   /api/v1/auth/login           None    Email/password login
+POST   /api/v1/auth/google          None    Google OAuth
+DELETE /api/v1/auth/logout          Bearer  Invalidate token
+GET    /api/v1/auth/me              Bearer  Current user
+POST   /api/v1/auth/forgot_password None    Request OTP
+POST   /api/v1/auth/verify_otp      None    Verify OTP → get reset token
+POST   /api/v1/auth/reset_password  None    Reset password with token
+
+Signup body (required: email, password, password_confirmation, first_name, last_name; optional: currency):
+  {
+    "email": "user@example.com",
+    "password": "Password123!",
+    "password_confirmation": "Password123!",
+    "first_name": "John",
+    "last_name": "Doe",
+    "currency": "USD"
+  }
+  Response 201: { "status": "success", "data": { "user": {...}, "token": "..." } }
+
+Login body (required: email, password):
+  { "email": "user@example.com", "password": "Password123!" }
+  Response 200: same shape as signup. Response 401 on bad credentials.
+
+Google OAuth body (required: email, uid; optional: first_name, last_name, photo_url):
+  { "email": "user@gmail.com", "uid": "google-uid-string", "first_name": "John", "last_name": "Doe", "photo_url": null }
+
+Forgot password body (required: email). Always returns 200 for security.
+
+Verify OTP body (required: email, otp):
+  { "email": "user@example.com", "otp": "123456" }
+  Response 200: { "status": "success", "data": { "message": "...", "reset_token": "..." } }
+  Response 422 on invalid/expired OTP.
+
+Reset password body (required: token, password, password_confirmation):
+  { "token": "<reset_token>", "password": "NewPass!", "password_confirmation": "NewPass!" }
+
+
+--- PROFILE ---
+
+PUT    /api/v1/profile              Bearer  Update profile
+POST   /api/v1/profile/upload_photo Bearer  Upload photo (multipart/form-data)
+DELETE /api/v1/profile/delete_photo Bearer  Remove photo
+DELETE /api/v1/profile/delete_account Bearer Delete account permanently
+
+Update profile body (all optional):
+  {
+    "first_name": "John", "last_name": "Doe", "email": "user@example.com",
+    "currency": "USD", "preferred_currency": "EUR",
+    "timezone": "Africa/Nairobi", "photo_url": null
+  }
+
+Upload photo: Send as multipart/form-data with a file field. Response returns updated User object under data.
+
+
+--- ACCOUNTS ---
+
+GET    /api/v1/accounts             Bearer  List active accounts
+POST   /api/v1/accounts             Bearer  Create account
+GET    /api/v1/accounts/{id}        Bearer  Get account
+PUT    /api/v1/accounts/{id}        Bearer  Update account
+DELETE /api/v1/accounts/{id}        Bearer  Deactivate account (returns 204)
+
+Create body (required: name, account_type; optional: bank_name, balance, currency, account_number, is_active):
+  {
+    "name": "Checking Account",
+    "account_type": "checking",
+    "bank_name": "Chase Bank",
+    "balance": 1000.0,
+    "currency": "USD",
+    "account_number": "****1234",
+    "is_active": true
+  }
+  account_type examples: checking, savings, credit_card, cash, investment
+
+List response data is an ARRAY of Account objects.
+Single resource response data is a single Account object.
+
+
+--- CATEGORIES ---
+
+GET    /api/v1/categories           Bearer  List all categories
+POST   /api/v1/categories           Bearer  Create category
+GET    /api/v1/categories/{id}      Bearer  Get category
+PUT    /api/v1/categories/{id}      Bearer  Update category
+DELETE /api/v1/categories/{id}      Bearer  Delete category (204)
+
+Create body (required: name, transaction_type; optional: icon, color, parent_category_id):
+  {
+    "name": "Groceries",
+    "transaction_type": "expense",
+    "icon": "🛒",
+    "color": "#4CAF50",
+    "parent_category_id": null
+  }
+  transaction_type must be exactly "income" or "expense".
+
+
+--- TRANSACTIONS ---
+
+GET    /api/v1/transactions                         Bearer  List transactions
+POST   /api/v1/transactions                         Bearer  Create transaction
+GET    /api/v1/transactions/{id}                    Bearer  Get transaction
+PUT    /api/v1/transactions/{id}                    Bearer  Update transaction
+DELETE /api/v1/transactions/{id}                    Bearer  Delete transaction (204)
+GET    /api/v1/transactions/stats                   Bearer  Stats (?start_date=&end_date=)
+GET    /api/v1/transactions/spending_by_category    Bearer  Spending by category (?start_date=&end_date=)
+
+Create body (required: amount, transaction_type; optional: original_amount, original_currency,
+  category_id, category_name, description, date, payment_method, from_account_id, to_account_id):
+  {
+    "amount": 50.0,
+    "transaction_type": "expense",
+    "category_id": 1,
+    "description": "Weekly groceries",
+    "date": "2026-03-01T10:00:00Z",
+    "payment_method": "credit_card"
+  }
+  - transaction_type must be "income", "expense", or "transfer".
+  - For transfers, supply from_account_id and to_account_id.
+  - category_name can be used as an alternative to category_id (server creates/finds by name).
+  - date is in ISO 8601 format.
+
+Stats response data:
+  { "total_income": 3000.0, "total_expenses": 1500.0, "transaction_count": 42,
+    "start_date": "2026-03-01", "end_date": "2026-03-31" }
+
+Spending by category data: array of { category_id, category_name, icon, color, amount, percentage }
+
+
+--- BUDGETS ---
+
+GET    /api/v1/budgets              Bearer  List budgets (paginated; ?page=&per_page=)
+POST   /api/v1/budgets              Bearer  Create budget
+GET    /api/v1/budgets/{id}         Bearer  Get budget
+PUT    /api/v1/budgets/{id}         Bearer  Update budget
+DELETE /api/v1/budgets/{id}         Bearer  Delete budget (204)
+GET    /api/v1/budgets/active       Bearer  Active budgets
+GET    /api/v1/budgets/summary      Bearer  Overall budget summary
+
+Create body (required: category_id, limit, start_date, end_date; optional: spent, period):
+  {
+    "category_id": 1,
+    "limit": 500.0,
+    "start_date": "2026-03-01T00:00:00Z",
+    "end_date": "2026-03-31T23:59:59Z",
+    "period": "monthly"
+  }
+  period examples: weekly, monthly, yearly
+
+The list endpoint includes a pagination object alongside data.
+Use ?page=1&per_page=20 query params.
+
+Summary data:
+  { "total_budget": 2000.0, "total_spent": 900.0, "total_remaining": 1100.0,
+    "budget_count": 5, "over_budget_count": 1, "budgets": [...] }
+
+
+--- DEBTS ---
+
+GET    /api/v1/debts                Bearer  List debts
+POST   /api/v1/debts                Bearer  Create debt
+GET    /api/v1/debts/{id}           Bearer  Get debt
+PUT    /api/v1/debts/{id}           Bearer  Update debt
+DELETE /api/v1/debts/{id}           Bearer  Delete debt (204)
+
+Create body (required: title, amount, creditor, due_date, debt_type;
+  optional: description, status, interest_rate, is_recurring):
+  {
+    "title": "Car Loan",
+    "amount": 15000.0,
+    "creditor": "ABC Bank",
+    "due_date": "2026-12-31",
+    "debt_type": "loan",
+    "status": "pending",
+    "interest_rate": 5.5,
+    "is_recurring": true
+  }
+  status must be "pending", "paid", or "overdue".
+  due_date format is YYYY-MM-DD.
+
+
+--- SAVING GOALS ---
+
+GET    /api/v1/saving_goals         Bearer  List saving goals
+POST   /api/v1/saving_goals         Bearer  Create saving goal
+GET    /api/v1/saving_goals/{id}    Bearer  Get saving goal
+PUT    /api/v1/saving_goals/{id}    Bearer  Update saving goal
+DELETE /api/v1/saving_goals/{id}    Bearer  Delete saving goal (204)
+
+Create body (required: title, target_amount; optional: current_amount, target_date, notes):
+  {
+    "title": "Emergency Fund",
+    "target_amount": 10000.0,
+    "current_amount": 2500.0,
+    "target_date": "2026-12-31T00:00:00Z",
+    "notes": "6 months of expenses"
+  }
+
+
+--- DASHBOARD ---
+
+GET    /api/v1/dashboard/overview               Bearer  Full dashboard overview
+GET    /api/v1/dashboard/financial_overview     Bearer  Financial summary
+GET    /api/v1/dashboard/spending_by_category   Bearer  Category spending (?start_date=&end_date=)
+
+Overview data shape:
+  balance_overview:          { current_balance, monthly_income, monthly_expenses, net_income }
+  monthly_summary:           { budget_utilization, income, expenses, savings_rate }
+  weekly_spending:           { current_week: [7 numbers], labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"] }
+  top_spending_categories:   [{ category_id, category_name, amount, percentage, icon, color }]
+  recent_transactions:       [{ id, amount, description, category, date, type }]
+  quick_stats:               { total_budgets, active_debts, saving_goals, transactions_this_month }
+
+Financial overview data:
+  total_balance, total_income, total_expenses, net_worth, savings_rate
+
+
+--- INSIGHTS ---
+
+GET    /api/v1/insights/monthly_overview        Bearer  Monthly income/expense
+GET    /api/v1/insights/spending_by_category    Bearer  Spending by category (last 30 days)
+GET    /api/v1/insights/weekly_trends           Bearer  Weekly trends (last 4 weeks)
+GET    /api/v1/insights/spending_comparison     Bearer  Current vs last month comparison
+
+Monthly overview data:  { total_income, total_expenses, top_categories: [{ category, amount }] }
+Weekly trends data:     array of { week, start_date, end_date, spending }
+Spending comparison data: { current_month, last_month, percentage_change }
+
+
+--- SUPPORT ---
+
+GET    /api/v1/support_messages     Bearer  List user's support messages
+POST   /api/v1/support_messages     Bearer  Submit support message
+
+Create body (required: message, message_type; optional: email, display_name, app_version, build_number, platform):
+  {
+    "message": "I found a bug when...",
+    "message_type": "bug_report",
+    "app_version": "1.2.0",
+    "build_number": "42",
+    "platform": "ios"
+  }
+  message_type examples: bug_report, feature_request, general
+
+
+--- DATA MANAGEMENT ---
+
+POST   /api/v1/data/start_afresh    Bearer  Reset financial data (keep accounts & categories)
+POST   /api/v1/data/delete_all      Bearer  Delete all user data permanently
+POST   /api/v1/data/reset_balances  Bearer  Reset all account balances to zero
+
+These are destructive operations. Confirm with the user before calling.
+All return 200 with a data.message string on success.
+
+
+STRICT RULES FOR IMPLEMENTATION
+--------------------------------
+
+1.  No invented endpoints. Every API call must match a path in this document exactly.
+
+2.  No field name aliases. Use the exact field names from the spec. Do not rename
+    first_name to firstName, transaction_type to type, etc. in your HTTP layer.
+
+3.  Enum values are exact strings.
+      - transaction_type:  "income" | "expense" | "transfer"
+      - debt status:       "pending" | "paid" | "overdue"
+      - category transaction_type: "income" | "expense"
+
+4.  Monetary strings. Amounts come back as strings (e.g., "1000.00").
+    Parse with double.tryParse(). Never treat them as raw numbers from JSON.
+
+5.  Date formats. Request bodies that take dates use ISO 8601 ("2026-03-01T00:00:00Z")
+    unless the field explicitly uses date format (YYYY-MM-DD), which applies to
+    due_date on debts only.
+
+6.  DELETE responses. Successful deletes return 204 No Content with no body.
+    Do not attempt to parse a response body.
+
+7.  Pagination. Only GET /api/v1/budgets is paginated server-side.
+    Use ?page= and ?per_page= query parameters.
+    Read pagination.total_pages to determine if more pages exist.
+
+8.  Token handling. After logout (DELETE /api/v1/auth/logout), clear the stored token.
+    On 401, redirect to the login screen and clear stored credentials.
+
+9.  Error handling. Display the error field from error responses to the user.
+    Never swallow API errors silently.
+
+10. Content-Type. Set Content-Type: application/json for all JSON requests.
+    Use multipart/form-data ONLY for POST /api/v1/profile/upload_photo.

@@ -150,10 +150,18 @@ class Api::V1::DashboardController < Api::BaseController
         {
           id: t.id,
           amount: t.amount,
+          original_amount: t.original_amount,
+          original_currency: t.original_currency,
           description: t.description,
-          category: t.category&.name || 'Uncategorized',
-          date: t.date.iso8601,
-          type: t.transaction_type
+          category_id: t.category_id,
+          category_name: t.category_name || t.category&.name || 'Uncategorized',
+          date: t.date&.iso8601,
+          transaction_type: t.transaction_type,
+          payment_method: t.payment_method,
+          from_account_id: t.from_account_id,
+          to_account_id: t.to_account_id,
+          created_at: t.created_at&.iso8601,
+          updated_at: t.updated_at&.iso8601
         }
       end
   end
