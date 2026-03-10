@@ -3,9 +3,13 @@
 require 'swagger_helper'
 
 RSpec.describe 'Profile API', type: :request do
+  let(:user) { create(:user) }
+  let(:Authorization) { "Bearer #{auth_token(user)}" }
+
   # ── Update Profile ─────────────────────────────────────────────────────────
   path '/api/v1/profile' do
     put 'Update user profile' do
+      let(:profile) { { first_name: 'Jane', last_name: 'Smith', currency: 'EUR' } }
       tags 'Profile'
       operationId 'updateProfile'
       security [bearer_auth: []]
@@ -37,11 +41,13 @@ RSpec.describe 'Profile API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:profile) { { email: 'not-an-email' } }
         schema('$ref' => '#/components/schemas/error_response')
         run_test!
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema('$ref' => '#/components/schemas/error_response')
         run_test!
       end

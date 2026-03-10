@@ -45,6 +45,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   gem 'letter_opener'
   gem 'rswag-specs'
+  gem 'shoulda-matchers', '~> 6.0'
 end
 
 group :development do

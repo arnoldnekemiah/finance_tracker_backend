@@ -3,6 +3,9 @@
 require 'swagger_helper'
 
 RSpec.describe 'Support Messages API', type: :request do
+  let(:user) { create(:user) }
+  let(:Authorization) { "Bearer #{auth_token(user)}" }
+
   path '/api/v1/support_messages' do
     get 'List user support messages' do
       tags 'Support'
@@ -22,12 +25,14 @@ RSpec.describe 'Support Messages API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
     end
 
     post 'Submit a support message' do
+      let(:support_message) { { message: 'I need help with the app', message_type: 'support' } }
       tags 'Support'
       operationId 'createSupportMessage'
       security [bearer_auth: []]
@@ -57,6 +62,7 @@ RSpec.describe 'Support Messages API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:support_message) { { message: '' } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end

@@ -3,6 +3,9 @@
 require 'swagger_helper'
 
 RSpec.describe 'Budgets API', type: :request do
+  let(:user) { create(:user) }
+  let(:Authorization) { "Bearer #{auth_token(user)}" }
+
   path '/api/v1/budgets' do
     get 'List all budgets (paginated)' do
       tags 'Budgets'
@@ -26,12 +29,23 @@ RSpec.describe 'Budgets API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
     end
 
     post 'Create a new budget' do
+      let(:category) { user.categories.first }
+      let(:budget) do
+        {
+          category_id: category.id,
+          limit: 500.00,
+          start_date: Date.today.beginning_of_month.iso8601,
+          end_date: Date.today.end_of_month.iso8601,
+          period: 'monthly'
+        }
+      end
       tags 'Budgets'
       operationId 'createBudget'
       security [bearer_auth: []]
@@ -60,6 +74,7 @@ RSpec.describe 'Budgets API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:budget) { { category_id: nil } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -68,6 +83,8 @@ RSpec.describe 'Budgets API', type: :request do
 
   path '/api/v1/budgets/{id}' do
     parameter name: :id, in: :path, type: :integer, description: 'Budget ID'
+
+    let(:id) { create(:budget, user: user, category: user.categories.first).id }
 
     get 'Get budget details' do
       tags 'Budgets'
@@ -84,12 +101,14 @@ RSpec.describe 'Budgets API', type: :request do
       end
 
       response '404', 'Budget not found' do
+        let(:id) { 0 }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
     end
 
     put 'Update a budget' do
+      let(:budget) { { limit: 750.00 } }
       tags 'Budgets'
       operationId 'updateBudget'
       security [bearer_auth: []]
@@ -117,6 +136,7 @@ RSpec.describe 'Budgets API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:budget) { { limit: -1 } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -132,6 +152,7 @@ RSpec.describe 'Budgets API', type: :request do
       end
 
       response '404', 'Budget not found' do
+        let(:id) { 0 }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -158,6 +179,7 @@ RSpec.describe 'Budgets API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -194,6 +216,7 @@ RSpec.describe 'Budgets API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end

@@ -3,6 +3,9 @@
 require 'swagger_helper'
 
 RSpec.describe 'Debts API', type: :request do
+  let(:user) { create(:user) }
+  let(:Authorization) { "Bearer #{auth_token(user)}" }
+
   path '/api/v1/debts' do
     get 'List all debts' do
       tags 'Debts'
@@ -22,12 +25,22 @@ RSpec.describe 'Debts API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
     end
 
     post 'Create a new debt' do
+      let(:debt) do
+        {
+          title: 'Car Loan',
+          amount: 15000.00,
+          creditor: 'ABC Bank',
+          due_date: 30.days.from_now.to_date.iso8601,
+          debt_type: 'loan'
+        }
+      end
       tags 'Debts'
       operationId 'createDebt'
       security [bearer_auth: []]
@@ -59,6 +72,7 @@ RSpec.describe 'Debts API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:debt) { { title: '' } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -67,6 +81,8 @@ RSpec.describe 'Debts API', type: :request do
 
   path '/api/v1/debts/{id}' do
     parameter name: :id, in: :path, type: :integer, description: 'Debt ID'
+
+    let(:id) { create(:debt, user: user).id }
 
     get 'Get debt details' do
       tags 'Debts'
@@ -83,12 +99,14 @@ RSpec.describe 'Debts API', type: :request do
       end
 
       response '404', 'Debt not found' do
+        let(:id) { 0 }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
     end
 
     put 'Update a debt' do
+      let(:debt) { { title: 'Updated Loan', status: 'paid' } }
       tags 'Debts'
       operationId 'updateDebt'
       security [bearer_auth: []]
@@ -119,6 +137,7 @@ RSpec.describe 'Debts API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:debt) { { amount: -1 } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -134,6 +153,7 @@ RSpec.describe 'Debts API', type: :request do
       end
 
       response '404', 'Debt not found' do
+        let(:id) { 0 }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end

@@ -3,6 +3,9 @@
 require 'swagger_helper'
 
 RSpec.describe 'Data Reset API', type: :request do
+  let(:user) { create(:user) }
+  let(:Authorization) { "Bearer #{auth_token(user)}" }
+
   # ── Start Afresh ───────────────────────────────────────────────────────────
   path '/api/v1/data/start_afresh' do
     post 'Reset financial data (keep accounts & categories)' do
@@ -29,6 +32,7 @@ RSpec.describe 'Data Reset API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema('$ref' => '#/components/schemas/error_response')
         run_test!
       end

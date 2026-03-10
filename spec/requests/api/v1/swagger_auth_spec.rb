@@ -6,6 +6,15 @@ RSpec.describe 'Authentication API', type: :request do
   # ── Sign Up ────────────────────────────────────────────────────────────────
   path '/api/v1/auth/signup' do
     post 'Create a new user account' do
+      let(:body) do
+        {
+          email: Faker::Internet.unique.email,
+          password: 'Password1!',
+          password_confirmation: 'Password1!',
+          first_name: 'John',
+          last_name: 'Doe'
+        }
+      end
       tags 'Authentication'
       operationId 'signup'
       consumes 'application/json'
@@ -39,6 +48,7 @@ RSpec.describe 'Authentication API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:body) { { email: 'not-an-email' } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -48,6 +58,8 @@ RSpec.describe 'Authentication API', type: :request do
   # ── Login ──────────────────────────────────────────────────────────────────
   path '/api/v1/auth/login' do
     post 'Sign in with email and password' do
+      let(:user) { create(:user) }
+      let(:body) { { email: user.email, password: 'Password1!' } }
       tags 'Authentication'
       operationId 'login'
       consumes 'application/json'
@@ -77,6 +89,7 @@ RSpec.describe 'Authentication API', type: :request do
       end
 
       response '401', 'Invalid credentials or deactivated account' do
+        let(:body) { { email: user.email, password: 'WrongPassword!' } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -86,6 +99,7 @@ RSpec.describe 'Authentication API', type: :request do
   # ── Google OAuth ───────────────────────────────────────────────────────────
   path '/api/v1/auth/google' do
     post 'Authenticate via Google OAuth' do
+      let(:body) { { email: Faker::Internet.unique.email, uid: SecureRandom.uuid, first_name: 'John', last_name: 'Doe' } }
       tags 'Authentication'
       operationId 'googleAuth'
       consumes 'application/json'
@@ -118,6 +132,7 @@ RSpec.describe 'Authentication API', type: :request do
       end
 
       response '422', 'Google authentication failed' do
+        let(:body) { { email: 'invalid' } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -127,6 +142,8 @@ RSpec.describe 'Authentication API', type: :request do
   # ── Logout ─────────────────────────────────────────────────────────────────
   path '/api/v1/auth/logout' do
     delete 'Sign out and invalidate JWT token' do
+      let(:user) { create(:user) }
+      let(:Authorization) { "Bearer #{auth_token(user)}" }
       tags 'Authentication'
       operationId 'logout'
       security [bearer_auth: []]
@@ -155,6 +172,8 @@ RSpec.describe 'Authentication API', type: :request do
   # ── Current User ───────────────────────────────────────────────────────────
   path '/api/v1/auth/me' do
     get 'Get current authenticated user profile' do
+      let(:user) { create(:user) }
+      let(:Authorization) { "Bearer #{auth_token(user)}" }
       tags 'Authentication'
       operationId 'getCurrentUser'
       security [bearer_auth: []]
@@ -169,6 +188,7 @@ RSpec.describe 'Authentication API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -178,6 +198,8 @@ RSpec.describe 'Authentication API', type: :request do
   # ── Forgot Password ────────────────────────────────────────────────────────
   path '/api/v1/auth/forgot_password' do
     post 'Request password reset OTP via email' do
+      let(:user) { create(:user) }
+      let(:body) { { email: user.email } }
       tags 'Authentication'
       operationId 'forgotPassword'
       consumes 'application/json'
@@ -223,7 +245,11 @@ RSpec.describe 'Authentication API', type: :request do
         required: %w[email otp]
       }
 
+      let(:user) { create(:user) }
+
       response '200', 'OTP verified, reset token returned' do
+        before { user.generate_reset_otp! }
+        let(:body) { { email: user.email, otp: user.reload.reset_otp } }
         schema type: :object, properties: {
           status: { type: :string, example: 'success' },
           data: {
@@ -238,6 +264,7 @@ RSpec.describe 'Authentication API', type: :request do
       end
 
       response '422', 'Invalid or expired OTP' do
+        let(:body) { { email: user.email, otp: '000000' } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -247,6 +274,9 @@ RSpec.describe 'Authentication API', type: :request do
   # ── Reset Password ────────────────────────────────────────────────────────
   path '/api/v1/auth/reset_password' do
     post 'Reset password using reset token' do
+      let(:user) { create(:user) }
+      let(:reset_token) { JwtService.encode(user.id, exp: 15.minutes.from_now) }
+      let(:body) { { token: reset_token, password: 'NewPassword1!', password_confirmation: 'NewPassword1!' } }
       tags 'Authentication'
       operationId 'resetPassword'
       consumes 'application/json'
@@ -276,6 +306,7 @@ RSpec.describe 'Authentication API', type: :request do
       end
 
       response '422', 'Reset failed' do
+        let(:body) { { token: 'invalid_token', password: '', password_confirmation: '' } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end

@@ -3,6 +3,9 @@
 require 'swagger_helper'
 
 RSpec.describe 'Insights API', type: :request do
+  let(:user) { create(:user) }
+  let(:Authorization) { "Bearer #{auth_token(user)}" }
+
   # ── Monthly Overview ───────────────────────────────────────────────────────
   path '/api/v1/insights/monthly_overview' do
     get 'Get monthly income/expense overview' do

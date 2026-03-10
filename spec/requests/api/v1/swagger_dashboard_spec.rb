@@ -3,6 +3,9 @@
 require 'swagger_helper'
 
 RSpec.describe 'Dashboard API', type: :request do
+  let(:user) { create(:user) }
+  let(:Authorization) { "Bearer #{auth_token(user)}" }
+
   # ── Dashboard Overview ─────────────────────────────────────────────────────
   path '/api/v1/dashboard/overview' do
     get 'Get full dashboard overview' do
@@ -89,6 +92,7 @@ RSpec.describe 'Dashboard API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema('$ref' => '#/components/schemas/error_response')
         run_test!
       end
@@ -123,6 +127,7 @@ RSpec.describe 'Dashboard API', type: :request do
         run_test!
       end
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema('$ref' => '#/components/schemas/error_response')
         run_test!
       end    end
@@ -164,6 +169,7 @@ RSpec.describe 'Dashboard API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema('$ref' => '#/components/schemas/error_response')
         run_test!
       end

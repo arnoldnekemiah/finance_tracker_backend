@@ -3,6 +3,9 @@
 require 'swagger_helper'
 
 RSpec.describe 'Transactions API', type: :request do
+  let(:user) { create(:user) }
+  let(:Authorization) { "Bearer #{auth_token(user)}" }
+
   path '/api/v1/transactions' do
     get 'List all transactions' do
       tags 'Transactions'
@@ -22,12 +25,15 @@ RSpec.describe 'Transactions API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
     end
 
     post 'Create a new transaction' do
+      let(:account) { user.accounts.first }
+      let(:transaction) { { amount: '50.00', transaction_type: 'expense', account_id: account.id, date: Time.current.iso8601 } }
       tags 'Transactions'
       operationId 'createTransaction'
       security [bearer_auth: []]
@@ -61,6 +67,7 @@ RSpec.describe 'Transactions API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:transaction) { { amount: '' } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -69,6 +76,8 @@ RSpec.describe 'Transactions API', type: :request do
 
   path '/api/v1/transactions/{id}' do
     parameter name: :id, in: :path, type: :integer, description: 'Transaction ID'
+
+    let(:id) { create(:transaction, user: user, account: user.accounts.first, category: user.categories.first).id }
 
     get 'Get transaction details' do
       tags 'Transactions'
@@ -85,12 +94,14 @@ RSpec.describe 'Transactions API', type: :request do
       end
 
       response '404', 'Transaction not found' do
+        let(:id) { 0 }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
     end
 
     put 'Update a transaction' do
+      let(:transaction) { { description: 'Updated description' } }
       tags 'Transactions'
       operationId 'updateTransaction'
       security [bearer_auth: []]
@@ -123,6 +134,7 @@ RSpec.describe 'Transactions API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:transaction) { { amount: -1 } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -138,6 +150,7 @@ RSpec.describe 'Transactions API', type: :request do
       end
 
       response '404', 'Transaction not found' do
+        let(:id) { 0 }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end

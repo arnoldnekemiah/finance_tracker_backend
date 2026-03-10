@@ -3,6 +3,9 @@
 require 'swagger_helper'
 
 RSpec.describe 'Accounts API', type: :request do
+  let(:user) { create(:user) }
+  let(:Authorization) { "Bearer #{auth_token(user)}" }
+
   path '/api/v1/accounts' do
     get 'List all active accounts' do
       tags 'Accounts'
@@ -22,12 +25,14 @@ RSpec.describe 'Accounts API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
     end
 
     post 'Create a new account' do
+      let(:account) { { name: 'My Account', account_type: 'regular', balance: '1000.00', currency: 'USD' } }
       tags 'Accounts'
       operationId 'createAccount'
       security [bearer_auth: []]
@@ -57,6 +62,7 @@ RSpec.describe 'Accounts API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:account) { { name: '' } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -65,6 +71,8 @@ RSpec.describe 'Accounts API', type: :request do
 
   path '/api/v1/accounts/{id}' do
     parameter name: :id, in: :path, type: :integer, description: 'Account ID'
+
+    let(:id) { create(:account, user: user).id }
 
     get 'Get account details' do
       tags 'Accounts'
@@ -81,12 +89,14 @@ RSpec.describe 'Accounts API', type: :request do
       end
 
       response '404', 'Account not found' do
+        let(:id) { 0 }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
     end
 
     put 'Update an account' do
+      let(:account) { { name: 'Updated Account' } }
       tags 'Accounts'
       operationId 'updateAccount'
       security [bearer_auth: []]
@@ -115,6 +125,7 @@ RSpec.describe 'Accounts API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:account) { { account_type: 'invalid_type' } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -130,6 +141,7 @@ RSpec.describe 'Accounts API', type: :request do
       end
 
       response '404', 'Account not found' do
+        let(:id) { 0 }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end

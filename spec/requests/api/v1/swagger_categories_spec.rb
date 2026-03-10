@@ -3,6 +3,9 @@
 require 'swagger_helper'
 
 RSpec.describe 'Categories API', type: :request do
+  let(:user) { create(:user) }
+  let(:Authorization) { "Bearer #{auth_token(user)}" }
+
   path '/api/v1/categories' do
     get 'List all categories' do
       tags 'Categories'
@@ -22,12 +25,14 @@ RSpec.describe 'Categories API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
     end
 
     post 'Create a new category' do
+      let(:category) { { name: 'Food', transaction_type: 'expense', icon: '🍔', color: '#F44336' } }
       tags 'Categories'
       operationId 'createCategory'
       security [bearer_auth: []]
@@ -55,6 +60,7 @@ RSpec.describe 'Categories API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:category) { { name: '' } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -63,6 +69,8 @@ RSpec.describe 'Categories API', type: :request do
 
   path '/api/v1/categories/{id}' do
     parameter name: :id, in: :path, type: :integer, description: 'Category ID'
+
+    let(:id) { user.categories.first&.id || create(:category, user: user).id }
 
     get 'Get category details' do
       tags 'Categories'
@@ -79,12 +87,14 @@ RSpec.describe 'Categories API', type: :request do
       end
 
       response '404', 'Category not found' do
+        let(:id) { 0 }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
     end
 
     put 'Update a category' do
+      let(:category) { { name: 'Updated Food', icon: '🥗' } }
       tags 'Categories'
       operationId 'updateCategory'
       security [bearer_auth: []]
@@ -111,6 +121,7 @@ RSpec.describe 'Categories API', type: :request do
       end
 
       response '422', 'Validation errors' do
+        let(:category) { { name: '' } }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
@@ -126,6 +137,7 @@ RSpec.describe 'Categories API', type: :request do
       end
 
       response '404', 'Category not found' do
+        let(:id) { 0 }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end
