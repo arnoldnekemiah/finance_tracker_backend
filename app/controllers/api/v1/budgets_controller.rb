@@ -68,9 +68,9 @@ class Api::V1::BudgetsController < Api::BaseController
     render json: {
       status: 'success',
       data: {
-        total_budget: total_budget,
-        total_spent: total_spent,
-        total_remaining: total_budget - total_spent,
+        total_budget: total_budget.to_f,
+        total_spent: total_spent.to_f,
+        total_remaining: (total_budget - total_spent).to_f,
         budget_count: active_budgets.count,
         over_budget_count: active_budgets.count(&:over_budget?),
         budgets: active_budgets.map { |b| BudgetSerializer.new(b).as_json }

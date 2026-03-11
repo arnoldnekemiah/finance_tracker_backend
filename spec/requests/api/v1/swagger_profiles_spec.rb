@@ -67,6 +67,7 @@ RSpec.describe 'Profile API', type: :request do
       parameter name: :photo_url, in: :formData, type: :string, required: false, description: 'Photo URL (alternative to file upload)'
 
       response '200', 'Photo uploaded' do
+        let(:photo_url) { 'https://example.com/photo.jpg' }
         schema(
           type: :object,
           properties: {

@@ -33,7 +33,8 @@ RSpec.describe 'Transactions API', type: :request do
 
     post 'Create a new transaction' do
       let(:account) { user.accounts.first }
-      let(:transaction) { { amount: '50.00', transaction_type: 'expense', account_id: account.id, date: Time.current.iso8601 } }
+      let(:category) { user.categories.first }
+      let(:transaction) { { amount: '50.00', transaction_type: 'expense', account_id: account.id, category_id: category.id, date: Time.current.iso8601 } }
       tags 'Transactions'
       operationId 'createTransaction'
       security [bearer_auth: []]

@@ -6,8 +6,8 @@ class Api::V1::InsightsController < Api::BaseController
     render json: {
       status: 'success',
       data: {
-        total_income: current_user.transactions.income.this_month.sum(:amount) || 0,
-        total_expenses: current_user.transactions.expense.this_month.sum(:amount) || 0,
+        total_income: (current_user.transactions.income.this_month.sum(:amount) || 0).to_f,
+        total_expenses: (current_user.transactions.expense.this_month.sum(:amount) || 0).to_f,
         top_categories: top_spending_categories
       }
     }
@@ -30,8 +30,8 @@ class Api::V1::InsightsController < Api::BaseController
         category_name: name,
         icon: icon,
         color: color,
-        amount: amount,
-        percentage: total > 0 ? ((amount / total) * 100).round(1) : 0
+        amount: amount.to_f,
+        percentage: total > 0 ? ((amount / total) * 100).round(1).to_f : 0.0
       }
     end.sort_by { |c| -c[:amount] }
 
@@ -51,10 +51,10 @@ class Api::V1::InsightsController < Api::BaseController
                             .sum(:amount)
 
       weeks << {
-        week: "Week #{4 - i}",
+        week: (4 - i),
         start_date: week_start.to_date,
         end_date: week_end.to_date,
-        spending: spending
+        spending: spending.to_f
       }
     end
 
@@ -63,8 +63,8 @@ class Api::V1::InsightsController < Api::BaseController
 
   # GET /api/v1/insights/spending_comparison
   def spending_comparison
-    current_month = current_user.transactions.expense.this_month.sum(:amount) || 0
-    last_month = current_user.transactions.expense.last_month.sum(:amount) || 0
+    current_month = (current_user.transactions.expense.this_month.sum(:amount) || 0).to_f
+    last_month = (current_user.transactions.expense.last_month.sum(:amount) || 0).to_f
     percentage_change = calculate_percentage_change(current_month, last_month)
 
     render json: {

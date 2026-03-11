@@ -13,11 +13,11 @@ class BudgetSerializer < ActiveModel::Serializer
   end
 
   def percentage_used
-    object.percentage_used
+    object.percentage_used.to_f
   end
 
   def remaining_amount
-    object.remaining_amount
+    object.remaining_amount.to_f
   end
 
   def over_budget

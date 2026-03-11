@@ -163,6 +163,7 @@ RSpec.describe 'Authentication API', type: :request do
       end
 
       response '401', 'Unauthorized' do
+        let(:Authorization) { 'Bearer invalid' }
         schema '$ref' => '#/components/schemas/error_response'
         run_test!
       end

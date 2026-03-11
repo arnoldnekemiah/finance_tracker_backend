@@ -4,11 +4,11 @@ class SavingGoalSerializer < ActiveModel::Serializer
              :achieved, :days_remaining, :overdue, :monthly_savings_needed
 
   def progress_percentage
-    object.progress_percentage
+    object.progress_percentage.to_f
   end
 
   def remaining_amount
-    object.remaining_amount
+    object.remaining_amount.to_f
   end
 
   def achieved
@@ -24,6 +24,6 @@ class SavingGoalSerializer < ActiveModel::Serializer
   end
 
   def monthly_savings_needed
-    object.monthly_savings_needed
+    object.monthly_savings_needed.to_f
   end
 end

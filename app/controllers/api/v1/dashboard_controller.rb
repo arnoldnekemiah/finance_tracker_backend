@@ -31,11 +31,11 @@ class Api::V1::DashboardController < Api::BaseController
     render json: {
       status: 'success',
       data: {
-        total_balance: total_assets,
-        total_income: monthly_income,
-        total_expenses: monthly_expenses,
-        net_worth: net_worth,
-        savings_rate: savings_rate
+        total_balance: total_assets.to_f,
+        total_income: monthly_income.to_f,
+        total_expenses: monthly_expenses.to_f,
+        net_worth: net_worth.to_f,
+        savings_rate: savings_rate.to_f
       }
     }
   end
@@ -60,8 +60,8 @@ class Api::V1::DashboardController < Api::BaseController
         category_name: name,
         icon: icon,
         color: color,
-        amount: amount,
-        percentage: total > 0 ? ((amount / total) * 100).round(1) : 0
+        amount: amount.to_f,
+        percentage: total > 0 ? ((amount / total) * 100).round(1).to_f : 0.0
       }
     end.sort_by { |c| -c[:amount] }
 
@@ -76,10 +76,10 @@ class Api::V1::DashboardController < Api::BaseController
     monthly_expenses = current_month_expenses
 
     {
-      current_balance: current_balance,
-      monthly_income: monthly_income,
-      monthly_expenses: monthly_expenses,
-      net_income: monthly_income - monthly_expenses
+      current_balance: current_balance.to_f,
+      monthly_income: monthly_income.to_f,
+      monthly_expenses: monthly_expenses.to_f,
+      net_income: (monthly_income - monthly_expenses).to_f
     }
   end
 
@@ -94,10 +94,10 @@ class Api::V1::DashboardController < Api::BaseController
     savings_rate = monthly_income > 0 ? ((monthly_income - monthly_expenses) / monthly_income) : 0
 
     {
-      budget_utilization: budget_utilization.round(2),
-      income: monthly_income,
-      expenses: monthly_expenses,
-      savings_rate: savings_rate.round(2)
+      budget_utilization: budget_utilization.to_f.round(2),
+      income: monthly_income.to_f,
+      expenses: monthly_expenses.to_f,
+      savings_rate: savings_rate.to_f.round(2)
     }
   end
 
@@ -111,7 +111,7 @@ class Api::V1::DashboardController < Api::BaseController
       daily_amount = current_user.transactions
         .where(transaction_type: 'expense', date: date.beginning_of_day..date.end_of_day)
         .sum(:amount)
-      daily_spending << daily_amount
+      daily_spending << daily_amount.to_f
       labels << date.strftime('%a')
     end
 
@@ -134,8 +134,8 @@ class Api::V1::DashboardController < Api::BaseController
       {
         category_id: category_id,
         category_name: name,
-        amount: amount,
-        percentage: total_expenses > 0 ? ((amount / total_expenses) * 100).round(1) : 0,
+        amount: amount.to_f,
+        percentage: total_expenses > 0 ? ((amount / total_expenses) * 100).round(1).to_f : 0.0,
         icon: icon || '📁',
         color: color || '#6B7280'
       }

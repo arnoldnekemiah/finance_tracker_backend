@@ -43,8 +43,8 @@ class Api::V1::TransactionsController < Api::BaseController
     render json: {
       status: 'success',
       data: {
-        total_income: transactions.income.sum(:amount),
-        total_expenses: transactions.expense.sum(:amount),
+        total_income: transactions.income.sum(:amount).to_f,
+        total_expenses: transactions.expense.sum(:amount).to_f,
         transaction_count: transactions.count,
         start_date: start_date,
         end_date: end_date
