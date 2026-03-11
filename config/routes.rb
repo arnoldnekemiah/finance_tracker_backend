@@ -56,9 +56,17 @@ Rails.application.routes.draw do
       resources :support_messages, only: [:index, :create]
 
       # Data Reset
-      post 'data/start_afresh',   to: 'data_reset#start_afresh'
-      post 'data/delete_all',     to: 'data_reset#delete_all'
-      post 'data/reset_balances', to: 'data_reset#reset_balances'
+      post 'data/start_afresh',       to: 'data_reset#start_afresh'
+      post 'data/delete_all',         to: 'data_reset#delete_all'
+      post 'data/reset_balances',     to: 'data_reset#reset_balances'
+      post 'data/reconcile_balances', to: 'data_reset#reconcile_balances'
+
+      # Exchange rates (proxied for frontend)
+      get 'exchange_rates', to: 'exchange_rates#index'
+
+      # Extended insights
+      get 'insights/monthly_trends',  to: 'insights#monthly_trends'
+      get 'insights/income_vs_expense', to: 'insights#income_vs_expense'
     end
   end
 

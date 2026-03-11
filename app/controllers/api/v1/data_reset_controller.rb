@@ -48,4 +48,36 @@ class Api::V1::DataResetController < Api::BaseController
       data: { message: 'All account balances have been reset to 0.' }
     }
   end
+
+  # POST /api/v1/data/reconcile_balances
+  # Recomputes account balances from all transactions
+  def reconcile_balances
+    ActiveRecord::Base.transaction do
+      current_user.accounts.update_all(balance: 0.0)
+
+      # Income: add to account
+      current_user.transactions.income.where.not(account_id: nil).each do |t|
+        Account.find_by(id: t.account_id)&.increment!(:balance, t.amount)
+      end
+
+      # Expense: subtract from account
+      current_user.transactions.expense.where.not(account_id: nil).each do |t|
+        Account.find_by(id: t.account_id)&.decrement!(:balance, t.amount)
+      end
+
+      # Transfer: debit from_account, credit to_account
+      current_user.transactions.transfer.each do |t|
+        Account.find_by(id: t.from_account_id)&.decrement!(:balance, t.amount)
+        Account.find_by(id: t.to_account_id)&.increment!(:balance, t.amount)
+      end
+    end
+
+    render json: {
+      status: 'success',
+      data: {
+        message: 'Account balances have been reconciled from transaction history.',
+        accounts: current_user.accounts.active.map { |a| { id: a.id, name: a.name, balance: a.balance.to_f, currency: a.currency } }
+      }
+    }
+  end
 end
