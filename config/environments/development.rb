@@ -69,4 +69,8 @@ Rails.application.configure do
   config.action_controller.raise_on_missing_callback_actions = true
 
   config.action_mailer.default_url_options = { host: 'localhost', port: 3001 }
+
+  # Allow subdomain testing in development
+  config.hosts << "admin.localhost"
+  config.hosts << /.*\.localhost/
 end
