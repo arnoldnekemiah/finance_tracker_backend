@@ -9,7 +9,7 @@ BASE URL & VERSIONING
 
 All endpoints are prefixed with /api/v1. Use the following base URLs:
 
-  - Production:  http://164.90.230.80
+  - Production:  https://api.ikondesoft.com
   - Local dev:   http://localhost:3000  or  http://127.0.0.1:3000
 
 All requests and responses use application/json unless the endpoint explicitly uses multipart/form-data.

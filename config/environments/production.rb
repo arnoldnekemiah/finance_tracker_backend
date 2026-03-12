@@ -76,7 +76,19 @@ Rails.application.configure do
     Rails.application.routes.default_url_options = app_url_options
   end
 
-  if ENV['MAILTRAP_USERNAME'].present?
+  if ENV['BREVO_SMTP_PASSWORD'].present?
+    config.action_mailer.raise_delivery_errors = true
+    config.action_mailer.delivery_method = :smtp
+    config.action_mailer.smtp_settings = {
+      address:              'smtp-relay.brevo.com',
+      port:                 587,
+      domain:               ENV.fetch('BREVO_DOMAIN', 'ikondesoft.com'),
+      user_name:            ENV.fetch('BREVO_SMTP_USERNAME', ENV['BREVO_USERNAME']),
+      password:             ENV['BREVO_SMTP_PASSWORD'],
+      authentication:       'plain',
+      enable_starttls_auto: true
+    }
+  elsif ENV['MAILTRAP_USERNAME'].present?
     config.action_mailer.raise_delivery_errors = true
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {

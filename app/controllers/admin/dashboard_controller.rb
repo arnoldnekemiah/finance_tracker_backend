@@ -216,8 +216,15 @@ class Admin::DashboardController < Admin::BaseController
       ruby_version: RUBY_VERSION,
       rails_version: Rails.version,
       uptime: 'Running',
-      memory_usage: `ps -o rss= -p #{Process.pid}`.to_i
+      memory_usage: get_memory_usage
     }
+  end
+
+  def get_memory_usage
+    `ps -o rss= -p #{Process.pid}`.to_i
+  rescue Errno::ENOENT, StandardError
+    # ps command not available or failed - fallback to 0
+    0
   end
 
   def performance_metrics
