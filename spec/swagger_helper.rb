@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require Rails.root.join('config/app_url')
 
 RSpec.configure do |config|
   config.openapi_root = Rails.root.join('swagger').to_s
@@ -186,20 +187,7 @@ RSpec.configure do |config|
           }
         }
       },
-      servers: [
-        {
-          url: 'http://localhost:3000',
-          description: 'Local development (localhost)'
-        },
-        {
-          url: 'http://127.0.0.1:3000',
-          description: 'Local development (127.0.0.1)'
-        },
-        {
-          url: 'https://accountanta-api.onrender.com',
-          description: 'Production (Render)'
-        }
-      ]
+      servers: AppUrl.swagger_servers
     }
   }
 

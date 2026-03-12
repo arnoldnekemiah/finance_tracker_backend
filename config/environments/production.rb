@@ -1,7 +1,9 @@
 require "active_support/core_ext/integer/time"
+require_relative "../app_url"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
+  app_url_options = AppUrl.admin_url_options
 
   # Code is not reloaded between requests.
   config.enable_reloading = false
@@ -41,7 +43,7 @@ Rails.application.configure do
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # Can be used together with config.force_ssl for Strict-Transport-Security and secure cookies.
-  # config.assume_ssl = true
+  config.assume_ssl = app_url_options[:protocol] == 'https'
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # Disabled: running on raw IP without SSL termination
@@ -68,10 +70,11 @@ Rails.application.configure do
   # config.active_job.queue_name_prefix = "finance_tracker_api_production"
 
   config.action_mailer.perform_caching = false
-  config.action_mailer.default_url_options = {
-    host: ENV.fetch('APP_HOST', 'localhost'),
-    protocol: ENV['SESSION_SECURE_COOKIE'] == 'true' ? 'https' : 'http'
-  }
+  config.action_mailer.default_url_options = app_url_options
+
+  config.after_initialize do
+    Rails.application.routes.default_url_options = app_url_options
+  end
 
   if ENV['MAILTRAP_USERNAME'].present?
     config.action_mailer.raise_delivery_errors = true

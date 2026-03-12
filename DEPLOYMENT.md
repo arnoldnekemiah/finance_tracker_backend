@@ -18,21 +18,20 @@ Database is hosted on **Neon** (serverless PostgreSQL). The Droplet only runs th
 > **Why not the $4 plan?** The 512MB RAM Droplet can OOM-kill Docker + Rails on startup. 1GB ($6) is the safe minimum.  
 > Neon's free tier gives you 0.5 GB storage + 190 compute hours/month — enough for a small production app. Upgrade to Neon's $19/mo plan when you need more.
 
-## Your API Base URL
+## Your Production Base URLs
 
-DigitalOcean does not give you a hostname — your API is accessible via the raw Droplet IP:
+This project is configured to use split production domains:
 
 ```
-http://<your-droplet-ip>
+Admin: https://admin.ikondesoft.com
+API:   https://accountanta.ikondesoft.com
 ```
 
 Examples:
 ```
-http://167.99.12.34/api/v1/auth/login
-http://167.99.12.34/api-docs        ← Swagger UI
+https://admin.ikondesoft.com/api-docs        ← Swagger UI
+https://accountanta.ikondesoft.com/api/v1/auth/login
 ```
-
-When you add a domain later, it becomes `https://api.yourdomain.com` — everything else stays the same.
 
 ---
 
@@ -46,7 +45,7 @@ Before starting, have these ready:
 - [ ] `JWT_SECRET_KEY` — run locally: `openssl rand -hex 64`
 - [ ] Google OAuth credentials (Client ID + Secret) if using Google login
 - [ ] Gmail App Password for mailer
-- [ ] A domain name pointed at the Droplet IP (or use the raw IP for testing)
+- [ ] `admin.ikondesoft.com` and `accountanta.ikondesoft.com` pointed at the Droplet IP in Cloudflare
 
 ---
 
@@ -64,14 +63,14 @@ Before starting, have these ready:
 
 ---
 
-## Step 2 — Note Your Droplet IP (Your API Base URL)
+## Step 2 — Note Your Droplet IP (Origin Server)
 
 After the Droplet is created, DigitalOcean shows you its IP address on the dashboard.
 
-That IP **is your API base URL**:
+That IP is the origin your domain points to:
 
 ```
-http://<your-droplet-ip>
+164.90.230.80
 ```
 
 Test it once the app is running:
@@ -80,7 +79,7 @@ Test it once the app is running:
 curl http://<your-droplet-ip>/up
 ```
 
-> **Adding a domain later:** Create an `A` record pointing `api.yourdomain.com` → your Droplet IP, update `server_name` in the Nginx config, then run `sudo certbot --nginx -d api.yourdomain.com` for free HTTPS.
+> Your Cloudflare DNS should point both `admin.ikondesoft.com` and `accountanta.ikondesoft.com` to `164.90.230.80`. Keep both hostnames in the Nginx `server_name` directive and provision TLS for both if Cloudflare is using Full / Full (strict).
 
 ---
 
@@ -135,7 +134,10 @@ Fill in every value. The critical ones:
 RAILS_MASTER_KEY=<content of your local config/master.key>
 DATABASE_URL=postgresql://USER:PASS@ep-xxxx.us-east-2.aws.neon.tech/neondb?sslmode=require
 JWT_SECRET_KEY=<output of: openssl rand -hex 64>
-APP_HOST=api.yourdomain.com
+ADMIN_APP_HOST=admin.ikondesoft.com
+API_APP_HOST=accountanta.ikondesoft.com
+APP_PROTOCOL=https
+SESSION_SECURE_COOKIE=true
 ```
 
 Get your `DATABASE_URL` from:  
@@ -153,7 +155,7 @@ sudo ln -s /etc/nginx/sites-available/accountanta /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 ```
 
-The config already uses `server_name _;` which works with any IP — **no edits needed** for a raw IP setup.
+The committed config already uses `server_name admin.ikondesoft.com accountanta.ikondesoft.com;`. If you deploy this exact project, keep both hostnames in place.
 
 Test and reload:
 
@@ -163,22 +165,15 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ---
 
-## Step 7 — SSL Certificate (Skip for now — requires a domain)
+## Step 7 — SSL Certificate
 
-You can skip this step entirely until you have a domain. Your API works fine over HTTP with the raw IP.
-
-When you do add a domain:
+Because production now uses two hostnames, configure TLS for both:
 
 ```bash
-# 1. Update server_name in the nginx config from _ to your domain
-sudo nano /etc/nginx/sites-available/accountanta
-# Change:  server_name _;
-# To:      server_name api.yourdomain.com;
+# 1. Get the cert
+sudo certbot --nginx -d admin.ikondesoft.com -d accountanta.ikondesoft.com
 
-# 2. Get the cert
-sudo certbot --nginx -d api.yourdomain.com
-
-# 3. Verify auto-renewal
+# 2. Verify auto-renewal
 sudo certbot renew --dry-run
 ```
 
@@ -215,8 +210,9 @@ docker logs accountanta_app --tail 50
 # Test the health endpoint
 curl http://localhost:3000/up
 
-# Test through Nginx (use your actual Droplet IP)
-curl http://<your-droplet-ip>/up
+# Test through the production domains
+curl https://admin.ikondesoft.com/up
+curl https://accountanta.ikondesoft.com/up
 ```
 
 Expected response from `/up`: `200 OK`
