@@ -6,7 +6,7 @@ module AppUrl
   end
 
   def api_host(env = ENV)
-    preferred_host(env, 'API_APP_HOST', default: 'accountanta.ikondesoft.com')
+    preferred_host(env, 'API_APP_HOST', default: 'api.ikondesoft.com')
   end
 
   def protocol(env = ENV)

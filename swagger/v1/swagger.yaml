@@ -318,8 +318,8 @@ servers:
   description: Local development (localhost)
 - url: http://127.0.0.1:3000
   description: Local development (127.0.0.1)
-- url: https://accountanta.ikondesoft.com
-  description: Production API (accountanta.ikondesoft.com)
+- url: https://api.ikondesoft.com
+  description: Production API (api.ikondesoft.com)
 tags:
 - name: Authentication
   description: Sign up, log in, Google OAuth, log out, and password reset flows

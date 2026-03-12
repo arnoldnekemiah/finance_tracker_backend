@@ -106,7 +106,7 @@ Rails.application.configure do
 
   # Enable DNS rebinding protection and other `Host` header attacks.
   config.hosts = [
-    "accountanta.ikondesoft.com",    # API host
+    "api.ikondesoft.com",            # API host
     "admin.ikondesoft.com",          # Admin host
     /.*\.ikondesoft\.com/            # Allow all ikondesoft.com subdomains
   ]

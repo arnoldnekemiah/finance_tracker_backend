@@ -24,13 +24,13 @@ This project is configured to use split production domains:
 
 ```
 Admin: https://admin.ikondesoft.com
-API:   https://accountanta.ikondesoft.com
+API:   https://api.ikondesoft.com
 ```
 
 Examples:
 ```
 https://admin.ikondesoft.com/api-docs        ← Swagger UI
-https://accountanta.ikondesoft.com/api/v1/auth/login
+https://api.ikondesoft.com/api/v1/auth/login
 ```
 
 ---
@@ -45,7 +45,7 @@ Before starting, have these ready:
 - [ ] `JWT_SECRET_KEY` — run locally: `openssl rand -hex 64`
 - [ ] Google OAuth credentials (Client ID + Secret) if using Google login
 - [ ] Gmail App Password for mailer
-- [ ] `admin.ikondesoft.com` and `accountanta.ikondesoft.com` pointed at the Droplet IP in Cloudflare
+- [ ] `admin.ikondesoft.com` and `api.ikondesoft.com` pointed at the Droplet IP in Cloudflare
 
 ---
 
@@ -79,7 +79,7 @@ Test it once the app is running:
 curl http://<your-droplet-ip>/up
 ```
 
-> Your Cloudflare DNS should point both `admin.ikondesoft.com` and `accountanta.ikondesoft.com` to `164.90.230.80`. Keep both hostnames in the Nginx `server_name` directive and provision TLS for both if Cloudflare is using Full / Full (strict).
+> Your Cloudflare DNS should point both `admin.ikondesoft.com` and `api.ikondesoft.com` to `164.90.230.80`. Keep both hostnames in the Nginx `server_name` directive and provision TLS for both if Cloudflare is using Full / Full (strict).
 
 ---
 
@@ -135,7 +135,7 @@ RAILS_MASTER_KEY=<content of your local config/master.key>
 DATABASE_URL=postgresql://USER:PASS@ep-xxxx.us-east-2.aws.neon.tech/neondb?sslmode=require
 JWT_SECRET_KEY=<output of: openssl rand -hex 64>
 ADMIN_APP_HOST=admin.ikondesoft.com
-API_APP_HOST=accountanta.ikondesoft.com
+API_APP_HOST=api.ikondesoft.com
 APP_PROTOCOL=https
 SESSION_SECURE_COOKIE=true
 ```
@@ -155,7 +155,7 @@ sudo ln -s /etc/nginx/sites-available/accountanta /etc/nginx/sites-enabled/
 sudo rm -f /etc/nginx/sites-enabled/default
 ```
 
-The committed config already uses `server_name admin.ikondesoft.com accountanta.ikondesoft.com;`. If you deploy this exact project, keep both hostnames in place.
+The committed config already uses `server_name admin.ikondesoft.com api.ikondesoft.com;`. If you deploy this exact project, keep both hostnames in place.
 
 Test and reload:
 
@@ -171,7 +171,7 @@ Because production now uses two hostnames, configure TLS for both:
 
 ```bash
 # 1. Get the cert
-sudo certbot --nginx -d admin.ikondesoft.com -d accountanta.ikondesoft.com
+sudo certbot --nginx -d admin.ikondesoft.com -d api.ikondesoft.com
 
 # 2. Verify auto-renewal
 sudo certbot renew --dry-run
@@ -212,7 +212,7 @@ curl http://localhost:3000/up
 
 # Test through the production domains
 curl https://admin.ikondesoft.com/up
-curl https://accountanta.ikondesoft.com/up
+curl https://api.ikondesoft.com/up
 ```
 
 Expected response from `/up`: `200 OK`
